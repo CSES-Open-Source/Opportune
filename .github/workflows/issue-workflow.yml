@@ -1,0 +1,30 @@
+name: Automate Issue and PR Workflows
+
+on:
+  issues:
+    types: [assigned]
+  pull_request:
+    types: [opened]
+
+jobs:
+  issue_to_in_progress:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Move Issue to In Progress
+        uses: actions-ecosystem/action-update-project-card@v1
+        with:
+          project_name: "Opportune"
+          column_name: "In Progress"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  pr_to_in_review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Move Issue to In Review
+        uses: actions-ecosystem/action-update-project-card@v1
+        with:
+          project_name: "Opportune"
+          column_name: "In Review"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
