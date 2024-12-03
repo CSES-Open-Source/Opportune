@@ -14,7 +14,7 @@ const validateIdBody = body("_id")
 
 const validateIdParam = param("id")
   .isString()
-  .withMessage("id must be a string. (Must be a Mongo ObjectID.)")
+  .withMessage("id must be a string.")
   .trim();
 
 const validateEmail = body("email")

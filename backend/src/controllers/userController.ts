@@ -32,15 +32,11 @@ type UserResponse = StudentResponse | AlumniResponse;
 // @desc Get all users
 // @route GET /api/users
 // @access Private
-export const getUsers = asyncHandler(async (_, res, next) => {
+export const getUsers = asyncHandler(async (_, res) => {
   const users = await User.find()
     .populate({ path: "company", model: Company })
     .lean()
     .exec();
-
-  if (!users.length) {
-    return next(createHttpError(404, "No users found."));
-  }
 
   res.status(200).json(users);
 });
@@ -238,11 +234,6 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
       .lean()
       .exec(),
   ]);
-
-  // check if we found any users
-  if (users.length === 0) {
-    return next(createHttpError(404, "No alumni found matching the criteria."));
-  }
 
   res.status(200).json({
     page,
