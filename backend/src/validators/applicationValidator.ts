@@ -1,4 +1,42 @@
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
+import { Status } from "src/models/Application";
+
+// Default values for page and perPage
+const DEFAULT_PAGE = 0;
+const DEFAULT_PER_PAGE = 10;
+
+const validateUserIdParam = param("userId")
+  .isString()
+  .notEmpty()
+  .withMessage("User ID must be a non-empty string");
+
+const validateQuery = query("query")
+  .optional()
+  .isString()
+  .trim()
+  .escape()
+  .withMessage("Search query must be a string");
+
+const validateProcessStatus = body("process.*.status")
+  .isIn(Object.values(Status))
+  .withMessage(`status must be one of: ${Object.values(Status).join(", ")}`);
+
+const validateSortBy = query("sortBy")
+  .optional()
+  .isIn(["createdAt", "updatedAt", "process"])
+  .withMessage("Sort by must be one of: createdAt, updatedAt, process");
+
+const validatePage = query("page")
+  .default(DEFAULT_PAGE)
+  .isInt({ min: 0 })
+  .toInt()
+  .withMessage("page must be a non-negative integer");
+
+const validatePerPage = query("perPage")
+  .default(DEFAULT_PER_PAGE)
+  .isInt({ min: 1 })
+  .toInt()
+  .withMessage("per page must be an integer greater than 1");
 
 const validateId = param("id")
   .isMongoId()
@@ -83,3 +121,12 @@ export const updateApplicationValidator = [
 ];
 
 export const deleteApplicationValidator = [validateId];
+
+export const getApplicationsByUserID = [
+  validateUserIdParam,
+  validateQuery,
+  validateProcessStatus,
+  validateSortBy,
+  validatePage,
+  validatePerPage,
+];
