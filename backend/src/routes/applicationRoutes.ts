@@ -31,6 +31,7 @@ applicationRouter.delete(
 
 applicationRouter.get(
   "/user/:id",
+  applicationValidator.getApplicationsByUserID,
   applicationController.getApplicationsByUserID,
 );
 
