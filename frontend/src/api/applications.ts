@@ -1,17 +1,119 @@
+import { PaginatedData } from "../types/PaginatedData";
+import {
+  Application,
+  CreateApplicationRequest,
+  GetApplicationsByUserIDQuery,
+  UpdateApplicationRequest,
+} from "../types/Application";
+import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
+
 /**
- * 
-What is the issue?
-A clear description of the task or feature to be implemented by the engineers.
-
-Create a new file applications.ts in frontend/src/api.
-Create Application.ts in src/types to store the types related to API calls.
-Implement API function calls for Application in the frontend. These functions are the endpoints in the frontend that interact directly with the backend endpoints.
-Additional context
-Add any other context or screenshots about the enhancement here.
-
-For more information about what to send to the backend in the body, query and param, look at the backend documentation
-Feel free to reference the users.ts API functions that I have implemented
-Note
-
-The JSON sent by the backend can only contain primitive types like strings, therefore the parser for company can be used to parse the dates for each applicationStatus.
+ * Fetch all applications from the backend.
+ *
+ * @returns A list of applications
  */
+export async function getAllApplications(): Promise<APIResult<Application[]>> {
+  try {
+    const response = await get("/api/applications/applied");
+    const json = (await response.json()) as Application[];
+    return { success: true, data: json };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+/**
+ * Fetch a single application by ID from the backend.
+ *
+ * @param id The ID of the application to fetch
+ * @returns The application object
+ */
+export async function getApplicationbyID(
+  id: string,
+): Promise<APIResult<Application>> {
+  try {
+    const response = await get(`/api/applications/applied/${id}`);
+    const json = (await response.json()) as Application;
+    return { success: true, data: json };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+/**
+ * Create a new application in the backend.
+ *
+ * @param user new user to create
+ * @returns The created user object
+ */
+export async function createApplication(
+  application: CreateApplicationRequest,
+): Promise<APIResult<Application>> {
+  try {
+    const response = await post("/api/applications/applied", application);
+    const json = (await response.json()) as Application;
+    return { success: true, data: json };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+/**
+ * Update an application in the backend.
+ *
+ * @param id id of application to update
+ * @param application Fields to update
+ * @returns updated application
+ */
+export async function updateUser(
+  id: string,
+  application: UpdateApplicationRequest,
+): Promise<APIResult<Application>> {
+  try {
+    const response = await patch(
+      `/api/applications/applied/${id}`,
+      application,
+    );
+    const json = (await response.json()) as Application;
+    return { success: true, data: json };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+/**
+ * Delete an application from the backend.
+ *
+ * @param id The ID of the application to delete
+ * @returns A success message or error
+ */
+export async function deleteApplication(id: string): Promise<APIResult<null>> {
+  try {
+    await del(`/api/applications/applied/${id}`);
+    return { success: true, data: null };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+/**
+ * Fetch all applications belonging to a user id
+ *
+ * @param queries
+ * @returns PaginatedData object containing applications
+ */
+export async function getApplicationsByUserID(
+  _id: string,
+  queries: GetApplicationsByUserIDQuery = { page: 0, perPage: 10 },
+): Promise<APIResult<PaginatedData<Application>>> {
+  try {
+    const response = await get(`/api/applications/applied/user/${_id}`, {
+      ...queries,
+    });
+    const json = (await response.json()) as PaginatedData<Application>;
+    const result = { ...json, data: json.data };
+    return { success: true, data: result };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}

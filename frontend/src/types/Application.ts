@@ -1,17 +1,47 @@
-/**
- * 
-What is the issue?
-A clear description of the task or feature to be implemented by the engineers.
+export enum Status {
+  Applied = "APPLIED",
+  Oa = "OA",
+  Phone = "PHONE",
+  Final = "FINAL",
+  Offer = "OFFER",
+  Rejected = "REJECTED",
+}
 
-Create a new file applications.ts in frontend/src/api.
-Create Application.ts in src/types to store the types related to API calls.
-Implement API function calls for Application in the frontend. These functions are the endpoints in the frontend that interact directly with the backend endpoints.
-Additional context
-Add any other context or screenshots about the enhancement here.
+export interface Application {
+  userId: string;
+  companyId: string;
+  companyName: string;
+  position: string;
+  link?: string;
+  process?: Array<{
+    status: Status;
+    date: string | Date;
+    note?: string;
+  }>;
+}
 
-For more information about what to send to the backend in the body, query and param, look at the backend documentation
-Feel free to reference the users.ts API functions that I have implemented
-Note
+export interface CreateApplicationRequest {
+  userId: string;
+  companyId: string;
+  companyName: string;
+  position: string;
+  link?: string;
+  process?: string;
+}
 
-The JSON sent by the backend can only contain primitive types like strings, therefore the parser for company can be used to parse the dates for each applicationStatus.
- */
+export interface UpdateApplicationRequest {
+  userId?: string;
+  companyId?: string;
+  companyName?: string;
+  position?: string;
+  link?: string;
+  process?: string;
+}
+
+export interface GetApplicationsByUserIDQuery {
+  page: number;
+  perPage: number;
+  query?: string;
+  status?: string;
+  sortBy?: string;
+}
