@@ -4,6 +4,7 @@ import express from "express";
 import userRouter from "src/routes/userRoutes";
 import companyRouter from "src/routes/companyRoutes";
 import applicationRouter from "src/routes/applicationRoutes";
+import savedApplicationRouter from "src/routes/savedApplicationRoutes";
 import errorHandler from "src/middlewares/errorHandler";
 
 const app = express();
@@ -25,6 +26,7 @@ app.use(
 app.use("/api/users", userRouter);
 app.use("/api/applications/applied", applicationRouter);
 app.use("/api/companies", companyRouter);
+app.use("/api/applications/saved", savedApplicationRouter);
 
 /**
  * Error handler; all errors thrown by server are handled here.
