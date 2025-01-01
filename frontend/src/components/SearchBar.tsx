@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaAngleDown } from "react-icons/fa6";
 
 interface SelectionOption {
@@ -14,27 +14,33 @@ interface SearchBarProps<T> {
   width?: string;
 }
 
-interface CheckboxGroupProps {
+interface CheckboxGroupProps extends React.ComponentProps<"div"> {
   options: string[];
   selectedValues: string[];
-  onChange: (values: string[]) => void;
+  onUpdate: (values: string[]) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 // Subcomponent of the SearchBar component used to display a group of checkboxes for a selection option.
 const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   options,
   selectedValues,
-  onChange,
+  onUpdate,
+  className,
+  ...props
 }) => {
   const handleCheckboxChange = (value: string) => {
     const newValues = selectedValues.includes(value)
       ? selectedValues.filter((v) => v !== value)
       : [...selectedValues, value];
-    onChange(newValues);
+    onUpdate(newValues);
   };
 
   return (
-    <div className="absolute top-12 flex flex-col gap-2 min-w-[150px] bg-white shadow-md rounded-md z-10">
+    <div
+      className={`absolute top-12 flex flex-col gap-2 min-w-[150px] bg-white shadow-md rounded-md z-10 ${className}`}
+      {...props}
+    >
       <div className="flex flex-col gap-1 border border-gray-300 p-2 rounded-md">
         {options.map((option) => (
           <label key={option} className="flex items-center gap-2">
@@ -55,11 +61,24 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
 /**
  * A generic search bar component that allows users to input a query and select multiple options from dropdowns.
  *
- * @template T - The type of the form data to be submitted.
+ * @template T - The type of the form data object that will be passed to the `onSubmitForm` callback function. The object should contain a `query` field of type string and additional fields for each selection option.
+ *
+ * An example `FormData` interface if your form data contains the selection options titled `"Location"`, `"Department"`, and `"Type"`:
+ *
+ * @example
+ *
+ * ```ts
+ * interface FormData extends Record<string, string | string[]> {
+ *     query: string;
+ *     location: string[];
+ *     department: string[];
+ *     type: string[];
+ * }
+ * ```
  *
  * @param {SearchBarProps<T>} props - The props for the SearchBar component.
  * @param {Array<{ label: string; options: string[] }>} props.selections - An array of selection objects, each containing a label and an array of options. The options will be displayed in a dropdown as checkboxes when the corresponding label is clicked.
- * @param {string} [props.placeholder] - The placeholder text for the search input field. Defaults to "Search".
+ * @param {string} [props.placeholder="Search"] - The placeholder text for the search input field. Defaults to "Search".
  * @param {(formData: T) => void} [props.onSubmitForm] - A callback function to handle form submission. The function will be called with the current state of the form data as an argument when the form is submitted.
  * @param {string} [props.width="100%"] - The width of the search bar component. Defaults to "100%".
  *
@@ -70,9 +89,11 @@ const SearchBar = <T extends Record<string, unknown>>({
   placeholder = "Search",
   onSubmitForm,
   width = "100%",
-}: SearchBarProps<T>) => {
-  const [query, setQuery] = useState(""); // String search query input
+}: SearchBarProps<T>): React.JSX.Element => {
+  // String search query input
+  const [query, setQuery] = useState("");
 
+  // Object to store selected values for each selection option
   const [selectionValues, setSelectionValues] = useState<
     Record<string, string[]>
   >(
@@ -80,10 +101,32 @@ const SearchBar = <T extends Record<string, unknown>>({
       acc[selection.label] = [];
       return acc;
     }, {} as Record<string, string[]>),
-  ); // Object to store selected values for each selection option
+  );
 
-  const [expanded, setExpanded] = useState<string>(""); // Current expanded selection option
+  // Current expanded selection option
+  const [expanded, setExpanded] = useState<string>("");
 
+  // Reference to the selections container, used for auto-closing dropdowns
+  const selectionsRef = useRef<HTMLDivElement>(null);
+
+  // Function to handle clicks outside the search bar container to close dropdowns
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      selectionsRef.current &&
+      !selectionsRef.current.contains(event.target as Node)
+    ) {
+      setExpanded("");
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Event handlers
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
@@ -126,7 +169,7 @@ const SearchBar = <T extends Record<string, unknown>>({
           Search
         </button>
       </div>
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-4 self-start" ref={selectionsRef}>
         {selections.map((selection) => (
           <div
             key={selection.label}
@@ -144,7 +187,7 @@ const SearchBar = <T extends Record<string, unknown>>({
               <CheckboxGroup
                 options={selection.options}
                 selectedValues={selectionValues[selection.label]}
-                onChange={(values) =>
+                onUpdate={(values) =>
                   handleSelectionChange(selection.label, values)
                 }
               />
