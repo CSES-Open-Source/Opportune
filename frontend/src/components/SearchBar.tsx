@@ -8,6 +8,7 @@ interface SelectionOption {
 
 interface SearchBarProps<T> {
   selections: SelectionOption[];
+  placeholder?: string;
   onSubmitForm?: (formData: T) => void;
   setResult?: (result: unknown) => void;
   width?: string;
@@ -57,7 +58,8 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
  * @template T - The type of the form data to be submitted.
  *
  * @param {SearchBarProps<T>} props - The props for the SearchBar component.
- * @param {Array<{ label: string; options: string[] }>} props.selections - An array of selection objects, each containing a label and an array of options. The options will be displayed as checkboxes when the corresponding label is clicked.
+ * @param {Array<{ label: string; options: string[] }>} props.selections - An array of selection objects, each containing a label and an array of options. The options will be displayed in a dropdown as checkboxes when the corresponding label is clicked.
+ * @param {string} [props.placeholder] - The placeholder text for the search input field. Defaults to "Search".
  * @param {(formData: T) => void} [props.onSubmitForm] - A callback function to handle form submission. The function will be called with the current state of the form data as an argument when the form is submitted.
  * @param {string} [props.width="100%"] - The width of the search bar component. Defaults to "100%".
  *
@@ -65,6 +67,7 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
  */
 const SearchBar = <T extends Record<string, unknown>>({
   selections,
+  placeholder = "Search",
   onSubmitForm,
   width = "100%",
 }: SearchBarProps<T>) => {
@@ -110,7 +113,7 @@ const SearchBar = <T extends Record<string, unknown>>({
       <div className="flex items-center gap-2">
         <input
           type="text"
-          placeholder="Search by job title, ID, or keyword"
+          placeholder={placeholder}
           value={query}
           onChange={handleInputChange}
           className="flex-1 p-2 text-base border border-gray-300 rounded-md"
