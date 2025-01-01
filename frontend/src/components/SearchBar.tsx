@@ -10,7 +10,6 @@ interface SearchBarProps<T> {
   selections: SelectionOption[];
   placeholder?: string;
   onSubmitForm?: (formData: T) => void;
-  setResult?: (result: unknown) => void;
   width?: string;
 }
 
