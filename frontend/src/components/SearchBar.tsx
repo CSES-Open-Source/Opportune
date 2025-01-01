@@ -13,7 +13,7 @@ interface SearchBarProps<T> {
   width?: string;
 }
 
-interface CheckboxGroupProps extends React.ComponentProps<"div"> {
+interface CheckboxGroupProps {
   options: string[];
   selectedValues: string[];
   onUpdate: (values: string[]) => void;
@@ -25,8 +25,6 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   options,
   selectedValues,
   onUpdate,
-  className,
-  ...props
 }) => {
   const handleCheckboxChange = (value: string) => {
     const newValues = selectedValues.includes(value)
@@ -36,10 +34,7 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   };
 
   return (
-    <div
-      className={`absolute top-12 flex flex-col gap-2 min-w-[150px] bg-white shadow-md rounded-md z-10 ${className}`}
-      {...props}
-    >
+    <div className="absolute top-12 flex flex-col gap-2 min-w-[150px] bg-white shadow-md rounded-md z-10">
       <div className="flex flex-col gap-1 border border-gray-300 p-2 rounded-md">
         {options.map((option) => (
           <label key={option} className="flex items-center gap-2">
