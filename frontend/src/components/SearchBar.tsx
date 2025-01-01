@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FaAngleDown } from "react-icons/fa6";
+import { FaAngleDown, FaSistrix } from "react-icons/fa6";
 
 interface SelectionOption {
   label: string;
@@ -154,14 +154,17 @@ const SearchBar = <T extends Record<string, unknown>>({
       onSubmit={handleFormSubmit}
     >
       <div className="flex items-center gap-2">
-        <input
-          type="text"
-          placeholder={placeholder}
-          value={query}
-          onChange={handleInputChange}
-          className="flex-1 p-2 text-base border border-gray-300 rounded-md"
-          name="query"
-        />
+        <div className="flex items-center border border-gray-300 rounded-md flex-1">
+          <FaSistrix className="ml-2 text-gray-700" size={20} />
+          <input
+            type="text"
+            placeholder={placeholder}
+            value={query}
+            onChange={handleInputChange}
+            className="flex-1 p-2 text-base border-none outline-none"
+            name="query"
+          />
+        </div>
         <button
           type="submit"
           className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
@@ -178,7 +181,7 @@ const SearchBar = <T extends Record<string, unknown>>({
             <button
               type="button"
               onClick={() => toggleSelection(selection.label)}
-              className="px-4 py-2 text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 flex flex-row justify-center items-center gap-2"
+              className="px-3 py-1 text-md text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 flex flex-row justify-center items-center gap-2"
             >
               <span>{selection.label}</span>
               <FaAngleDown />
