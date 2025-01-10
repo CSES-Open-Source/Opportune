@@ -10,6 +10,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { PaginatedData } from "../types/PaginatedData";
+import Paginator, { UsePagination } from "./Paginator";
 
 interface TableStyle {
   width?: string;
@@ -18,35 +19,73 @@ interface TableStyle {
   maxHeight?: string;
 }
 
-interface DataTableProps<T extends object> {
+interface BaseDataTableProps<T extends object> {
   columns: ColumnDef<T, unknown>[]; // Definition of columns for react table
-  inputData?: T[]; // data to display in table when the table is not paginated
-  fetchData?: (page: number, perPage: number) => Promise<PaginatedData<T>>; // function to fetch data when server side pagination is used (for now this table does not support client side pagination)
-  usePagination?: boolean; // Set to true to toggle server side pagination
+  useServerPagination?: boolean; // Set to true to toggle server side pagination
   onRowClick?: (row: T) => void; // Event emitter for row click
   tableStyle?: TableStyle;
 }
 
-const DataTable = <T extends object>({
-  columns,
-  inputData,
-  fetchData,
-  usePagination = false,
-  onRowClick,
-  tableStyle,
-}: DataTableProps<T>) => {
+interface DataTableNoPaginationProps<T extends object>
+  extends BaseDataTableProps<T> {
+  data: T[]; // data to display in table when the table is not paginated
+  usePagination?: false;
+  useServerPagination?: false; // Set to true to toggle server side pagination
+}
+
+interface DataTablePaginationProps<T extends object>
+  extends BaseDataTableProps<T>,
+    UsePagination {
+  data: T[]; // data to display in table when the table is not paginated
+  usePagination: true;
+  useServerPagination?: false; // Set to true to toggle server side pagination
+}
+
+interface DataTableServerPaginationProps<T extends object>
+  extends BaseDataTableProps<T>,
+    UsePagination {
+  fetchData: (page: number, perPage: number) => Promise<PaginatedData<T>>; // function to fetch data when server side pagination is used (for now this table does not support client side pagination)
+  useServerPagination: true; // Set to true to toggle server side pagination
+}
+
+type DataTableProps<T extends object> =
+  | DataTableNoPaginationProps<T>
+  | DataTablePaginationProps<T>
+  | DataTableServerPaginationProps<T>;
+
+const DataTable = <T extends object>(props: DataTableProps<T>) => {
+  const { columns, onRowClick, tableStyle, useServerPagination } = props;
+
   const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState<number>(0);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [perPage, setPerPage] = useState<number>(10);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch data using fetchData() when server side pagination is used
+  // Handle page change by slicing data for client side pagination
+  useEffect(() => {
+    if (!useServerPagination) {
+      const inputData = props.data;
+      setLoading(true);
+      if (props.usePagination) {
+        setData(inputData.slice(page * perPage, (page + 1) * perPage));
+        setTotalItems(inputData.length);
+        setLoading(false);
+      } else {
+        setData(inputData);
+        setTotalItems(inputData.length);
+        setLoading(false);
+      }
+    }
+  }, [props, page, perPage, useServerPagination]);
+
+  // Handle page change by fetching data from backend for server side pagination
   useEffect(() => {
     const loadData = async () => {
-      if (usePagination && fetchData) {
+      if (useServerPagination) {
+        const fetchData = props.fetchData;
         setLoading(true);
-        const response = await fetchData(page, pageSize);
+        const response = await fetchData(page, perPage);
         setData(response.data);
         setTotalItems(response.total);
         setLoading(false);
@@ -54,35 +93,27 @@ const DataTable = <T extends object>({
     };
 
     loadData();
-  }, [page, pageSize, usePagination, fetchData]);
-
-  useEffect(() => {
-    if (!usePagination && inputData) {
-      setData(inputData);
-      setTotalItems(inputData.length);
-      setLoading(false);
-    }
-  }, [inputData, usePagination]);
+  }, [page, perPage, props, useServerPagination]);
 
   // Create react-table instance
   const table = useReactTable<T>({
     data,
     columns,
-    pageCount: Math.ceil(totalItems / pageSize), // Required for server-side pagination
+    pageCount: Math.ceil(totalItems / perPage), // Required for server-side pagination
     state: {
       pagination: {
         pageIndex: page,
-        pageSize,
+        pageSize: perPage,
       },
     },
     onPaginationChange: (updater) => {
       // 'updater' can be a function or an object
       const newState =
         typeof updater === "function"
-          ? updater({ pageIndex: page, pageSize })
+          ? updater({ pageIndex: page, pageSize: perPage })
           : updater;
       setPage(newState.pageIndex);
-      setPageSize(newState.pageSize);
+      setPerPage(newState.pageSize);
     },
     manualPagination: true, // Enable manual pagination for server-side
     getCoreRowModel: getCoreRowModel(),
@@ -95,9 +126,12 @@ const DataTable = <T extends object>({
   }
 
   return (
-    <div className="p-4 table">
+    <div className="table">
       <div style={tableStyle} className="overflow-y-auto">
-        <table className="border-collapse border border-gray-200">
+        <table
+          style={{ width: tableStyle?.width, maxWidth: tableStyle?.maxWidth }}
+          className="border-collapse border border-gray-200"
+        >
           {/* Generate Headers (Column names) */}
           <thead className="bg-gray-100 sticky top-0">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -148,65 +182,15 @@ const DataTable = <T extends object>({
       </div>
 
       {/* Pagination Controls */}
-      {/* TODO: Style pagination */}
-      {usePagination && (
-        <div className="mt-4">
-          <button onClick={() => setPage(0)} disabled={page === 0}>
-            {"<<"}
-          </button>{" "}
-          <button
-            onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-            disabled={page === 0}
-          >
-            {"<"}
-          </button>{" "}
-          <button
-            onClick={() => setPage((prev) => prev + 1)}
-            disabled={(page + 1) * pageSize >= totalItems}
-          >
-            {">"}
-          </button>{" "}
-          <button
-            onClick={() => setPage(Math.floor(totalItems / pageSize))}
-            disabled={(page + 1) * pageSize >= totalItems}
-          >
-            {">>"}
-          </button>{" "}
-          <span>
-            Page{" "}
-            <strong>
-              {page + 1} of {Math.ceil(totalItems / pageSize)}
-            </strong>{" "}
-          </span>
-          <span>
-            | Go to page:{" "}
-            <input
-              type="number"
-              defaultValue={page + 1}
-              min={1}
-              max={Math.ceil(totalItems / pageSize)}
-              onChange={(e) => {
-                const newPage = Number(e.target.value) - 1;
-                setPage(
-                  newPage >= 0 && newPage < Math.ceil(totalItems / pageSize)
-                    ? newPage
-                    : 0,
-                );
-              }}
-              style={{ width: "50px" }}
-            />
-          </span>{" "}
-          <select
-            value={pageSize}
-            onChange={(e) => setPageSize(Number(e.target.value))}
-          >
-            {[10, 20, 30, 40, 50].map((size) => (
-              <option key={size} value={size}>
-                Show {size}
-              </option>
-            ))}
-          </select>
-        </div>
+      {(useServerPagination || props.usePagination) && (
+        <Paginator
+          page={page}
+          perPage={perPage}
+          onPageChange={setPage}
+          onPerPageChange={setPerPage}
+          totalItems={totalItems}
+          paginatorContent={props.paginatorContent}
+        />
       )}
     </div>
   );

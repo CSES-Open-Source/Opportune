@@ -11,17 +11,17 @@ const applicationData = [
   {
     position: "SWE",
     company: "google",
-    status: ["Interviewing", "Applied"],
+    status: ["Applied", "Interviewing"],
   },
   {
     position: "SWE",
     company: "meta",
-    status: ["Interviewing", "Applied"],
+    status: ["Applied", "Interviewing"],
   },
   {
     position: "SWE",
     company: "google",
-    status: ["Interviewing", "Applied"],
+    status: ["Applied", "Interviewing"],
   },
   {
     position: "SWE",
@@ -41,32 +41,32 @@ const applicationData = [
   {
     position: "SWE",
     company: "google",
-    status: ["Offer", "Applied"],
+    status: ["Applied", "Offer"],
   },
   {
     position: "SWE",
     company: "meta",
-    status: ["Rejected", "Applied"],
+    status: ["Applied", "Rejected"],
   },
   {
     position: "SWE",
     company: "google",
-    status: ["Rejected", "Applied"],
+    status: ["Applied", "Rejected"],
   },
   {
     position: "SWE",
     company: "meta",
-    status: ["Rejected", "Applied"],
+    status: ["Applied", "Rejected"],
   },
   {
     position: "SWE",
     company: "google",
-    status: ["Rejected", "Applied"],
+    status: ["Applied", "Rejected"],
   },
   {
     position: "SWE",
     company: "meta",
-    status: ["Rejected", "Applied"],
+    status: ["Applied", "Rejected"],
   },
 ];
 
@@ -96,26 +96,27 @@ const StatusBubble = ({ status }: StatusBubbleProps) => {
   );
 };
 
-const fetchData = async (page: number, perPage: number) => {
-  const data = {
-    page: page,
-    perPage: perPage,
-    total: 12,
-    data: applicationData.slice(page * perPage, (page + 1) * perPage),
-  };
-  return data; // Should be in the form { page, perPage, total, applications }
-};
+// const fetchData = async (page: number, perPage: number) => {
+//   const data = {
+//     page: page,
+//     perPage: perPage,
+//     total: 12,
+//     data: applicationData.slice(page * perPage, (page + 1) * perPage),
+//   };
+//   return data; // Should be in the form { page, perPage, total, applications }
+// };
 
 const columns: ColumnDef<Data>[] = [
-  { accessorKey: "position", header: "Job Position", size: 150 },
-  { accessorKey: "company", header: "Company", size: 150 },
+  { accessorKey: "position", header: "Job Position", size: 200 },
+  { accessorKey: "company", header: "Company" },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ getValue }) => {
-      return <StatusBubble status={getValue<string[]>()[0]} />;
+      const status = getValue<string[]>();
+      return <StatusBubble status={status[status.length - 1]} />;
     },
-    size: 200,
+    size: 100,
   },
 ];
 
@@ -125,10 +126,10 @@ const Sandbox = () => {
       <h1 className="text-2xl font-bold mb-4">Sandbox</h1>
       <DataTable
         columns={columns}
-        fetchData={fetchData}
-        inputData={applicationData}
+        // fetchData={fetchData}
+        data={applicationData}
         usePagination={true}
-        // tableStyle={{ height: "500px" }}
+        tableStyle={{ height: "500px", width: "500px" }}
       />
     </div>
   );
