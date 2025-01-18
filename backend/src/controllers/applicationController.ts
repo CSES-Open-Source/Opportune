@@ -13,6 +13,7 @@ interface ApplicationCreate {
   companyName?: string;
   position: string;
   link?: string;
+  location?: string;
   process?: Array<{
     status: Status;
     date: string | Date;
