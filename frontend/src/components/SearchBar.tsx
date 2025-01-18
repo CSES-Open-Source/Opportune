@@ -34,7 +34,7 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   };
 
   return (
-    <div className="absolute top-12 flex flex-col gap-2 min-w-[150px] bg-white shadow-md rounded-md z-10">
+    <div className="absolute top-12 flex flex-col gap-2 min-w-[150px] bg-background shadow-md rounded-md z-10">
       <div className="flex flex-col gap-1 border border-gray-300 p-2 rounded-md">
         {options.map((option) => (
           <label key={option} className="flex items-center gap-2">
@@ -143,7 +143,7 @@ const SearchBar = <T extends Record<string, unknown>>({
 
   return (
     <form
-      className="flex flex-col gap-4 border border-gray-300 p-4 rounded-lg bg-white"
+      className="flex flex-col gap-2 rounded-lg"
       style={{ width }}
       onSubmit={handleFormSubmit}
     >
@@ -161,7 +161,7 @@ const SearchBar = <T extends Record<string, unknown>>({
         </div>
         <button
           type="submit"
-          className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+          className="px-4 py-2 text-black bg-accent-blue rounded-md hover:opacity-90"
         >
           Search
         </button>
@@ -175,7 +175,7 @@ const SearchBar = <T extends Record<string, unknown>>({
             <button
               type="button"
               onClick={() => toggleSelection(selection.label)}
-              className="px-3 py-1 text-md text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 flex flex-row justify-center items-center gap-2"
+              className="px-5 py-0.5 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 flex flex-row justify-center items-center gap-2"
             >
               <span>{selection.label}</span>
               <FaAngleDown />

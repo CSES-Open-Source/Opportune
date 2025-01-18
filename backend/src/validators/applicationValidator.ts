@@ -39,6 +39,12 @@ const validateLink = body("link")
   .withMessage("link must be a valid URL.")
   .trim();
 
+const validateLocation = body("location")
+  .optional()
+  .isString()
+  .withMessage("location must be a string.")
+  .trim();
+
 const validateProcess = [
   body("process")
     .optional()
@@ -68,6 +74,7 @@ export const createApplicationValidator = [
   validateCompanyName,
   validatePosition,
   validateLink,
+  validateLocation,
   ...validateProcess,
 ];
 
@@ -79,6 +86,7 @@ export const updateApplicationValidator = [
   validateCompanyId.optional(),
   validateCompanyName.optional(),
   validatePosition.optional(),
+  validateLocation.optional(),
   validateLink.optional(),
   ...validateProcess,
 ];

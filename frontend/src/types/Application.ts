@@ -13,6 +13,7 @@ export interface Application {
   companyName: string;
   position: string;
   link?: string;
+  location?: string;
   process?: Array<{
     status: Status;
     date: string | Date;
@@ -25,6 +26,7 @@ export interface CreateApplicationRequest {
   companyId: string;
   companyName: string;
   position: string;
+  location?: string;
   link?: string;
   process?: string;
 }
@@ -35,6 +37,7 @@ export interface UpdateApplicationRequest {
   companyName?: string;
   position?: string;
   link?: string;
+  location?: string;
   process?: string;
 }
 
