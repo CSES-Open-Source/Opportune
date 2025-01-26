@@ -183,7 +183,9 @@ export const deleteApplicationByID = asyncHandler(async (req, res, next) => {
 //  @returns {Application[]} 200 - Array of user's applications
 //  @throws {404} - If no applications found for user
 //  @throws {400} - If user ID is invalid
-export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
+export const getApplicationsByUserID = asyncHandler(async (req) => {
+  // eslint-disable-next-line no-unused-vars
   const { userId } = req.params;
+  // eslint-disable-next-line no-unused-vars
   const { query, status, sortBy } = req.query;
 });

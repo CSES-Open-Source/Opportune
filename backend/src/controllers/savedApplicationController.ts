@@ -46,7 +46,7 @@ export const createSavedApplication = asyncHandler(async (req, res, next) => {
   // Extract validated data from the request body
   const savedApplicationData = matchedData(req) as SavedApplicationCreate;
 
-  // Check if an application with the same userId, companyId, and position already exists
+  // Check if an application with the same userId, company, and position already exists
   const existingSavedApplication = await SavedApplication.findOne({
     userId: savedApplicationData.userId,
     company: savedApplicationData.company,
