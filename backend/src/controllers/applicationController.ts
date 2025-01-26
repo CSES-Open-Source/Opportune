@@ -4,13 +4,14 @@ import { matchedData, validationResult } from "express-validator";
 import validationErrorParser from "src/util/validationErrorParser";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
+import Company from "src/models/Company";
+import mongoose from "mongoose";
 
 // Interface for creating/updating an application
 // @interface CreateApplicationRequest
 interface ApplicationCreate {
   userId: string;
-  companyId: string;
-  companyName?: string;
+  company: mongoose.Types.ObjectId;
   position: string;
   link?: string;
   location?: string;
@@ -29,7 +30,10 @@ interface ApplicationUpdate extends Partial<ApplicationCreate> {}
 // @returns {Application[]} 200 - Array of applications
 export const getAllApplications = asyncHandler(async (req, res, _) => {
   // Retrieve all applications from the database
-  const applications = await Application.find().lean().exec();
+  const applications = await Application.find()
+    .populate({ path: "company", model: Company })
+    .lean()
+    .exec();
 
   res.status(200).json(applications);
 });
@@ -50,10 +54,10 @@ export const createApplication = asyncHandler(async (req, res, next) => {
   // Extract validated data from the request body
   const applicationData = matchedData(req) as ApplicationCreate;
 
-  // Check if an application with the same userId, companyId, and position already exists
+  // Check if an application with the same userId, company, and position already exists
   const existingApplication = await Application.findOne({
     userId: applicationData.userId,
-    companyId: applicationData.companyId,
+    company: applicationData.company,
     position: applicationData.position,
   })
     .lean()
@@ -88,7 +92,10 @@ export const getApplicationByID = asyncHandler(async (req, res, next) => {
   const { id } = matchedData(req, { locations: ["params"] }) as { id: string };
 
   // Find the application by ID
-  const application = await Application.findById(id).lean().exec();
+  const application = await Application.findById(id)
+    .populate({ path: "company", model: Company })
+    .lean()
+    .exec();
 
   if (!application) {
     return next(createHttpError(404, "Application not found."));
@@ -176,7 +183,9 @@ export const deleteApplicationByID = asyncHandler(async (req, res, next) => {
 //  @returns {Application[]} 200 - Array of user's applications
 //  @throws {404} - If no applications found for user
 //  @throws {400} - If user ID is invalid
-export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
+export const getApplicationsByUserID = asyncHandler(async (req) => {
+  // eslint-disable-next-line no-unused-vars
   const { userId } = req.params;
+  // eslint-disable-next-line no-unused-vars
   const { query, status, sortBy } = req.query;
 });

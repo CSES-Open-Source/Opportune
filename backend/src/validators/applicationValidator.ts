@@ -1,4 +1,4 @@
-import { body, param, query } from "express-validator";
+import { body, param } from "express-validator";
 
 const validateId = param("id")
   .isMongoId()
@@ -12,9 +12,9 @@ const validateUserId = body("userId")
   .notEmpty()
   .withMessage("userId must be a non-empty string.");
 
-const validateCompanyId = body("companyId")
+const validateCompany = body("company")
   .isMongoId()
-  .withMessage("invalid company ID. (Must be a Mongo ObjectID.)")
+  .withMessage("invalid company. (Must be a Mongo ObjectID.)")
   .trim();
 
 const validatePosition = body("position")
@@ -23,13 +23,6 @@ const validatePosition = body("position")
   .trim()
   .notEmpty()
   .withMessage("position must be a non-empty string.");
-
-const validateCompanyName = body("companyName")
-  .isString()
-  .withMessage("company name must be a string.")
-  .trim()
-  .notEmpty()
-  .withMessage("company name must be a non-empty string.");
 
 const validateLink = body("link")
   .optional()
@@ -70,8 +63,7 @@ const validateProcess = [
 
 export const createApplicationValidator = [
   validateUserId,
-  validateCompanyId,
-  validateCompanyName,
+  validateCompany,
   validatePosition,
   validateLink,
   validateLocation,
@@ -83,8 +75,7 @@ export const getApplicationValidator = [validateId];
 export const updateApplicationValidator = [
   validateId,
   validateUserId.optional(),
-  validateCompanyId.optional(),
-  validateCompanyName.optional(),
+  validateCompany.optional(),
   validatePosition.optional(),
   validateLocation.optional(),
   validateLink.optional(),

@@ -33,12 +33,8 @@ const applicationSchema = new Schema(
       type: String,
       required: true,
     },
-    companyId: {
+    company: {
       type: Schema.Types.ObjectId,
-      required: true,
-    },
-    companyName: {
-      type: String,
       required: true,
     },
     position: {
