@@ -10,10 +10,6 @@ const savedApplicationSchema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
     },
-    companyName: {
-      type: String,
-      require: true,
-    },
     position: {
       type: String,
       required: true,

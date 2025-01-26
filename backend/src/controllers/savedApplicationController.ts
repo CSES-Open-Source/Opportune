@@ -11,7 +11,6 @@ import mongoose from "mongoose";
 interface SavedApplicationCreate {
   userId: string;
   company: mongoose.Types.ObjectId;
-  companyName: string;
   position: string;
   link?: string;
   materialsNeeded?: string[];
@@ -156,10 +155,7 @@ export const deleteSavedApplicationByID = asyncHandler(
     };
 
     // Find and delete the application by ID
-    const savedApplication = await SavedApplication.findByIdAndDelete(id)
-      .populate({ path: "company", model: Company })
-      .lean()
-      .exec();
+    const savedApplication = await SavedApplication.findByIdAndDelete(id);
 
     if (!savedApplication) {
       return next(createHttpError(404, "Saved application not found."));
@@ -224,7 +220,6 @@ export const getSavedApplicationsByUserID = asyncHandler(
       data: applications.map((app) => ({
         userId: app.userId,
         company: app.company,
-        companyName: app.companyName,
         position: app.position,
         link: app.link,
         materialsNeeded: app.materialsNeeded,
