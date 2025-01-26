@@ -41,6 +41,10 @@ const applicationSchema = new Schema(
       type: String,
       required: true,
     },
+    location: {
+      type: String,
+      required: false,
+    },
     link: {
       type: String,
       required: false,

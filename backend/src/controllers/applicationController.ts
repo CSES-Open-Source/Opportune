@@ -14,6 +14,7 @@ interface ApplicationCreate {
   company: mongoose.Types.ObjectId;
   position: string;
   link?: string;
+  location?: string;
   process?: Array<{
     status: Status;
     date: string | Date;
