@@ -13,10 +13,9 @@ export interface CompanyJSON {
 }
 
 export interface CompanyQuery {
-  page: number;
-  perPage: number;
-  name?: string;
-  city?: string;
+  page?: number;
+  perPage?: number;
+  query?: string;
   state?: string;
 }
 

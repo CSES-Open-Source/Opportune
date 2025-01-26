@@ -19,7 +19,7 @@ function parseCompany(company: CompanyJSON): Company {
  * @returns A list of companies
  */
 export async function getCompanies(
-  query: CompanyQuery,
+  query?: CompanyQuery,
 ): Promise<APIResult<PaginatedData<Company>>> {
   try {
     const response = await get("/api/companies", { ...query });
@@ -60,7 +60,7 @@ export async function createCompany(
   company: CreateCompanyRequest,
 ): Promise<APIResult<Company>> {
   try {
-    const response = await post("/api/users", company);
+    const response = await post("/api/companies", company);
     const json = (await response.json()) as CompanyJSON;
     return { success: true, data: parseCompany(json) };
   } catch (error) {
