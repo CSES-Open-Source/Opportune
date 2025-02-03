@@ -3,7 +3,7 @@ import SideNav from "./SideNav";
 
 const Layout = () => {
   return (
-    <div className="flex">
+    <div className="flex bg-background">
       <SideNav />
       <div className="w-full">
         <Outlet />

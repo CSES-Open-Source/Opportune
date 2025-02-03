@@ -1,6 +1,8 @@
+import { Company } from "./Company";
+
 export enum Status {
   Applied = "APPLIED",
-  Oa = "OA",
+  OA = "OA",
   Phone = "PHONE",
   Final = "FINAL",
   Offer = "OFFER",
@@ -9,8 +11,7 @@ export enum Status {
 
 export interface Application {
   userId: string;
-  companyId: string;
-  companyName: string;
+  company: Company;
   position: string;
   link?: string;
   location?: string;
