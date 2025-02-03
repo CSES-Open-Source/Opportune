@@ -1,16 +1,7 @@
-/**
- * DataTable component implemented using @tanstack/react-table, for more information visit https://tanstack.com/table/latest
- */
 import { useEffect, useState } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  ColumnDef,
-  flexRender,
-} from "@tanstack/react-table";
 import { PaginatedData } from "../types/PaginatedData";
 import Paginator, { UsePagination } from "./Paginator";
+import { ColumnDef } from "../types/ColumnDef";
 
 interface TableStyle {
   width?: string;
@@ -20,7 +11,7 @@ interface TableStyle {
 }
 
 interface BaseDataTableProps<T extends object> {
-  columns: ColumnDef<T, unknown>[]; // Definition of columns for react table
+  columns: ColumnDef<T>[]; // Definition of columns for react table
   useServerPagination?: boolean; // Set to true to toggle server side pagination
   onRowClick?: (row: T) => void; // Event emitter for row click
   tableStyle?: TableStyle;
@@ -95,103 +86,108 @@ const DataTable = <T extends object>(props: DataTableProps<T>) => {
     loadData();
   }, [page, perPage, props, useServerPagination]);
 
-  // Create react-table instance
-  const table = useReactTable<T>({
-    data,
-    columns,
-    pageCount: Math.ceil(totalItems / perPage), // Required for server-side pagination
-    state: {
-      pagination: {
-        pageIndex: page,
-        pageSize: perPage,
-      },
-    },
-    onPaginationChange: (updater) => {
-      // 'updater' can be a function or an object
-      const newState =
-        typeof updater === "function"
-          ? updater({ pageIndex: page, pageSize: perPage })
-          : updater;
-      setPage(newState.pageIndex);
-      setPerPage(newState.pageSize);
-    },
-    manualPagination: true, // Enable manual pagination for server-side
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  });
-
-  // TODO: Render spinner when loading async data
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const handleRowClick = (row: T) => {
+    if (onRowClick) {
+      onRowClick(row);
+    }
+  };
 
   return (
-    <div className="table">
-      <div style={tableStyle} className="overflow-y-auto">
-        <table
-          style={{ width: tableStyle?.width, maxWidth: tableStyle?.maxWidth }}
-          className="border-collapse border border-gray-200"
-        >
-          {/* Generate Headers (Column names) */}
-          <thead className="bg-gray-100 sticky top-0">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="border-b p-2 text-left"
-                    style={{
-                      width: header.column.getSize(),
-                    }}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
+    <div>
+      <div
+        style={{
+          ...tableStyle,
+        }}
+        className="overflow-auto border border-solid bg-white"
+      >
+        <table style={{ borderCollapse: "collapse" }} className="w-full">
+          <thead>
+            <tr>
+              {columns.map((column, index) => (
+                <th
+                  key={index}
+                  style={{
+                    width: column.width,
+                    overflowX: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                  className="px-[14px] py-2 text-left border border-solid"
+                >
+                  {column.header}
+                </th>
+              ))}
+            </tr>
           </thead>
-
-          {/* Generate Table Body */}
           <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                className="hover:bg-gray-100"
-                onClick={() => onRowClick && onRowClick(row.original)}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className="border-b p-2"
-                    style={{
-                      width: cell.column.getSize(),
-                    }}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+            {loading ? (
+              <tr>
+                <td colSpan={columns.length} className="text-center">
+                  Loading...
+                </td>
               </tr>
-            ))}
+            ) : data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="text-center">
+                  No data available.
+                </td>
+              </tr>
+            ) : (
+              data.map((row, index) => (
+                <tr
+                  key={index}
+                  onClick={() => handleRowClick(row)}
+                  style={{ cursor: onRowClick ? "pointer" : "default" }}
+                  className="hover:bg-gray-100"
+                >
+                  {columns.map((column, index) => (
+                    <td
+                      key={index}
+                      style={{
+                        width: column.width,
+                      }}
+                      className={`border border-solid ${
+                        "cell" in column ? "p-0" : "px-[14px] py-2"
+                      }`}
+                    >
+                      {"cell" in column && column.cell(row)}
+                      {!("cell" in column) && (
+                        <div
+                          style={{
+                            width: column.width,
+                            overflowX: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {String(
+                            "key" in column
+                              ? row[column.key as keyof T]
+                              : column.accessor(row),
+                          )}
+                        </div>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
-
       {/* Pagination Controls */}
-      {(useServerPagination || props.usePagination) && (
-        <Paginator
-          page={page}
-          perPage={perPage}
-          onPageChange={setPage}
-          onPerPageChange={setPerPage}
-          totalItems={totalItems}
-          paginatorContent={props.paginatorContent}
-        />
-      )}
+      <div style={{ width: tableStyle?.width }}>
+        {(useServerPagination || props.usePagination) && (
+          <Paginator
+            page={page}
+            perPage={perPage}
+            onPageChange={setPage}
+            onPerPageChange={setPerPage}
+            totalItems={totalItems}
+            paginatorContent={props.paginatorContent}
+          />
+        )}
+      </div>
     </div>
   );
 };
