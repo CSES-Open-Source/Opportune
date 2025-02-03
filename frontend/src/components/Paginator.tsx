@@ -27,7 +27,7 @@ const Paginator = ({
   onPageChange,
   onPerPageChange,
   perPageOptions = [10, 20, 30, 40, 50],
-  paginatorContent = { setPerPage: true, goToPage: true },
+  paginatorContent = { setPerPage: false, goToPage: false },
 }: PaginatorProps) => {
   const totalPages = Math.ceil(totalItems / perPage);
 

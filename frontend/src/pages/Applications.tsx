@@ -92,6 +92,7 @@ const Applications = () => {
           height: "72vh",
         }}
         usePagination
+        paginatorContent={{ setPerPage: true, goToPage: true }}
         columns={applicationColumns}
         data={
           [
