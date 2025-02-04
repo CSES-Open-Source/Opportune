@@ -30,7 +30,6 @@ const validateStatusQuery = query("status")
     return true;
   });
 
-
 const validateSortBy = query("sortBy")
   .optional()
   .isIn(["createdAt", "updatedAt", "process"])
