@@ -17,9 +17,19 @@ const validateQuery = query("query")
   .escape()
   .withMessage("Search query must be a string");
 
-const validateProcessStatus = body("process.*.status")
-  .isIn(Object.values(Status))
-  .withMessage(`status must be one of: ${Object.values(Status).join(", ")}`);
+const validateStatusQuery = query("status")
+  .optional()
+  .custom((value) => {
+    const statuses = Array.isArray(value) ? value : [value];
+    const validStatuses = Object.values(Status);
+    for (const s of statuses) {
+      if (!validStatuses.includes(s)) {
+        throw new Error(`Status must be one of: ${validStatuses.join(", ")}`);
+      }
+    }
+    return true;
+  });
+
 
 const validateSortBy = query("sortBy")
   .optional()
@@ -125,7 +135,7 @@ export const deleteApplicationValidator = [validateId];
 export const getApplicationsByUserID = [
   validateUserIdParam,
   validateQuery,
-  validateProcessStatus,
+  validateStatusQuery,
   validateSortBy,
   validatePage,
   validatePerPage,

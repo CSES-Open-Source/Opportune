@@ -61,6 +61,7 @@ export const createApplication = asyncHandler(async (req, res, next) => {
 
   // Extract validated data from the request body
   const applicationData = matchedData(req) as ApplicationCreate;
+  
 
   // Check if an application with the same userId, company, and position already exists
   const existingApplication = await Application.findOne({
@@ -184,7 +185,7 @@ export const deleteApplicationByID = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc Get applications by user ID
-//  @route GET /api/applications/applied/user/:id?query=[query]&status=[status]&sortBy=[sortBy]
+//  @route GET /api/applications/applied/user/:userId?query=[query]&status=[status]&sortBy=[sortBy]
 //  @access Private
 //
 //  @param {string} userId.path.required - User ID
@@ -193,6 +194,7 @@ export const deleteApplicationByID = asyncHandler(async (req, res, next) => {
 //  @throws {400} - If user ID is invalid
 export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     return next(createHttpError(400, validationErrorParser(errors)));
   }
@@ -212,6 +214,9 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
   // Get applications from specific users
   const dbQuery: ApplicationQuery = { userId };
 
+  // Convert status to an array
+  const statusArray = status ? (Array.isArray(status) ? status : [status]) : [];
+
   // Search query provided then filter by position & companyName
   if (query) {
     dbQuery.$or = [
@@ -221,8 +226,8 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
   }
 
   // If status filter is provided and non empty then filter by status
-  if (status && status.length > 0) {
-    dbQuery["process.status"] = { $in: status };
+  if (statusArray.length > 0) {
+    dbQuery["process.status"] = { $in: statusArray };
   }
 
   // The sorting logic depending on the query
@@ -242,8 +247,9 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
   }
 
   // Build up the result that will be outputted (Aggregation)
-  const [applications] = await Application.aggregate([
+  const applications = await Application.aggregate([
     { $match: dbQuery },
+    { $addFields: { latestProcessDate: { $max: "$process.date" } } },
     { $sort: sortOptions },
     { $skip: page * perPage },
     { $limit: perPage },
