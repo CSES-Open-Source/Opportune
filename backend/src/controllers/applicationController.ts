@@ -267,17 +267,10 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
   // Count total documents found from query
   const total = await Application.countDocuments(dbQuery);
 
-  // Handle no the scenario where no applications are found
-  if (!applications || total == 0) {
-    return next(
-      createHttpError(404, "No applications found that satisfy the query."),
-    );
-  }
-
   res.status(200).json({
     page,
     perPage,
     total,
-    data: applications,
+    data: applications || [],
   });
 });
