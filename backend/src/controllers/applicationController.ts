@@ -7,6 +7,14 @@ import createHttpError from "http-errors";
 import Company from "src/models/Company";
 import mongoose from "mongoose";
 
+// Interface for MongoDB query to fetch applications based on certain conditions
+// @interface getApplicationsByUserID
+interface ApplicationQuery {
+  userId: string;
+  $or?: { [key: string]: { $regex: string; $options: string } }[];
+  "process.status"?: { $in: string[] };
+}
+
 // Interface for creating/updating an application
 // @interface CreateApplicationRequest
 interface ApplicationCreate {
@@ -176,16 +184,93 @@ export const deleteApplicationByID = asyncHandler(async (req, res, next) => {
 });
 
 //  @desc Get applications by user ID
-//  @route GET /api/applications/applied/user/:id?query=[query]&status=[status]&sortBy=[sortBy]
+//  @route GET /api/applications/applied/user/:userId?query=[query]&status=[status]&sortBy=[sortBy]
 //  @access Private
 //
 //  @param {string} userId.path.required - User ID
 //  @returns {Application[]} 200 - Array of user's applications
 //  @throws {404} - If no applications found for user
 //  @throws {400} - If user ID is invalid
-export const getApplicationsByUserID = asyncHandler(async (req) => {
-  // eslint-disable-next-line no-unused-vars
-  const { userId } = req.params;
-  // eslint-disable-next-line no-unused-vars
-  const { query, status, sortBy } = req.query;
+export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return next(createHttpError(400, validationErrorParser(errors)));
+  }
+
+  // Extract query parameters with default values
+  const {
+    userId,
+    query,
+    status,
+    sortBy = "createdAt",
+    page = 0,
+    perPage = 10,
+  } = matchedData(req, {
+    locations: ["params", "query"],
+  });
+
+  // Get applications from specific users
+  const dbQuery: ApplicationQuery = { userId };
+
+  // Convert status to an array
+  const statusArray = status ? (Array.isArray(status) ? status : [status]) : [];
+
+  // Search query provided then filter by position & companyName
+  if (query) {
+    dbQuery.$or = [
+      { position: { $regex: query, $options: "i" } },
+      { companyName: { $regex: query, $options: "i" } },
+    ];
+  }
+
+  // If status filter is provided and non empty then filter by status
+  if (statusArray.length > 0) {
+    dbQuery["process.status"] = { $in: statusArray };
+  }
+
+  // The sorting logic depending on the query
+  let sortOptions = {};
+  switch (sortBy) {
+    case "createdAt":
+      sortOptions = { createdAt: -1 };
+      break;
+    case "updatedAt":
+      sortOptions = { updatedAt: -1 };
+      break;
+    case "process":
+      sortOptions = { "process.date": -1 };
+      break;
+    default:
+      sortOptions = { createdAt: -1 };
+  }
+
+  // Build up the result that will be outputted (Aggregation)
+  const applications = await Application.aggregate([
+    { $match: dbQuery },
+    { $addFields: { latestProcessDate: { $max: "$process.date" } } },
+    { $sort: sortOptions },
+    { $skip: page * perPage },
+    { $limit: perPage },
+    {
+      $project: {
+        userId: 1,
+        companyName: 1,
+        position: 1,
+        process: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    },
+  ]);
+
+  // Count total documents found from query
+  const total = await Application.countDocuments(dbQuery);
+
+  res.status(200).json({
+    page,
+    perPage,
+    total,
+    data: applications || [],
+  });
 });

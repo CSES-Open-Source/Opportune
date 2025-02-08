@@ -1,4 +1,51 @@
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
+import { Status } from "src/models/Application";
+
+// Default values for page and perPage
+const DEFAULT_PAGE = 0;
+const DEFAULT_PER_PAGE = 10;
+
+const validateUserIdParam = param("userId")
+  .isString()
+  .notEmpty()
+  .withMessage("User ID must be a non-empty string");
+
+const validateQuery = query("query")
+  .optional()
+  .isString()
+  .trim()
+  .escape()
+  .withMessage("Search query must be a string");
+
+const validateStatusQuery = query("status")
+  .optional()
+  .custom((value) => {
+    const statuses = Array.isArray(value) ? value : [value];
+    const validStatuses = Object.values(Status);
+    for (const s of statuses) {
+      if (!validStatuses.includes(s)) {
+        throw new Error(`Status must be one of: ${validStatuses.join(", ")}`);
+      }
+    }
+    return true;
+  });
+
+const validateSortBy = query("sortBy")
+  .optional()
+  .isIn(["createdAt", "updatedAt", "process"])
+  .withMessage("Sort by must be one of: createdAt, updatedAt, process");
+
+const validatePage = query("page")
+  .default(DEFAULT_PAGE)
+  .isInt({ min: 0 })
+  .toInt()
+  .withMessage("page must be a non-negative integer");
+
+const validatePerPage = query("perPage")
+  .default(DEFAULT_PER_PAGE)
+  .isInt({ min: 1 })
+  .toInt()
+  .withMessage("per page must be an integer greater than 1");
 
 const validateId = param("id")
   .isMongoId()
@@ -83,3 +130,12 @@ export const updateApplicationValidator = [
 ];
 
 export const deleteApplicationValidator = [validateId];
+
+export const getApplicationsByUserID = [
+  validateUserIdParam,
+  validateQuery,
+  validateStatusQuery,
+  validateSortBy,
+  validatePage,
+  validatePerPage,
+];
