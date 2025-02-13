@@ -162,8 +162,8 @@ const DataTable = <T extends object>(props: DataTableProps<T>) => {
                         >
                           {String(
                             "key" in column
-                              ? row[column.key as keyof T]
-                              : column.accessor(row),
+                              ? row[column.key as keyof T] || ""
+                              : column.accessor(row) || "",
                           )}
                         </div>
                       )}
