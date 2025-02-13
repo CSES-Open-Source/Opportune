@@ -73,9 +73,8 @@ const Modal = ({
   return (
     // backdrop
     <div
-      className={`absolute left-0 top-0 w-[100vw] h-[100vh] flex justify-center items-center hover:cursor-pointer ${
-        useOverlay ? `bg-black bg-opacity-${backdropOpacity}` : ""
-      }`}
+      className="absolute left-0 top-0 w-[100vw] h-[100vh] flex justify-center items-center hover:cursor-pointer transition z-50"
+      style={{ backgroundColor: useOverlay ? "#000000" + backdropOpacity : "" }}
       ref={backdropRef}
     >
       {/* modal container */}
@@ -88,7 +87,7 @@ const Modal = ({
           size={20}
           onClick={() => onClose()}
         />
-        <div className="">{children}</div>
+        <div className="w-full h-full">{children}</div>
       </div>
     </div>
   );
