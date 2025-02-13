@@ -1,3 +1,10 @@
+import {
+  RxChevronLeft,
+  RxChevronRight,
+  RxDoubleArrowLeft,
+  RxDoubleArrowRight,
+} from "react-icons/rx";
+
 interface PaginatorContent {
   setPerPage?: boolean;
   goToPage?: boolean;
@@ -32,37 +39,54 @@ const Paginator = ({
   const totalPages = Math.ceil(totalItems / perPage);
 
   return (
-    <div className="mt-4 flex justify-center items-center gap-2">
-      <button onClick={() => onPageChange(0)} disabled={page === 0}>
-        {"<<"}
+    <div className="relative mt-4 flex justify-center items-center gap-6">
+      {paginatorContent.setPerPage && (
+        <select
+          className="absolute  left-0 hover:cursor-pointer"
+          value={perPage}
+          onChange={(e) => onPerPageChange(Number(e.target.value))}
+        >
+          {perPageOptions.map((size) => (
+            <option key={size} value={size}>
+              Show {size}
+            </option>
+          ))}
+        </select>
+      )}
+      <button
+        className="hover:cursor-pointer hover:text-accent-blue"
+        onClick={() => onPageChange(0)}
+        disabled={page === 0}
+      >
+        <RxDoubleArrowLeft size={18} />
       </button>
       <button
+        className="hover:cursor-pointer hover:text-accent-blue"
         onClick={() => onPageChange(Math.max(page - 1, 0))}
         disabled={page === 0}
       >
-        {"<"}
+        <RxChevronLeft size={18} />
       </button>
+      <span>
+        Page {page + 1} of {totalPages}
+      </span>
       <button
+        className="hover:cursor-pointer hover:text-accent-blue"
         onClick={() => onPageChange(Math.min(page + 1, totalPages - 1))}
         disabled={(page + 1) * perPage >= totalItems}
       >
-        {">"}
+        <RxChevronRight size={18} />
       </button>
       <button
+        className="hover:cursor-pointer hover:text-accent-blue"
         onClick={() => onPageChange(totalPages - 1)}
         disabled={(page + 1) * perPage >= totalItems}
       >
-        {">>"}
+        <RxDoubleArrowRight size={18} />
       </button>
-      <span>
-        Page{" "}
-        <strong>
-          {page + 1} of {totalPages}
-        </strong>
-      </span>
       {paginatorContent.goToPage && (
         <span>
-          | Go to page:{" "}
+          Go to page:{" "}
           <input
             type="number"
             defaultValue={page + 1}
@@ -74,21 +98,8 @@ const Paginator = ({
                 newPage >= 0 && newPage < totalPages ? newPage : page,
               );
             }}
-            style={{ width: "50px" }}
           />
         </span>
-      )}
-      {paginatorContent.setPerPage && (
-        <select
-          value={perPage}
-          onChange={(e) => onPerPageChange(Number(e.target.value))}
-        >
-          {perPageOptions.map((size) => (
-            <option key={size} value={size}>
-              Show {size}
-            </option>
-          ))}
-        </select>
       )}
     </div>
   );
