@@ -19,8 +19,9 @@ const validateQuery = query("query")
 
 const validateStatusQuery = query("status")
   .optional()
+  .isString()
   .custom((value) => {
-    const statuses = Array.isArray(value) ? value : [value];
+    const statuses = value.split(",");
     const validStatuses = Object.values(Status);
     for (const s of statuses) {
       if (!validStatuses.includes(s)) {

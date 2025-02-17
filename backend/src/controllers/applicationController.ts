@@ -214,13 +214,14 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
   const dbQuery: ApplicationQuery = { userId };
 
   // Convert status to an array
-  const statusArray = status ? (Array.isArray(status) ? status : [status]) : [];
+  const statusArray = status ? status.split(",") : [];
 
   // Search query provided then filter by position & companyName
   if (query) {
     dbQuery.$or = [
       { position: { $regex: query, $options: "i" } },
       { companyName: { $regex: query, $options: "i" } },
+      { location: { $regex: query, $options: "i" } },
     ];
   }
 
@@ -258,6 +259,7 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
         companyName: 1,
         position: 1,
         process: 1,
+        location: 1,
         createdAt: 1,
         updatedAt: 1,
       },
