@@ -5,7 +5,7 @@ import validationErrorParser from "src/util/validationErrorParser";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import Company from "src/models/Company";
-import mongoose, { model } from "mongoose";
+import mongoose from "mongoose";
 
 // Interface for MongoDB query to fetch applications based on certain conditions
 // @interface getApplicationsByUserID
