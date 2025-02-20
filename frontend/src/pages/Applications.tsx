@@ -71,20 +71,28 @@ const Applications = () => {
     console.log("New application!");
   };
 
+  interface SearchBarData extends Record<string, string | string[]> {
+    query: string;
+    sortBy: string;
+    status: string[];
+  }
+
   return (
     <div className="flex flex-col gap-5 px-6 py-4">
       <h1 className="text-3xl font-bold">Applications</h1>
-      <SearchBar
+      <SearchBar<SearchBarData>
         selections={[
           {
             label: "Sort By",
             options: ["Applied", "Modified", "Status", "Company", "Position"],
+            single: true,
           },
           {
             label: "Status",
             options: ["Applied", "OA", "Phone", "Final", "Offer", "Rejected"],
           },
         ]}
+        onSubmitForm={(values) => console.log(values)}
       />
       <DataTable<Application>
         tableStyle={{
