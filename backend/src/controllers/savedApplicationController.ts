@@ -12,6 +12,7 @@ interface SavedApplicationCreate {
   userId: string;
   company: mongoose.Types.ObjectId;
   position: string;
+  location?: string;
   link?: string;
   materialsNeeded?: string[];
   deadline?: Date;
@@ -51,6 +52,7 @@ export const createSavedApplication = asyncHandler(async (req, res, next) => {
     userId: savedApplicationData.userId,
     company: savedApplicationData.company,
     position: savedApplicationData.position,
+    location: savedApplicationData.location,
   })
     .lean()
     .exec();
@@ -187,12 +189,16 @@ export const getSavedApplicationsByUserID = asyncHandler(
       locations: ["query"],
     });
 
-    const dbQuery = SavedApplication.find({ userId: id });
-
-    // add a name search filter if provided
-    if (query) {
-      dbQuery.where("name").regex(new RegExp(query, "i"));
-    }
+    const dbQuery = SavedApplication.find({
+      userId: id,
+      ...(query && {
+        $or: [
+          { "company.name": { $regex: query, $options: "i" } },
+          { position: { $regex: query, $options: "i" } },
+          { location: { $regex: query, $options: "i" } },
+        ],
+      }),
+    });
 
     // Apply sorting if `sortBy` is provided
     if (sortBy) {
@@ -221,6 +227,7 @@ export const getSavedApplicationsByUserID = asyncHandler(
         userId: app.userId,
         company: app.company,
         position: app.position,
+        location: app.location,
         link: app.link,
         materialsNeeded: app.materialsNeeded,
         deadline: app.deadline,
