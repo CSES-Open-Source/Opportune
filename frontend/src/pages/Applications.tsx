@@ -10,16 +10,16 @@ const applicationColumns: ColumnDef<Application>[] = [
     header: "Company",
     cell: (row) => {
       return (
-        <div className="flex flex-row items-center">
+        <div className="flex flex-row items-center" >
           <div
-            className={`w-[6px] h-[40.57px] mr-2 ${
-              statusColors[
-                row.process ? row.process[row.process.length - 1].status : ""
-              ]
-            }`}
+            className={`w-[6px] h-[40.57px] mr-2 ${statusColors[
+              row.process ? row.process[row.process.length - 1].status : ""
+            ]
+              }`}
           />
-          {row.company.name}
-        </div>
+          {row.company.name
+          }
+        </div >
       );
     },
   },
