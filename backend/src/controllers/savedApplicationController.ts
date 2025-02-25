@@ -4,7 +4,7 @@ import validationErrorParser from "src/util/validationErrorParser";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import Company from "src/models/Company";
-import mongoose from "mongoose";
+import mongoose, { PipelineStage } from "mongoose";
 
 // Interface for creating/updating a saved application
 // @interface CreateSavedApplicationRequest
@@ -189,35 +189,46 @@ export const getSavedApplicationsByUserID = asyncHandler(
       locations: ["query"],
     });
 
-    const dbQuery = SavedApplication.find({
-      userId: id,
-      ...(query && {
-        $or: [
-          { "company.name": { $regex: query, $options: "i" } },
-          { position: { $regex: query, $options: "i" } },
-          { location: { $regex: query, $options: "i" } },
-        ],
-      }),
-    });
+    // Build the aggregation pipeline
+    const pipeline: PipelineStage[] = [
+      { $match: { userId: id } },
+      {
+        $lookup: {
+          from: "companies",
+          localField: "company",
+          foreignField: "_id",
+          as: "company",
+        },
+      },
+      { $unwind: "$company" },
+    ];
 
-    // Apply sorting if `sortBy` is provided
-    if (sortBy) {
-      dbQuery.sort(sortBy);
+    // Add the query filter if provided
+    if (query) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { "company.name": { $regex: query, $options: "i" } },
+            { position: { $regex: query, $options: "i" } },
+            { location: { $regex: query, $options: "i" } },
+          ],
+        },
+      });
     }
 
-    // ensure count and paginate do not conflict
-    const countQuery = dbQuery.clone();
+    // Add sorting if `sortBy` is provided
+    if (sortBy) {
+      pipeline.push({ $sort: { [sortBy]: 1 } });
+    }
 
-    // count total results, populate company, and paginate in parallel
-    const [total, applications] = await Promise.all([
-      countQuery.countDocuments(),
-      dbQuery
-        .skip(page * perPage)
-        .limit(perPage)
-        .populate({ path: "company", model: Company })
-        .lean()
-        .exec(),
-    ]);
+    // Add pagination
+    pipeline.push({ $skip: page * perPage }, { $limit: perPage });
+
+    // Execute the aggregation pipeline
+    const applications = await SavedApplication.aggregate(pipeline).exec();
+
+    // Count total results
+    const total = await SavedApplication.countDocuments({ userId: id });
 
     res.status(200).json({
       page,

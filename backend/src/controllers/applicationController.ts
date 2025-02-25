@@ -5,15 +5,7 @@ import validationErrorParser from "src/util/validationErrorParser";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import Company from "src/models/Company";
-import mongoose from "mongoose";
-
-// Interface for MongoDB query to fetch applications based on certain conditions
-// @interface getApplicationsByUserID
-interface ApplicationQuery {
-  userId: string;
-  $or?: { [key: string]: { $regex: string; $options: string } }[];
-  "process.status"?: { $in: string[] };
-}
+import mongoose, { PipelineStage } from "mongoose";
 
 // Interface for creating/updating an application
 // @interface CreateApplicationRequest
@@ -211,23 +203,40 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
   });
 
   // Get applications from specific users
-  const dbQuery: ApplicationQuery = { userId };
+  const dbQuery: PipelineStage[] = [
+    { $match: { userId: userId } },
+    {
+      $lookup: {
+        from: "companies",
+        localField: "company",
+        foreignField: "_id",
+        as: "company",
+      },
+    },
+    { $unwind: "$company" },
+  ];
 
   // Convert status to an array
   const statusArray = status ? status.split(",") : [];
 
   // Search query provided then filter by position & companyName
   if (query) {
-    dbQuery.$or = [
-      { position: { $regex: query, $options: "i" } },
-      { companyName: { $regex: query, $options: "i" } },
-      { location: { $regex: query, $options: "i" } },
-    ];
+    dbQuery.push({
+      $match: {
+        $or: [
+          { "company.name": { $regex: query, $options: "i" } },
+          { position: { $regex: query, $options: "i" } },
+          { location: { $regex: query, $options: "i" } },
+        ],
+      },
+    });
   }
 
   // If status filter is provided and non empty then filter by status
   if (statusArray.length > 0) {
-    dbQuery["process.status"] = { $in: statusArray };
+    dbQuery.push({
+      $match: { "process.status": { $in: statusArray } },
+    });
   }
 
   // The sorting logic depending on the query
@@ -246,25 +255,15 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
       sortOptions = { createdAt: -1 };
   }
 
-  // Build up the result that will be outputted (Aggregation)
-  const applications = await Application.aggregate([
-    { $match: dbQuery },
-    { $addFields: { latestProcessDate: { $max: "$process.date" } } },
+  // Add sorting and pagination to the aggregation pipeline
+  dbQuery.push(
     { $sort: sortOptions },
     { $skip: page * perPage },
     { $limit: perPage },
-    {
-      $project: {
-        userId: 1,
-        companyName: 1,
-        position: 1,
-        process: 1,
-        location: 1,
-        createdAt: 1,
-        updatedAt: 1,
-      },
-    },
-  ]);
+  );
+
+  // Build up the result that will be outputted (Aggregation)
+  const applications = await Application.aggregate(dbQuery).exec();
 
   // Count total documents found from query
   const total = await Application.countDocuments(dbQuery);

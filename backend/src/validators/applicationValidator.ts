@@ -20,6 +20,7 @@ const validateQuery = query("query")
 const validateStatusQuery = query("status")
   .optional()
   .isString()
+  .toUpperCase()
   .custom((value) => {
     const statuses = value.split(",");
     const validStatuses = Object.values(Status);
@@ -92,6 +93,7 @@ const validateProcess = [
     .isArray()
     .withMessage("process must be an array of application statuses."),
   body("process.*.status")
+    .toUpperCase()
     .isIn(["APPLIED", "OA", "PHONE", "FINAL", "OFFER", "REJECTED"])
     .withMessage(
       "Status must be one of: APPLIED, OA, PHONE, FINAL, OFFER, REJECTED",
