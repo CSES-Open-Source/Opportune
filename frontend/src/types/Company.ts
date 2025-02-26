@@ -30,3 +30,15 @@ export interface UpdateCompanyRequest {
   city?: string;
   state?: string;
 }
+
+export interface CompanyPage {
+  _id: string;
+  name: string;
+  city?: string;
+  state?: string;
+  logo?: string;
+  logoKey?: string;
+  employees?: string;
+  industry?: string;
+  url?: string;
+}
