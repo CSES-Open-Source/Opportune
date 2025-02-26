@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { CompanyPage } from "../types/Company"
-import { ExternalLink } from "lucide-react";
+import { FaExternalLinkAlt } from "react-icons/fa";
+
 
 interface CompanyTileProps {
   data: CompanyPage;
@@ -60,7 +61,7 @@ const CompanyTile: React.FC<CompanyTileProps> = ({ data }) => {
             rel="noopener noreferrer"
             className="text-gray-500 hover:text-blue-500 transition-colors"
           >
-            <ExternalLink className="w-5 h-5" />
+            <FaExternalLinkAlt className="w-4 h-4" />
           </a>
         )}
       </div>
