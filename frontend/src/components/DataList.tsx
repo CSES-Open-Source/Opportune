@@ -90,29 +90,30 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
   }
 
   return (
-    <div style={{ ...listStyle, overflowY: "auto" }}  className="flex flex-col h-full overflow-y-auto">
+    <div
+      style={{ ...listStyle, overflowY: "auto" }}
+      className="flex flex-col h-full overflow-y-auto"
+    >
       <div className="flex-1 overflow-y-auto">
-      <div className="flex flex-col gap-4">
-        {data.map((item, index) => (
-          <TileComponent key={index} data={item} />
-        ))}
+        <div className="flex flex-col gap-4">
+          {data.map((item, index) => (
+            <TileComponent key={index} data={item} />
+          ))}
         </div>
       </div>
 
-
       {/* Pagination Controls */}
       {(useServerPagination || props.usePagination) && (
-      <div className="mt-4">
-        <Paginator
-          page={page}
-          perPage={perPage}
-          onPageChange={setPage}
-          onPerPageChange={setPerPage}
-          totalItems={totalItems}
-          paginatorContent={props.paginatorContent}
-        />
+        <div>
+          <Paginator
+            page={page}
+            perPage={perPage}
+            onPageChange={setPage}
+            onPerPageChange={setPerPage}
+            totalItems={totalItems}
+            paginatorContent={props.paginatorContent}
+          />
         </div>
-
       )}
     </div>
   );

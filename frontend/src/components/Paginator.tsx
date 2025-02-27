@@ -54,35 +54,35 @@ const Paginator = ({
         </select>
       )}
       <button
-        className="hover:cursor-pointer hover:text-accent-blue"
+        className="hover:cursor-pointer hover:text-primary transition"
         onClick={() => onPageChange(0)}
         disabled={page === 0}
       >
-        <RxDoubleArrowLeft size={18} />
+        <RxDoubleArrowLeft size={18} className="stroke-[0.75]" />
       </button>
       <button
-        className="hover:cursor-pointer hover:text-accent-blue"
+        className="hover:cursor-pointer hover:text-primary transition"
         onClick={() => onPageChange(Math.max(page - 1, 0))}
         disabled={page === 0}
       >
-        <RxChevronLeft size={18} />
+        <RxChevronLeft size={18} className="stroke-[0.75]" />
       </button>
       <span>
         Page {page + 1} of {totalPages}
       </span>
       <button
-        className="hover:cursor-pointer hover:text-accent-blue"
+        className="hover:cursor-pointer hover:text-primary transition"
         onClick={() => onPageChange(Math.min(page + 1, totalPages - 1))}
         disabled={(page + 1) * perPage >= totalItems}
       >
-        <RxChevronRight size={18} />
+        <RxChevronRight size={18} className="stroke-[0.75]" />
       </button>
       <button
-        className="hover:cursor-pointer hover:text-accent-blue"
+        className="hover:cursor-pointer hover:text-primary transition"
         onClick={() => onPageChange(totalPages - 1)}
         disabled={(page + 1) * perPage >= totalItems}
       >
-        <RxDoubleArrowRight size={18} />
+        <RxDoubleArrowRight size={18} className="stroke-[0.75]" />
       </button>
       {paginatorContent.goToPage && (
         <span>

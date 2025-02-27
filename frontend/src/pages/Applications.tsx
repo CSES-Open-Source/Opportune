@@ -123,7 +123,7 @@ const Applications = () => {
       />
       <button
         onClick={onNewApplicationClicked}
-        className="px-4 py-3 absolute right-10 bottom-6 bg-accent-pink text-white rounded-md hover:opacity-90 font-medium"
+        className="px-4 py-3 absolute right-10 bottom-6 bg-accent-pink text-white rounded-md hover:opacity-90 font-medium transition"
       >
         New Application
       </button>
