@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { CompanyPage } from "../types/Company"
-import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaExternalLinkAlt, FaLinkedin } from "react-icons/fa";
 
 
 interface CompanyTileProps {
@@ -9,8 +9,7 @@ interface CompanyTileProps {
 }
 
 const CompanyTile: React.FC<CompanyTileProps> = ({ data }) => {
-  const defaultLogo =
-    "/images/linkedin-icon-logo.svg";
+
   const navigate = useNavigate();
 
   const handleTileClick = () => {
@@ -29,11 +28,15 @@ const CompanyTile: React.FC<CompanyTileProps> = ({ data }) => {
         {/* Left: logo and company info */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 w-full">
           <div className="w-16 h-16 overflow-hidden rounded flex-shrink-0">
-            <img
-              src={data.logo && data.logo.trim() !== "" ? data.logo : defaultLogo}
-              alt={`${data.name} logo`}
-              className="object-contain w-full h-full"
-            />
+          {data.logo && data.logo.trim() !== "" ? (
+              <img
+                src={data.logo}
+                alt={`${data.name} logo`}
+                className="object-contain w-full h-full"
+              />
+            ) : (
+              <FaLinkedin className="w-10 h-10 text-blue-600" /> // Show LinkedIn icon if no logo
+            )}
           </div>
           <div className="flex-1">
             <h2 className="text-lg font-semibold text-gray-800">{data.name}</h2>
