@@ -2,9 +2,7 @@ import React from "react";
 import SearchBar from "../components/SearchBar";
 import DataList from "../components/DataList";
 import CompanyTile from "../components/CompanyTile";
-import { CompanyPage } from "../types/Company"
-
-
+import { CompanyPage } from "../types/Company";
 
 const sampleCompanies: CompanyPage[] = [
   {
@@ -109,14 +107,21 @@ const sampleCompanies: CompanyPage[] = [
 
 const Companies: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-semibold text-gray-800 mb-6">Companies</h1>
+        <h1 className="text-3xl font-bold mb-6">Companies</h1>
         <SearchBar
           selections={[
             {
               label: "Employees",
-              options: ["1-10", "11-50", "51-200", "201-500", "501-1000", "1001+"],
+              options: [
+                "1-10",
+                "11-50",
+                "51-200",
+                "201-500",
+                "501-1000",
+                "1001+",
+              ],
             },
             {
               label: "Industry",
@@ -132,13 +137,12 @@ const Companies: React.FC = () => {
           ]}
         />
         {/* dataList container with paginator at the bottom */}
-        <div className="mt-8 h-[70vh] flex flex-col">
+        <div className="mt-4 h-[75vh] flex flex-col">
           <DataList
             TileComponent={CompanyTile}
             data={sampleCompanies}
             usePagination={true}
             paginatorContent={{ setPerPage: true, goToPage: true }}
-            
           />
         </div>
       </div>
