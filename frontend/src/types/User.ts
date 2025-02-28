@@ -17,8 +17,14 @@ export interface BaseUser {
   _id: string;
   email: string;
   name: string;
+  type: UserType;
   linkedIn?: string;
   phoneNumber?: string;
+  profilePicture?: string;
+  company?: Company;
+  shareProfile?: boolean;
+  major?: string;
+  classLevel?: ClassLevel;
 }
 
 export interface Student extends BaseUser {

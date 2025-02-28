@@ -4,15 +4,11 @@ import { NavItem } from "../../types/NavItem";
 import { FiLogOut } from "react-icons/fi";
 import { useState } from "react";
 import Dialog from "../Dialog";
+import { useAuth } from "../../contexts/useAuth";
+import { FcGoogle } from "react-icons/fc";
 
 const SideNav = () => {
-  const isAuthenticated = true;
-  const user = {
-    name: "King Triton",
-    profile:
-      "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
-    email: "ktriton@ucsd.edu",
-  };
+  const { user, isAuthenticated, login, logout } = useAuth();
 
   const [isLogOutDialogOpen, setIsLogOutDialogOpen] = useState<boolean>(false);
 
@@ -24,7 +20,7 @@ const SideNav = () => {
   };
 
   const onLogOutDialogConfirm = () => {
-    // TODO
+    logout();
   };
 
   const onLogOutDialogClose = () => {
@@ -65,34 +61,44 @@ const SideNav = () => {
             })}
           </ul>
         </nav>
-        <hr className="w-[80%]" />
-        {isAuthenticated && (
-          <div className="h-[65px] py-1 w-full gap-3">
-            <NavLink
-              className="h-full w-full text-sm flex items-center rounded-md font-medium px-2 gap-3 text-gray-700"
-              to={"/profile"}
-            >
-              <img
-                src={user.profile}
-                alt={`${user.name} Profile Picture`}
-                className="rounded-full h-10 w-10"
-              />
-              <div className="flex flex-col flex-grow">
-                <div>{user.name}</div>
-                <div className="text-gray-400">{user.email}</div>
-              </div>
-              <button
-                className="p-2 h-[47px] rounded-full hover:bg-primary hover:bg-opacity-10 transition"
-                onClick={onLogOutClicked}
+        {isAuthenticated() && user && (
+          <div>
+            <hr className="w-[80%]" />
+            <div className="h-[65px] py-1 w-full gap-3">
+              <NavLink
+                className="h-full w-full text-sm flex items-center rounded-md font-medium px-2 gap-3 text-gray-700"
+                to={"/profile"}
               >
-                <FiLogOut size={27} className="ml-1" />
-              </button>
-            </NavLink>
+                <img
+                  src={user.profilePicture}
+                  alt={`${user.name} Profile`}
+                  className="rounded-full h-10 w-10"
+                />
+                <div className="flex flex-col flex-grow">
+                  <div>{user.name}</div>
+                  <div className="text-gray-400">{user.email}</div>
+                </div>
+                <button
+                  className="p-2 h-[47px] rounded-full hover:bg-primary hover:bg-opacity-10 transition"
+                  onClick={onLogOutClicked}
+                >
+                  <FiLogOut size={27} className="ml-1" />
+                </button>
+              </NavLink>
+            </div>
           </div>
         )}
-        {!isAuthenticated && (
-          <div className="h-18 w-full flex items-center p-4">
-            Google login here
+        {!isAuthenticated() && (
+          <div className="h-[65px] py-1 px-2 w-full flex items-center">
+            <button
+              className={
+                "h-full w-full text-lg flex items-center rounded-md font-medium px-3 gap-3 transition justify-center border shadow-md hover:bg-black hover:bg-opacity-[0.03] hover:shadow-lg"
+              }
+              onClick={login}
+            >
+              <FcGoogle size={28} />
+              <div>Sign in with Google</div>
+            </button>
           </div>
         )}
       </aside>
@@ -100,7 +106,7 @@ const SideNav = () => {
         isDialogOpen={isLogOutDialogOpen}
         onConfirm={onLogOutDialogConfirm}
         onDialogClose={onLogOutDialogClose}
-        text="Are you sure you would like to log out?"
+        text="Are you sure you would like to logout?"
       />
     </div>
   );
