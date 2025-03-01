@@ -87,7 +87,9 @@ const Modal = (props: ModalProps): React.JSX.Element => {
   return (
     // backdrop
     <div
-      className="absolute left-0 top-0 w-[100vw] h-[100vh] flex justify-center items-center hover:cursor-pointer transition z-50"
+      className={`absolute left-0 top-0 w-[100vw] h-[100vh] flex justify-center items-center ${
+        !disableClose && "hover:cursor-pointer"
+      } transition z-50`}
       style={{ backgroundColor: useOverlay ? "#000000" + backdropOpacity : "" }}
       ref={backdropRef}
     >
@@ -104,7 +106,7 @@ const Modal = (props: ModalProps): React.JSX.Element => {
           />
         )}
 
-        <div className="w-full h-full">{children}</div>
+        {children}
       </div>
     </div>
   );

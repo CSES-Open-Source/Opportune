@@ -20,6 +20,7 @@ import {
   UserType,
 } from "../types/User";
 import React, { createContext, useEffect, useState } from "react";
+import { APIResult } from "../api/requests";
 
 // Define the shape of our context
 interface AuthContextType {
@@ -28,10 +29,11 @@ interface AuthContextType {
   login: () => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: () => boolean;
-  createUser: (newUser: CreateUserRequest) => void;
-  updateUser: (updates: UpdateUserRequest) => void;
+  createUser: (newUser: CreateUserRequest) => Promise<APIResult<User>>;
+  updateUser: (updates: UpdateUserRequest) => Promise<APIResult<User>>;
   clearAuthError: () => void;
   isProfileComplete: boolean;
+  setIsProfileComplete: (isProfileComplete: boolean) => void;
   isLoading: boolean;
 }
 
@@ -42,24 +44,25 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   logout: async () => {},
   isAuthenticated: () => false,
-  createUser: () => {},
-  updateUser: () => {},
+  createUser: (): Promise<APIResult<User>> => {
+    return Promise.resolve({ success: false, error: "User not authenticated" });
+  },
+  updateUser: (): Promise<APIResult<User>> => {
+    return Promise.resolve({ success: false, error: "User not authenticated" });
+  },
   clearAuthError: () => {},
   isProfileComplete: true,
+  setIsProfileComplete: () => {},
   isLoading: false,
 });
 
 // Helper function to check if user profile is complete
 const checkProfileComplete = (user: User | null): boolean => {
   if (!user) return false;
-
-  // Add all required fields that need to be checked here
-  // For example: name, email, phone, etc.
   return !!(
     user.name &&
     user.email &&
-    // Add any other required fields
-    true
+    Object.values(UserType).includes(user.type)
   );
 };
 
@@ -78,18 +81,15 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
       setIsLoading(true);
 
       if (firebaseUser) {
-        // Try to get user from our backend
         getUserById(firebaseUser.uid)
           .then((response) => {
             if (response.success) {
-              // User exists in our backend
+              // User exists in backend
               const userData = {
                 ...response.data,
                 profilePicture: firebaseUser.photoURL || "",
               };
               setUser(userData);
-
-              // Check if profile is complete
               setIsProfileComplete(checkProfileComplete(userData));
             } else {
               const newUser: User = {
@@ -121,12 +121,6 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
     // Clean up the listener on component unmount
     return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    if (error !== "") {
-      // TODO: Display error modal
-    }
-  }, [error]);
 
   // Google sign-in function
   const login = async (): Promise<void> => {
@@ -163,43 +157,62 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
     }
   };
 
-  const createUser = async (newUser: CreateUserRequest) => {
+  const createUser = async (
+    newUser: CreateUserRequest,
+  ): Promise<APIResult<User>> => {
     if (user && !isProfileComplete) {
       setIsLoading(true);
-      create(newUser)
-        .then((response) => {
-          if (response.success) {
-            setUser({ ...response.data, profilePicture: user.profilePicture });
-            setIsProfileComplete(true);
-          } else {
-            setError(response.error);
-          }
-        })
-        .catch((err) => {
-          console.error("Error updating profile:", err);
-          setError("An error occurred while updating your profile");
-        });
-      setIsLoading(false);
+      try {
+        const response = await create(newUser);
+
+        if (response.success) {
+          setUser({ ...response.data, profilePicture: user.profilePicture });
+        } else {
+          setError(response.error);
+        }
+
+        return response;
+      } catch (err) {
+        console.error("Error updating profile:", err);
+        setError("An error occurred while creating your profile");
+        return {
+          success: false,
+          error: "An error occurred while creating your profile",
+        };
+      } finally {
+        setIsLoading(false);
+      }
     }
+    return { success: false, error: "User not authenticated" };
   };
 
-  const updateUser = async (updates: UpdateUserRequest) => {
+  const updateUser = async (
+    updates: UpdateUserRequest,
+  ): Promise<APIResult<User>> => {
     if (isAuthenticated() && user) {
       setIsLoading(true);
-      update(user._id, updates)
-        .then((response) => {
-          if (response.success) {
-            setUser({ ...response.data, profilePicture: user.profilePicture });
-          } else {
-            setError(response.error);
-          }
-        })
-        .then((err) => {
-          console.error("Error updating profile:", err);
-          setError("An error occurred while updating your profile");
-        });
-      setIsLoading(false);
+      try {
+        const response = await update(user._id, updates);
+
+        if (response.success) {
+          setUser({ ...response.data, profilePicture: user.profilePicture });
+        } else {
+          setError(response.error);
+        }
+
+        return response;
+      } catch (err) {
+        console.error("Error updating profile:", err);
+        setError("An error occurred while creating your profile");
+        return {
+          success: false,
+          error: "An error occurred while creating your profile",
+        };
+      } finally {
+        setIsLoading(false);
+      }
     }
+    return { success: false, error: "User not authenticated" };
   };
 
   const isAuthenticated = (): boolean => {
@@ -221,6 +234,7 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
     updateUser,
     clearAuthError,
     isProfileComplete,
+    setIsProfileComplete,
     isLoading,
   };
 

@@ -6,6 +6,7 @@ import { useState } from "react";
 import Dialog from "../Dialog";
 import { useAuth } from "../../contexts/useAuth";
 import { FcGoogle } from "react-icons/fc";
+import AuthModal from "../AuthModal";
 
 const SideNav = () => {
   const { user, isAuthenticated, login, logout } = useAuth();
@@ -20,7 +21,7 @@ const SideNav = () => {
   };
 
   const onLogOutDialogConfirm = () => {
-    logout();
+    logout().then(() => setIsLogOutDialogOpen(false));
   };
 
   const onLogOutDialogClose = () => {
@@ -62,9 +63,9 @@ const SideNav = () => {
           </ul>
         </nav>
         {isAuthenticated() && user && (
-          <div>
+          <div className="w-full flex flex-col items-center justify-center">
             <hr className="w-[80%]" />
-            <div className="h-[65px] py-1 w-full gap-3">
+            <div className="h-[65px] w-full py-1 gap-3">
               <NavLink
                 className="h-full w-full text-sm flex items-center rounded-md font-medium px-2 gap-3 text-gray-700"
                 to={"/profile"}
@@ -78,11 +79,11 @@ const SideNav = () => {
                   <div>{user.name}</div>
                   <div className="text-gray-400">{user.email}</div>
                 </div>
-                <button
-                  className="p-2 h-[47px] rounded-full hover:bg-primary hover:bg-opacity-10 transition"
-                  onClick={onLogOutClicked}
-                >
-                  <FiLogOut size={27} className="ml-1" />
+                <button onClick={onLogOutClicked}>
+                  <FiLogOut
+                    size={27}
+                    className="m-1 hover:stroke-primary transition"
+                  />
                 </button>
               </NavLink>
             </div>
@@ -108,6 +109,7 @@ const SideNav = () => {
         onDialogClose={onLogOutDialogClose}
         text="Are you sure you would like to logout?"
       />
+      <AuthModal />
     </div>
   );
 };

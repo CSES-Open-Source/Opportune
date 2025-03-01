@@ -34,13 +34,13 @@ const Dialog = ({
         {type === "confirmation" && (
           <div className="w-full flex justify-center items-center gap-10">
             <button
-              className="w-28 h-10 border-2 border-solid rounded-full text-primary font-medium hover:bg-primary hover:bg-opacity-10 hover:transition"
+              className="w-28 h-10 border-2 border-solid rounded-full font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition"
               onClick={onDialogClose}
             >
               Cancel
             </button>
             <button
-              className="w-28 h-10 border-2 border-solid rounded-full text-white bg-primary hover:bg-opacity-80 hover:transition font font-medium"
+              className="w-28 h-10 border-2 border-solid rounded-full text-white bg-blue-600 hover:bg-blue-700 transition font font-medium"
               onClick={onConfirm}
             >
               Confirm

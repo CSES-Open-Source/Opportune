@@ -21,22 +21,22 @@ export interface BaseUser {
   linkedIn?: string;
   phoneNumber?: string;
   profilePicture?: string;
-  company?: Company;
-  shareProfile?: boolean;
-  major?: string;
-  classLevel?: ClassLevel;
+  // company?: Company;
+  // shareProfile?: boolean;
+  // major?: string;
+  // classLevel?: ClassLevel;
 }
 
 export interface Student extends BaseUser {
   type: UserType.Student;
-  major: string;
-  classLevel: ClassLevel;
+  major?: string;
+  classLevel?: ClassLevel;
 }
 
 export interface Alumni extends BaseUser {
   type: UserType.Alumni;
-  company: Company;
-  shareProfile: boolean;
+  company?: Company;
+  shareProfile?: boolean;
 }
 
 export type User = Student | Alumni;
