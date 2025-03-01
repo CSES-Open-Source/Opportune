@@ -369,12 +369,9 @@ const AuthModal = () => {
                     : "bg-blue-300"
                 }`}
                 onClick={() => {
-                  console.log(newUser);
                   if (stage === totalStages - 1) {
                     createUser(newUser).then((response) => {
-                      console.log(response);
                       if (response.success) {
-                        console.log("success");
                         setStage(totalStages);
                       }
                     });
