@@ -10,7 +10,6 @@ import AuthModal from "../AuthModal";
 import { requireLogin, roleGuard } from "../../constants/pathAccess";
 import { MdLockOutline } from "react-icons/md";
 // import { Tooltip } from "primereact/tooltip";
-import "../../styles/SideNav.css";
 
 const SideNav = () => {
   const { user, isAuthenticated, login, logout } = useAuth();
