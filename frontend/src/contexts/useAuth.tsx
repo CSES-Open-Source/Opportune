@@ -13,7 +13,6 @@ import {
   updateUser as update,
 } from "../api/users";
 import {
-  ClassLevel,
   CreateUserRequest,
   UpdateUserRequest,
   User,
@@ -28,7 +27,7 @@ interface AuthContextType {
   error: string;
   login: () => Promise<void>;
   logout: () => Promise<void>;
-  isAuthenticated: () => boolean;
+  isAuthenticated: boolean;
   createUser: (newUser: CreateUserRequest) => Promise<APIResult<User>>;
   updateUser: (updates: UpdateUserRequest) => Promise<APIResult<User>>;
   clearAuthError: () => void;
@@ -43,7 +42,7 @@ const AuthContext = createContext<AuthContextType>({
   error: "",
   login: async () => {},
   logout: async () => {},
-  isAuthenticated: () => false,
+  isAuthenticated: false,
   createUser: (): Promise<APIResult<User>> => {
     return Promise.resolve({ success: false, error: "User not authenticated" });
   },
@@ -74,6 +73,7 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
   const [error, setError] = useState("");
   const [isProfileComplete, setIsProfileComplete] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Initialize auth listener on component mount
   useEffect(() => {
@@ -98,8 +98,6 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
                 name: firebaseUser.displayName || "",
                 profilePicture: firebaseUser.photoURL || "",
                 type: UserType.Student,
-                major: "",
-                classLevel: ClassLevel.Freshmen,
               };
               setIsProfileComplete(false);
               setUser(newUser);
@@ -121,6 +119,14 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
     // Clean up the listener on component unmount
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (user != null && isProfileComplete) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [user, isProfileComplete]);
 
   // Google sign-in function
   const login = async (): Promise<void> => {
@@ -189,7 +195,7 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
   const updateUser = async (
     updates: UpdateUserRequest,
   ): Promise<APIResult<User>> => {
-    if (isAuthenticated() && user) {
+    if (isAuthenticated && user) {
       setIsLoading(true);
       try {
         const response = await update(user._id, updates);
@@ -213,10 +219,6 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
       }
     }
     return { success: false, error: "User not authenticated" };
-  };
-
-  const isAuthenticated = (): boolean => {
-    return user != null && isProfileComplete;
   };
 
   const clearAuthError = (): void => {

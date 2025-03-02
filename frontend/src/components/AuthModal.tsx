@@ -34,20 +34,20 @@ const AuthModal = () => {
   const toast = useRef<Toast>(null);
 
   const classLevelOptions = Object.keys(ClassLevel).map((key) => ({
-    label: key, // Optional: You can format this string if necessary
-    value: ClassLevel[key as keyof typeof ClassLevel], // Type assertion
+    label: key,
+    value: ClassLevel[key as keyof typeof ClassLevel],
   }));
 
   useEffect(() => {
     if (user) {
-      setNewUser({
-        ...newUser,
+      setNewUser((prevUser) => ({
+        ...prevUser,
         _id: user._id,
         name: user.name,
         email: user.email,
-      });
+      }));
     }
-  }, [user, newUser]);
+  }, [user]);
 
   useEffect(() => {
     if (toast && error !== "") {

@@ -7,6 +7,10 @@ import Dialog from "../Dialog";
 import { useAuth } from "../../contexts/useAuth";
 import { FcGoogle } from "react-icons/fc";
 import AuthModal from "../AuthModal";
+import { requireLogin, roleGuard } from "../../constants/pathAccess";
+import { MdLockOutline } from "react-icons/md";
+// import { Tooltip } from "primereact/tooltip";
+import "../../styles/SideNav.css";
 
 const SideNav = () => {
   const { user, isAuthenticated, login, logout } = useAuth();
@@ -40,29 +44,63 @@ const SideNav = () => {
         <nav className="flex-grow w-full">
           <ul className="h-full w-full">
             {navItems.map((navItem: NavItem, index: number) => {
-              return navItem.disabled ? (
-                <></>
-              ) : (
+              if (navItem.disabled) {
+                return <></>;
+              }
+
+              const pathIndex = roleGuard.findIndex(
+                (pair) => navItem.path === pair.path,
+              );
+              if (pathIndex !== -1) {
+                if (
+                  !isAuthenticated ||
+                  (user && roleGuard[pathIndex].role.includes(user.type))
+                ) {
+                  return <></>;
+                }
+              }
+
+              const isPathLocked =
+                !isAuthenticated && requireLogin.includes(navItem.path);
+
+              return (
                 <li key={index} className="h-[65px] px-2 py-1">
-                  <NavLink
-                    className={({ isActive }) =>
-                      `h-full w-full text-lg flex items-center rounded-md font-medium px-3 gap-3 transition ${
-                        isActive
-                          ? "bg-primary text-white"
-                          : "hover:bg-primary hover:bg-opacity-10 text-gray-700"
-                      }`
-                    }
-                    to={navItem.url}
-                  >
-                    {navItem.icon && <navItem.icon size={24} />}
-                    <div>{navItem.label}</div>
-                  </NavLink>
+                  {!isPathLocked && (
+                    <NavLink
+                      className={({ isActive }) =>
+                        `h-full w-full text-lg flex items-center rounded-md font-medium px-3 gap-3 transition ${
+                          isActive
+                            ? "bg-primary text-white"
+                            : "hover:bg-primary hover:bg-opacity-10 text-gray-700"
+                        }`
+                      }
+                      to={navItem.path}
+                    >
+                      {navItem.icon && <navItem.icon size={24} />}
+                      <div>{navItem.label}</div>
+                    </NavLink>
+                  )}
+                  {isPathLocked && (
+                    <div
+                      className={`nav-lock-${index} h-full w-full text-lg flex items-center rounded-md font-medium px-3 gap-3 transition text-gray-400 hover:cursor-default`}
+                    >
+                      {navItem.icon && <navItem.icon size={24} />}
+                      <div>{navItem.label}</div>
+                      <MdLockOutline className="mt-0.5" />
+                    </div>
+                  )}
+                  {/* <Tooltip
+                    target={`.nav-lock-${index}`}
+                    content={`Login to access ${navItem.label}`}
+                    showDelay={300}
+                    mouseTrack
+                  /> */}
                 </li>
               );
             })}
           </ul>
         </nav>
-        {isAuthenticated() && user && (
+        {isAuthenticated && user && (
           <div className="w-full flex flex-col items-center justify-center">
             <hr className="w-[80%]" />
             <div className="h-[65px] w-full py-1 gap-3">
@@ -89,7 +127,7 @@ const SideNav = () => {
             </div>
           </div>
         )}
-        {!isAuthenticated() && (
+        {!isAuthenticated && (
           <div className="h-[65px] py-1 px-2 w-full flex items-center">
             <button
               className={

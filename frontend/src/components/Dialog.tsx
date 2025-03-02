@@ -23,7 +23,7 @@ const Dialog = ({
       useOverlay={true}
       isOpen={isDialogOpen}
       onClose={onDialogClose}
-      className="rounded-xl w-[60vh] h-[40vh] flex flex-col"
+      className="rounded-xl w-[50vh] h-[37vh] flex flex-col"
     >
       <div className="h-full flex flex-col justify-center items-center gap-7">
         {type === "confirmation" && <RxQuestionMarkCircled size={120} />}
@@ -34,13 +34,13 @@ const Dialog = ({
         {type === "confirmation" && (
           <div className="w-full flex justify-center items-center gap-10">
             <button
-              className="w-28 h-10 border-2 border-solid rounded-full font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition"
+              className="w-28 h-10 rounded-lg font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition"
               onClick={onDialogClose}
             >
               Cancel
             </button>
             <button
-              className="w-28 h-10 border-2 border-solid rounded-full text-white bg-blue-600 hover:bg-blue-700 transition font font-medium"
+              className="w-28 h-10 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition font font-medium"
               onClick={onConfirm}
             >
               Confirm
