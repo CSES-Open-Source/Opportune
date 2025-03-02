@@ -1,0 +1,5 @@
+/* Custom styles for PrimeReact Dropdown */
+.p-dropdown {
+  border: 2 !important;
+  box-shadow: none;
+}

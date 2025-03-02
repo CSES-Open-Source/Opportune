@@ -3,6 +3,7 @@ import { Company } from "./Company";
 export enum UserType {
   Student = "STUDENT",
   Alumni = "ALUMNI",
+  Admin = "ADMIN",
 }
 
 export enum ClassLevel {
@@ -17,20 +18,22 @@ export interface BaseUser {
   _id: string;
   email: string;
   name: string;
+  type: UserType;
   linkedIn?: string;
   phoneNumber?: string;
+  profilePicture?: string;
 }
 
 export interface Student extends BaseUser {
   type: UserType.Student;
-  major: string;
-  classLevel: ClassLevel;
+  major?: string;
+  classLevel?: ClassLevel;
 }
 
 export interface Alumni extends BaseUser {
   type: UserType.Alumni;
-  company: Company;
-  shareProfile: boolean;
+  company?: Company;
+  shareProfile?: boolean;
 }
 
 export type User = Student | Alumni;
