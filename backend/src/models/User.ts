@@ -4,6 +4,7 @@ import { InferSchemaType, Schema, model } from "mongoose";
 export enum UserType {
   Student = "STUDENT",
   Alumni = "ALUMNI",
+  Admin = "ADMIN",
 }
 /* eslint-enable no-unused-vars */
 
