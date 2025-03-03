@@ -1,4 +1,4 @@
-import Application from "src/models/Application";
+import Application, { SortingOptions } from "src/models/Application";
 import { Status } from "src/models/Application";
 import { matchedData, validationResult } from "express-validator";
 import validationErrorParser from "src/util/validationErrorParser";
@@ -242,14 +242,14 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
   // The sorting logic depending on the query
   let sortOptions = {};
   switch (sortBy) {
-    case "createdAt":
-      sortOptions = { createdAt: -1 };
-      break;
-    case "updatedAt":
+    case SortingOptions.Modified:
       sortOptions = { updatedAt: -1 };
       break;
-    case "process":
-      sortOptions = { "process.date": -1 };
+    case SortingOptions.Company:
+      sortOptions = { "company.name": 1 };
+      break;
+    case SortingOptions.Position:
+      sortOptions = { position: 1 };
       break;
     default:
       sortOptions = { createdAt: -1 };
@@ -257,7 +257,11 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
 
   // Add sorting and pagination to the aggregation pipeline
   dbQuery.push(
-    { $sort: sortOptions },
+    {
+      $sort: {
+        ...sortOptions,
+      },
+    },
     { $skip: page * perPage },
     { $limit: perPage },
   );
@@ -267,6 +271,22 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
 
   // Count total documents found from query
   const total = await Application.countDocuments(dbQuery);
+
+  // Sort by date applied
+  if (sortBy === SortingOptions.Applied) {
+    applications.sort(
+      (a, b) => b.process[0].date.getTime() - a.process[0].date.getTime(),
+    );
+  }
+
+  // Sort by status
+  if (sortBy === SortingOptions.Status) {
+    applications.sort((a, b) => {
+      const statusA = a.process[a.process.length - 1].status;
+      const statusB = b.process[b.process.length - 1].status;
+      return statusA.localeCompare(statusB);
+    });
+  }
 
   res.status(200).json({
     page,

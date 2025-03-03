@@ -10,7 +10,14 @@ export enum Status {
   Rejected = "REJECTED",
 }
 
-/* eslint-enable no-unused-vars */
+export enum SortingOptions {
+  Applied = "APPLIED",
+  Modified = "MODIFIED",
+  Status = "STATUS",
+  Company = "COMPANY",
+  Position = "POSITION",
+}
+
 const applicationStatusSchema = new Schema({
   status: {
     type: String,

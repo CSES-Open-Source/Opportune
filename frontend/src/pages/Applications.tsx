@@ -65,14 +65,14 @@ const applicationColumns: ColumnDef<Application>[] = [
 
 interface SearchBarData extends Record<string, string | string[]> {
   query: string;
-  sortBy: string;
+  sortBy: string[];
   status: string[];
 }
 
 const Applications = () => {
   const [search, setSearch] = useState<SearchBarData>({
     query: "",
-    sortBy: "",
+    sortBy: [],
     status: [],
   });
 
@@ -86,7 +86,10 @@ const Applications = () => {
           page: page,
           perPage: perPage,
           query: search.query.length >= 1 ? search.query : undefined,
-          sortBy: search.sortBy.length >= 1 ? search.sortBy : undefined,
+          sortBy:
+            search.sortBy.length == 1
+              ? search.sortBy[0].toUpperCase()
+              : undefined,
           status:
             search.status.length >= 1 ? search.status.join(",") : undefined,
         },

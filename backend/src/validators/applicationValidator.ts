@@ -1,5 +1,5 @@
 import { body, param, query } from "express-validator";
-import { Status } from "src/models/Application";
+import { SortingOptions, Status } from "src/models/Application";
 
 // Default values for page and perPage
 const DEFAULT_PAGE = 0;
@@ -34,8 +34,10 @@ const validateStatusQuery = query("status")
 
 const validateSortBy = query("sortBy")
   .optional()
-  .isIn(["createdAt", "updatedAt", "process"])
-  .withMessage("Sort by must be one of: createdAt, updatedAt, process");
+  .isIn(Object.values(SortingOptions))
+  .withMessage(
+    `Sort by must be one of: ${Object.values(SortingOptions).join(", ")}.`,
+  );
 
 const validatePage = query("page")
   .default(DEFAULT_PAGE)
