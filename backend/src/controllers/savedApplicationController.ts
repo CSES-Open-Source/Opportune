@@ -28,7 +28,6 @@ export const getAllSavedApplications = asyncHandler(async (req, res, _) => {
   // Retrieve all saved applications from the database
   const savedApplications = await SavedApplication.find()
     .populate({ path: "company", model: Company })
-    .lean()
     .exec();
 
   res.status(200).json(savedApplications);
@@ -51,9 +50,7 @@ export const createSavedApplication = asyncHandler(async (req, res, next) => {
     userId: savedApplicationData.userId,
     company: savedApplicationData.company,
     position: savedApplicationData.position,
-  })
-    .lean()
-    .exec();
+  }).exec();
 
   if (existingSavedApplication) {
     return next(createHttpError(409, "Saved application already exists."));
@@ -83,7 +80,6 @@ export const getSavedApplicationByID = asyncHandler(async (req, res, next) => {
   // Find the application by ID
   const savedApplication = await SavedApplication.findById(id)
     .populate({ path: "company", model: Company })
-    .lean()
     .exec();
 
   if (!savedApplication) {
@@ -209,7 +205,6 @@ export const getSavedApplicationsByUserID = asyncHandler(
         .skip(page * perPage)
         .limit(perPage)
         .populate({ path: "company", model: Company })
-        .lean()
         .exec(),
     ]);
 

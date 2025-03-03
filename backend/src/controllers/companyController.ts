@@ -1,3 +1,4 @@
+import s3Upload from "src/aws/s3Upload";
 import Company from "src/models/Company";
 import { matchedData, validationResult } from "express-validator";
 import asyncHandler from "express-async-handler";
@@ -13,9 +14,12 @@ export const getCompanies = asyncHandler(async (req, res, next) => {
     return next(createHttpError(400, validationErrorParser(errors)));
   }
 
-  const { page, perPage, query, state } = matchedData(req, {
-    locations: ["query"],
-  });
+  const { page, perPage, query, state, industry, employees } = matchedData(
+    req,
+    {
+      locations: ["query"],
+    },
+  );
 
   // Begin query
   const dbQuery = Company.find();
@@ -30,16 +34,30 @@ export const getCompanies = asyncHandler(async (req, res, next) => {
     dbQuery.where("state").regex(new RegExp(state, "i"));
   }
 
+  console.log(req.query);
+
+  // Filter by industry if provided
+  if (industry) {
+    const industryArray = industry
+      .split(",")
+      .map((item: string) => item.trim());
+    dbQuery.where("industry").in(industryArray);
+  }
+
+  // Filter by employees if provided
+  if (employees) {
+    dbQuery.where("employees").regex(new RegExp(employees, "i"));
+  }
+
   // Duplicate before pagination to get total count
   const countQuery = dbQuery.clone();
 
   // Execute count and paginate in parallel
   const [total, companies] = await Promise.all([
     countQuery.countDocuments().exec(),
-    dbQuery
+    await dbQuery
       .skip(page * perPage)
       .limit(perPage)
-      .lean()
       .exec(),
   ]);
 
@@ -60,19 +78,33 @@ export const createCompany = asyncHandler(async (req, res, next) => {
     return next(createHttpError(400, validationErrorParser(errors)));
   }
 
-  const { name, city, state } = matchedData(req, { locations: ["body"] });
+  const { name, city, state, employees, industry, url } = matchedData(req, {
+    locations: ["body"],
+  });
 
   // Check if company already exists with case insensitive collation
   const foundCompany = await Company.findOne({ name })
     .collation({ locale: "en", strength: 2 }) // future localization?
-    .lean()
     .exec();
 
   if (foundCompany) {
     return next(createHttpError(409, "Company already exists."));
   }
 
-  const newCompany = new Company({ name, city, state });
+  let logoKey = null;
+  if (req.file) {
+    logoKey = await s3Upload(req.file);
+  }
+
+  const newCompany = new Company({
+    name,
+    city,
+    state,
+    logoKey,
+    employees,
+    industry,
+    url,
+  });
   await newCompany.save();
 
   res.status(201).json(newCompany);
@@ -89,7 +121,7 @@ export const getCompanyById = asyncHandler(async (req, res, next) => {
 
   const { id } = matchedData(req, { locations: ["params"] });
 
-  const company = await Company.findById(id).lean().exec();
+  const company = await Company.findById(id).exec();
 
   if (!company) {
     return next(createHttpError(404, "Company not found."));
@@ -140,12 +172,12 @@ export const deleteCompany = asyncHandler(async (req, res, next) => {
 
   const { id } = matchedData(req, { locations: ["params"] });
 
-  const company = await Company.findByIdAndDelete(id).lean().exec();
+  const foundCompany = await Company.findByIdAndDelete(id).exec();
 
   // Return 404 if company not found
-  if (!company) {
+  if (!foundCompany) {
     return next(createHttpError(404, "Company not found."));
   }
 
-  res.status(200).send();
+  res.status(200).send(foundCompany);
 });
