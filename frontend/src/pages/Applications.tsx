@@ -82,7 +82,6 @@ const Applications = () => {
   // Fetch paginated applications whenever search options change
   const getPaginatedApplications = useCallback(
     async (page: number, perPage: number) => {
-      console.log(search);
       const res = await getApplicationsByUserID(user!._id, {
         page: page,
         perPage: perPage,
@@ -93,8 +92,6 @@ const Applications = () => {
             : undefined,
         status: search.status.length >= 1 ? search.status.join(",") : undefined,
       });
-
-      console.log(res);
 
       if (res.success) {
         return {
