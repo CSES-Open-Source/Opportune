@@ -7,6 +7,7 @@ import { statusColors } from "../constants/statusColors";
 import { Application } from "../types/Application";
 import { ColumnDef } from "../types/ColumnDef";
 import { PaginatedData } from "../types/PaginatedData";
+import { useAuth } from "../contexts/useAuth";
 
 const applicationColumns: ColumnDef<Application>[] = [
   {
@@ -70,6 +71,8 @@ interface SearchBarData extends Record<string, string | string[]> {
 }
 
 const Applications = () => {
+  const { user } = useAuth();
+
   const [search, setSearch] = useState<SearchBarData>({
     query: "",
     sortBy: [],
@@ -80,20 +83,16 @@ const Applications = () => {
   const getPaginatedApplications = useCallback(
     async (page: number, perPage: number) => {
       console.log(search);
-      const res = await getApplicationsByUserID(
-        "SJojNi187KVwanBnuoH0EGAIUyq2",
-        {
-          page: page,
-          perPage: perPage,
-          query: search.query.length >= 1 ? search.query : undefined,
-          sortBy:
-            search.sortBy.length == 1
-              ? search.sortBy[0].toUpperCase()
-              : undefined,
-          status:
-            search.status.length >= 1 ? search.status.join(",") : undefined,
-        },
-      );
+      const res = await getApplicationsByUserID(user!._id, {
+        page: page,
+        perPage: perPage,
+        query: search.query.length >= 1 ? search.query : undefined,
+        sortBy:
+          search.sortBy.length === 1
+            ? search.sortBy[0].toUpperCase()
+            : undefined,
+        status: search.status.length >= 1 ? search.status.join(",") : undefined,
+      });
 
       console.log(res);
 
@@ -122,7 +121,7 @@ const Applications = () => {
         } as PaginatedData<Application>;
       }
     },
-    [search],
+    [search, user],
   );
 
   const onApplicationClicked = (application: Application) => {
