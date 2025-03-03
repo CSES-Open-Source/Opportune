@@ -1,8 +1,6 @@
 import { InferSchemaType, Schema, model } from "mongoose";
 import { URL } from "url";
 
-const AWS_BUCKET_URL = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
-
 /* eslint-disable no-unused-vars */
 export enum IndustryType {
   AEROSPACEDEFENSE = "AERO_DEF",
@@ -90,6 +88,8 @@ const companySchema = new Schema(
 
 type Company = InferSchemaType<typeof companySchema>;
 
+const AWS_BUCKET_URL = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/`;
+
 companySchema.virtual("logo").get(function () {
   if (this.logoKey) {
     return new URL(this.logoKey, AWS_BUCKET_URL).href;
@@ -97,14 +97,21 @@ companySchema.virtual("logo").get(function () {
   return null;
 });
 
+const generateLogoUrl = async (doc: Company) => {
+  if (doc.logoKey) {
+    return new URL(doc.logoKey, AWS_BUCKET_URL).href;
+  }
+};
+
 companySchema.post("find", async function (docs) {
   for (const doc of docs) {
-    await function () {
-      if (doc.logoKey) {
-        return new URL(doc.logoKey, AWS_BUCKET_URL).href;
-      }
-      return null; // Generate for each document
-    };
+    await generateLogoUrl(doc);
+  }
+});
+
+companySchema.post("findOne", async function (doc) {
+  if (doc) {
+    await generateLogoUrl(doc);
   }
 });
 
