@@ -150,7 +150,7 @@ By participating in this project, you agree to uphold the [Code of Conduct](CODE
 1. Go to [https://firebase.google.com/](https://firebase.google.com/) in click on **Go to console** on the top right of the page.
 2. Click **Create a project** and create a project, feel free to name it anything you like (or just Opportune).
 3. Go to the **Get started** portion of the page and add a new **web app** to the project.
-4. After adding an app to the project, you will see your secrets. Create a new file in the local repo under the `backend` folder called `.env` and add the following to the file:
+4. After adding an app to the project, you will see your secrets. Create a new file in the local repo under the `frontend` folder called `.env` and add the following to the file:
    ```
    REACT_APP_FIREBASE_API_KEY=[api-key]
    REACT_APP_FIREBASE_AUTH_DOMAIN=[auth-domain]
