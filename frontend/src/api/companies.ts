@@ -19,7 +19,14 @@ function parseCompany(company: CompanyJSON): Company {
  * @returns A list of companies
  */
 export async function getCompanies(
-  query?: CompanyQuery,
+  query?: CompanyQuery & {
+    page?: number;
+    perPage?: number;
+    query?: string;
+    state?: string;
+    industry?: string;
+    employees?: string;
+  },
 ): Promise<APIResult<PaginatedData<Company>>> {
   try {
     const response = await get("/api/companies", { ...query });
@@ -57,7 +64,7 @@ export async function getCompanyById(id: string): Promise<APIResult<Company>> {
  * @returns The created company object
  */
 export async function createCompany(
-  company: CreateCompanyRequest,
+  company: CreateCompanyRequest & { name: string },
 ): Promise<APIResult<Company>> {
   try {
     const response = await post("/api/companies", company);

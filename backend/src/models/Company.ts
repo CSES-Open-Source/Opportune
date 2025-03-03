@@ -61,6 +61,7 @@ const companySchema = new Schema(
       type: String,
       trim: true,
       required: false,
+      default: null,
     },
     employees: {
       type: String,
