@@ -13,7 +13,8 @@ type Method = "GET" | "POST" | "PATCH" | "DELETE";
  * every request. This means in the rest of our code, we can write "/api/foo"
  * instead of "http://localhost:3001/api/foo".
  */
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL =
+  process.env.REACT_APP_BACKEND_URL || "http://localhost:3500";
 
 /**
  * A wrapper around the built-in `fetch()` function that abstracts away some of
@@ -92,15 +93,12 @@ export async function get(
 ): Promise<Response> {
   // Construct the query string
   const queryString = new URLSearchParams(
-    Object.entries(queries).reduce(
-      (acc, [key, value]) => {
-        if (value !== undefined && value !== null) {
-          acc[key] = String(value);
-        }
-        return acc;
-      },
-      {} as Record<string, string>,
-    ),
+    Object.entries(queries).reduce((acc, [key, value]) => {
+      if (value !== undefined && value !== null) {
+        acc[key] = String(value);
+      }
+      return acc;
+    }, {} as Record<string, string>),
   ).toString();
 
   // Append the query string to the URL if it's not empty

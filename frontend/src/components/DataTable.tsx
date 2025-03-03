@@ -138,7 +138,7 @@ const DataTable = <T extends object>(props: DataTableProps<T>) => {
                   key={index}
                   onClick={() => handleRowClick(row)}
                   style={{ cursor: onRowClick ? "pointer" : "default" }}
-                  className="hover:bg-gray-100"
+                  className="hover:bg-primary hover:bg-opacity-10 transition"
                 >
                   {columns.map((column, index) => (
                     <td

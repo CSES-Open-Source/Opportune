@@ -13,42 +13,42 @@ import { NavItem } from "../types/NavItem";
 export const navItems: NavItem[] = [
   {
     label: "Home",
-    url: "/",
+    path: "/",
     icon: FiHome,
   },
   {
     label: "Companies",
-    url: "/companies",
+    path: "/companies",
     icon: FiBriefcase,
   },
   {
     label: "Connect",
-    url: "/connect",
+    path: "/connect",
     icon: FiLink,
   },
   {
     label: "Applications",
-    url: "/applications/applied",
+    path: "/applications/applied",
     icon: FiCheckSquare,
   },
   {
     label: "Saved Jobs",
-    url: "/applications/saved",
+    path: "/applications/saved",
     icon: FiBookmark,
   },
   {
     label: "Interview",
-    url: "/interview/behavioral",
+    path: "/interview/behavioral",
     icon: FiFileText,
   },
   {
     label: "Leetcode",
-    url: "/interview/leetcode",
+    path: "/interview/leetcode",
     icon: FiTerminal,
   },
   {
     label: "Sandbox",
-    url: "/sandbox",
+    path: "/sandbox",
     icon: FiCode,
     disabled: false,
   },
