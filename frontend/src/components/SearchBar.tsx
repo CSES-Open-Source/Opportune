@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaAngleDown, FaSistrix } from "react-icons/fa6";
+import camelize from "../utils/camelize";
 
 interface SelectionOption {
   label: string;
@@ -72,9 +73,9 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
  * ```ts
  * interface FormData extends Record<string, string | string[]> {
  *     query: string;
- *     location: string[];
- *     department: string[];
- *     type: string[];
+ *     "location": string[];
+ *     "department": string[];
+ *     "type": string[];
  * }
  * ```
  *
@@ -139,7 +140,16 @@ const SearchBar = <T extends Record<string, unknown>>({
 
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    const formData = { query, ...selectionValues } as unknown as T;
+
+    const camelizedSelectionValues = Object.keys(selectionValues).reduce(
+      (acc, key) => {
+        acc[camelize(key)] = selectionValues[key];
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    );
+
+    const formData = { query, ...camelizedSelectionValues } as unknown as T;
     if (onSubmitForm) {
       onSubmitForm(formData);
     }

@@ -1,9 +1,12 @@
+import { useCallback, useState } from "react";
+import { getApplicationsByUserID } from "../api/applications";
 import DataTable from "../components/DataTable";
 import SearchBar from "../components/SearchBar";
 import StatusBubble from "../components/StatusBubble";
 import { statusColors } from "../constants/statusColors";
 import { Application } from "../types/Application";
 import { ColumnDef } from "../types/ColumnDef";
+import { PaginatedData } from "../types/PaginatedData";
 
 const applicationColumns: ColumnDef<Application>[] = [
   {
@@ -60,7 +63,65 @@ const applicationColumns: ColumnDef<Application>[] = [
   },
 ];
 
+interface SearchBarData extends Record<string, string | string[]> {
+  query: string;
+  sortBy: string;
+  status: string[];
+}
+
 const Applications = () => {
+  const [search, setSearch] = useState<SearchBarData>({
+    query: "",
+    sortBy: "",
+    status: [],
+  });
+
+  // Fetch paginated applications whenever search options change
+  const getPaginatedApplications = useCallback(
+    async (page: number, perPage: number) => {
+      console.log(search);
+      const res = await getApplicationsByUserID(
+        "SJojNi187KVwanBnuoH0EGAIUyq2",
+        {
+          page: page,
+          perPage: perPage,
+          query: search.query.length >= 1 ? search.query : undefined,
+          sortBy: search.sortBy.length >= 1 ? search.sortBy : undefined,
+          status:
+            search.status.length >= 1 ? search.status.join(",") : undefined,
+        },
+      );
+
+      console.log(res);
+
+      if (res.success) {
+        return {
+          ...res.data,
+          // Convert ISO date strings to locale date strings
+          data: res.data.data.map((app) => ({
+            ...app,
+            process:
+              app.process &&
+              app.process.map((proc) => ({
+                ...proc,
+                date: new Date(proc.date).toLocaleDateString(),
+              })),
+          })),
+        };
+      } else {
+        console.error(res.error);
+
+        return {
+          page: 0,
+          perPage: 0,
+          total: 0,
+          data: [],
+        } as PaginatedData<Application>;
+      }
+    },
+    [search],
+  );
+
   const onApplicationClicked = (application: Application) => {
     // TODO: Toggle modal for view application details
     console.log(application);
@@ -70,12 +131,6 @@ const Applications = () => {
     // TODO: Toggle modal for new application
     console.log("New application!");
   };
-
-  interface SearchBarData extends Record<string, string | string[]> {
-    query: string;
-    sortBy: string;
-    status: string[];
-  }
 
   return (
     <div className="flex flex-col gap-5 px-6 py-4">
@@ -92,41 +147,17 @@ const Applications = () => {
             options: ["Applied", "OA", "Phone", "Final", "Offer", "Rejected"],
           },
         ]}
-        onSubmitForm={(values) => console.log(values)}
+        onSubmitForm={setSearch}
       />
       <DataTable<Application>
         tableStyle={{
           width: "100%",
           height: "72vh",
         }}
-        usePagination
+        useServerPagination
         paginatorContent={{ setPerPage: true, goToPage: true }}
         columns={applicationColumns}
-        data={
-          [
-            {
-              company: {
-                _id: "123",
-                name: "Google",
-                city: "Mountain View",
-                state: "California",
-              },
-              position: "Software Engineer",
-              userId: "1",
-              link: "https://www.google.com",
-              process: [
-                {
-                  status: "Applied",
-                  date: "2021-09-01",
-                },
-                {
-                  status: "OA",
-                  date: "2021-09-05",
-                },
-              ],
-            },
-          ] as Application[]
-        }
+        fetchData={getPaginatedApplications}
         onRowClick={onApplicationClicked}
       />
       <button
