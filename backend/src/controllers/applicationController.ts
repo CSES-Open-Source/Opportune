@@ -1,19 +1,11 @@
-import Application from "src/models/Application";
+import Application, { SortingOptions } from "src/models/Application";
 import { Status } from "src/models/Application";
 import { matchedData, validationResult } from "express-validator";
 import validationErrorParser from "src/util/validationErrorParser";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import Company from "src/models/Company";
-import mongoose from "mongoose";
-
-// Interface for MongoDB query to fetch applications based on certain conditions
-// @interface getApplicationsByUserID
-interface ApplicationQuery {
-  userId: string;
-  $or?: { [key: string]: { $regex: string; $options: string } }[];
-  "process.status"?: { $in: string[] };
-}
+import mongoose, { PipelineStage } from "mongoose";
 
 // Interface for creating/updating an application
 // @interface CreateApplicationRequest
@@ -211,61 +203,96 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
   });
 
   // Get applications from specific users
-  const dbQuery: ApplicationQuery = { userId };
+  const dbQuery: PipelineStage[] = [
+    { $match: { userId: userId } },
+    {
+      $lookup: {
+        from: "companies",
+        localField: "company",
+        foreignField: "_id",
+        as: "company",
+      },
+    },
+    { $unwind: "$company" },
+  ];
 
   // Convert status to an array
-  const statusArray = status ? (Array.isArray(status) ? status : [status]) : [];
+  const statusArray = status ? status.split(",") : [];
 
   // Search query provided then filter by position & companyName
   if (query) {
-    dbQuery.$or = [
-      { position: { $regex: query, $options: "i" } },
-      { companyName: { $regex: query, $options: "i" } },
-    ];
+    dbQuery.push({
+      $match: {
+        $or: [
+          { "company.name": { $regex: query, $options: "i" } },
+          { position: { $regex: query, $options: "i" } },
+          { location: { $regex: query, $options: "i" } },
+        ],
+      },
+    });
   }
 
   // If status filter is provided and non empty then filter by status
   if (statusArray.length > 0) {
-    dbQuery["process.status"] = { $in: statusArray };
+    dbQuery.push({
+      $match: { "process.status": { $in: statusArray } },
+    });
   }
 
   // The sorting logic depending on the query
   let sortOptions = {};
   switch (sortBy) {
-    case "createdAt":
-      sortOptions = { createdAt: -1 };
-      break;
-    case "updatedAt":
+    case SortingOptions.Modified:
       sortOptions = { updatedAt: -1 };
       break;
-    case "process":
-      sortOptions = { "process.date": -1 };
+    case SortingOptions.Company:
+      sortOptions = { "company.name": 1 };
+      break;
+    case SortingOptions.Position:
+      sortOptions = { position: 1 };
       break;
     default:
       sortOptions = { createdAt: -1 };
   }
 
+  // Add sorting and pagination to the aggregation pipeline
+  dbQuery.push({
+    $sort: {
+      ...sortOptions,
+    },
+  });
+
   // Build up the result that will be outputted (Aggregation)
   const applications = await Application.aggregate([
-    { $match: dbQuery },
-    { $addFields: { latestProcessDate: { $max: "$process.date" } } },
-    { $sort: sortOptions },
+    ...dbQuery,
     { $skip: page * perPage },
     { $limit: perPage },
-    {
-      $project: {
-        userId: 1,
-        companyName: 1,
-        position: 1,
-        process: 1,
-        createdAt: 1,
-        updatedAt: 1,
-      },
-    },
-  ]);
+  ]).exec();
 
   // Count total documents found from query
-  const total = await Application.countDocuments(dbQuery);
+  const countResults = await Application.aggregate([
+    ...dbQuery,
+    { $count: "total" },
+  ]).exec();
+
+  // Extract total count from the aggregation result
+  const total = countResults.length > 0 ? countResults[0].total : 0;
+
+  // Sort by date applied
+  if (sortBy === SortingOptions.Applied) {
+    applications.sort(
+      (a, b) => b.process[0].date.getTime() - a.process[0].date.getTime(),
+    );
+  }
+
+  // Sort by status
+  if (sortBy === SortingOptions.Status) {
+    applications.sort((a, b) => {
+      const statusA = a.process[a.process.length - 1].status;
+      const statusB = b.process[b.process.length - 1].status;
+      return statusA.localeCompare(statusB);
+    });
+  }
 
   res.status(200).json({
     page,

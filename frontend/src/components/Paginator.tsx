@@ -68,7 +68,7 @@ const Paginator = ({
         <RxChevronLeft size={18} className="stroke-[0.75]" />
       </button>
       <span>
-        Page {page + 1} of {totalPages}
+        Page {page + 1} of {totalPages === 0 ? 1 : totalPages}
       </span>
       <button
         className="hover:cursor-pointer hover:text-primary transition"
