@@ -5,6 +5,7 @@ import userRouter from "src/routes/userRoutes";
 import companyRouter from "src/routes/companyRoutes";
 import applicationRouter from "src/routes/applicationRoutes";
 import savedApplicationRouter from "src/routes/savedApplicationRoutes";
+import leetcodeQuestionRouter from "src/routes/leetcodeQuestionRoutes";
 import errorHandler from "src/middlewares/errorHandler";
 import { logger } from "src/middlewares/logger";
 
@@ -31,6 +32,7 @@ app.use("/api/users", userRouter);
 app.use("/api/applications/applied", applicationRouter);
 app.use("/api/companies", companyRouter);
 app.use("/api/applications/saved", savedApplicationRouter);
+app.use("/api/questions/leetcode", leetcodeQuestionRouter);
 
 /**
  * Error handler; all errors thrown by server are handled here.
