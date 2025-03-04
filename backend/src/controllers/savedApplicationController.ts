@@ -221,14 +221,21 @@ export const getSavedApplicationsByUserID = asyncHandler(
       pipeline.push({ $sort: { [sortBy]: 1 } });
     }
 
-    // Add pagination
-    pipeline.push({ $skip: page * perPage }, { $limit: perPage });
-
     // Execute the aggregation pipeline
-    const applications = await SavedApplication.aggregate(pipeline).exec();
+    const applications = await SavedApplication.aggregate([
+      ...pipeline,
+      { $skip: page * perPage },
+      { $limit: perPage },
+    ]).exec();
 
     // Count total results
-    const total = await SavedApplication.countDocuments({ userId: id });
+    const countResults = await SavedApplication.aggregate([
+      ...pipeline,
+      { $count: "total" },
+    ]).exec();
+
+    // Extract the total count from the aggregation result (for some reason this works and not countDocuments())
+    const total = countResults.length > 0 ? countResults[0].total : 0;
 
     res.status(200).json({
       page,

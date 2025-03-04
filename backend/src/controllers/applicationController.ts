@@ -256,21 +256,27 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
   }
 
   // Add sorting and pagination to the aggregation pipeline
-  dbQuery.push(
-    {
-      $sort: {
-        ...sortOptions,
-      },
+  dbQuery.push({
+    $sort: {
+      ...sortOptions,
     },
-    { $skip: page * perPage },
-    { $limit: perPage },
-  );
+  });
 
   // Build up the result that will be outputted (Aggregation)
-  const applications = await Application.aggregate(dbQuery).exec();
+  const applications = await Application.aggregate([
+    ...dbQuery,
+    { $skip: page * perPage },
+    { $limit: perPage },
+  ]).exec();
 
   // Count total documents found from query
-  const total = await Application.countDocuments(dbQuery);
+  const countResults = await Application.aggregate([
+    ...dbQuery,
+    { $count: "total" },
+  ]).exec();
+
+  // Extract total count from the aggregation result
+  const total = countResults.length > 0 ? countResults[0].total : 0;
 
   // Sort by date applied
   if (sortBy === SortingOptions.Applied) {
