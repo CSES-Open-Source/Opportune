@@ -34,8 +34,6 @@ export const getCompanies = asyncHandler(async (req, res, next) => {
     dbQuery.where("state").regex(new RegExp(state, "i"));
   }
 
-  console.log(req.query);
-
   // Filter by industry if provided
   if (industry) {
     const industryArray = industry
