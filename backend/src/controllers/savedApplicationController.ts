@@ -229,7 +229,7 @@ export const getSavedApplicationsByUserID = asyncHandler(
       ...pipeline,
       { $count: "total" },
     ]).exec();
-    
+
     // Extract the total count from the aggregation result (for some reason this works and not countDocuments())
     const total = countResults.length > 0 ? countResults[0].total : 0;
 
