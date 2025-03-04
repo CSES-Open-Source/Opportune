@@ -147,6 +147,10 @@ export const updateCompany = asyncHandler(async (req, res, next) => {
     return next(createHttpError(400, "At least one field to update required."));
   }
 
+  if (req.file) {
+    validatedData.logoKey = await s3Upload(req.file);
+  }
+
   const foundCompany = await Company.findByIdAndUpdate(
     id,
     { $set: validatedData },
