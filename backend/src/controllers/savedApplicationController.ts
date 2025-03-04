@@ -4,7 +4,7 @@ import validationErrorParser from "src/util/validationErrorParser";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import Company from "src/models/Company";
-import mongoose from "mongoose";
+import mongoose, { PipelineStage } from "mongoose";
 
 // Interface for creating/updating a saved application
 // @interface CreateSavedApplicationRequest
@@ -12,6 +12,7 @@ interface SavedApplicationCreate {
   userId: string;
   company: mongoose.Types.ObjectId;
   position: string;
+  location?: string;
   link?: string;
   materialsNeeded?: string[];
   deadline?: Date;
@@ -51,6 +52,7 @@ export const createSavedApplication = asyncHandler(async (req, res, next) => {
     userId: savedApplicationData.userId,
     company: savedApplicationData.company,
     position: savedApplicationData.position,
+    location: savedApplicationData.location,
   })
     .lean()
     .exec();
@@ -187,31 +189,53 @@ export const getSavedApplicationsByUserID = asyncHandler(
       locations: ["query"],
     });
 
-    const dbQuery = SavedApplication.find({ userId: id });
+    // Build the aggregation pipeline
+    const pipeline: PipelineStage[] = [
+      { $match: { userId: id } },
+      {
+        $lookup: {
+          from: "companies",
+          localField: "company",
+          foreignField: "_id",
+          as: "company",
+        },
+      },
+      { $unwind: "$company" },
+    ];
 
-    // add a name search filter if provided
+    // Add the query filter if provided
     if (query) {
-      dbQuery.where("name").regex(new RegExp(query, "i"));
+      pipeline.push({
+        $match: {
+          $or: [
+            { "company.name": { $regex: query, $options: "i" } },
+            { position: { $regex: query, $options: "i" } },
+            { location: { $regex: query, $options: "i" } },
+          ],
+        },
+      });
     }
 
-    // Apply sorting if `sortBy` is provided
+    // Add sorting if `sortBy` is provided
     if (sortBy) {
-      dbQuery.sort(sortBy);
+      pipeline.push({ $sort: { [sortBy]: 1 } });
     }
 
-    // ensure count and paginate do not conflict
-    const countQuery = dbQuery.clone();
+    // Execute the aggregation pipeline
+    const applications = await SavedApplication.aggregate([
+      ...pipeline,
+      { $skip: page * perPage },
+      { $limit: perPage },
+    ]).exec();
 
-    // count total results, populate company, and paginate in parallel
-    const [total, applications] = await Promise.all([
-      countQuery.countDocuments(),
-      dbQuery
-        .skip(page * perPage)
-        .limit(perPage)
-        .populate({ path: "company", model: Company })
-        .lean()
-        .exec(),
-    ]);
+    // Count total results
+    const countResults = await SavedApplication.aggregate([
+      ...pipeline,
+      { $count: "total" },
+    ]).exec();
+
+    // Extract the total count from the aggregation result (for some reason this works and not countDocuments())
+    const total = countResults.length > 0 ? countResults[0].total : 0;
 
     res.status(200).json({
       page,
@@ -221,6 +245,7 @@ export const getSavedApplicationsByUserID = asyncHandler(
         userId: app.userId,
         company: app.company,
         position: app.position,
+        location: app.location,
         link: app.link,
         materialsNeeded: app.materialsNeeded,
         deadline: app.deadline,

@@ -21,6 +21,14 @@ const validateCompany = body("company")
   .withMessage("invalid company id. (Must be a Mongo ObjectID.)")
   .trim();
 
+const validateLocation = body("location")
+  .optional()
+  .isString()
+  .withMessage("location must be a string.")
+  .trim()
+  .notEmpty()
+  .withMessage("location must be a non-empty string.");
+
 const validatePosition = body("position")
   .isString()
   .withMessage("position must be a string.")
@@ -74,6 +82,7 @@ export const createSavedApplicationValidator = [
   validateUserId,
   validateCompany,
   validatePosition,
+  validateLocation,
   validateLink,
   validateMaterialsNeeded,
   validateDeadline,
@@ -86,6 +95,7 @@ export const updateSavedApplicationValidator = [
   validateCompany.optional(),
   validatePosition.optional(),
   validateLink.optional(),
+  validateLocation.optional(),
   validateMaterialsNeeded.optional(),
   validateDeadline.optional(),
 ];

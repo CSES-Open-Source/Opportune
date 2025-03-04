@@ -43,8 +43,8 @@ export interface UpdateApplicationRequest {
 }
 
 export interface GetApplicationsByUserIDQuery {
-  page: number;
-  perPage: number;
+  page?: number;
+  perPage?: number;
   query?: string;
   status?: string;
   sortBy?: string;
