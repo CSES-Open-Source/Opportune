@@ -133,7 +133,7 @@ By participating in this project, you agree to uphold the [Code of Conduct](CODE
 
 #### AWS S3
 
-1. got to [https://aws.amazon.com/](https://aws.amazon.com/) and create a new account (or login to an existing account if you already have one).
+1. go to [https://aws.amazon.com/](https://aws.amazon.com/) and create a new account (or login to an existing account if you already have one).
 2. Search for S3 in the search bar and **create a new bucket**.
 3. Then search for IAM in the search bar and create a new user (feel free to name it anything you like), make sure to give the user the **AmazonS3FullAccess** policy. This allows the users to have access to your S3 bucket.
 4. For the user created, **add a new access key**. Make sure to keep this page open so that we can copy the Access Key.
@@ -145,9 +145,21 @@ By participating in this project, you agree to uphold the [Code of Conduct](CODE
    ```
    Make sure to copy the **Access Key ID** and **Secrete Access Key** from the page in step 4 and fill in the region if your bucket.
 
-#### Google Oauth
+#### Firebase
 
-1.
+1. Go to [https://firebase.google.com/](https://firebase.google.com/) in click on **Go to console** on the top right of the page.
+2. Click **Create a project** and create a project, feel free to name it anything you like (or just Opportune).
+3. Go to the **Get started** portion of the page and add a new **web app** to the project.
+4. After adding an app to the project, you will see your secrets. Create a new file in the local repo under the `frontend` folder called `.env` and add the following to the file:
+   ```
+   REACT_APP_FIREBASE_API_KEY=[api-key]
+   REACT_APP_FIREBASE_AUTH_DOMAIN=[auth-domain]
+   REACT_APP_FIREBASE_PROJECT_ID=[project-id]
+   REACT_APP_FIREBASE_STORAGE_BUCKET=[storage-bucket]
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=[messaging-sender-id]
+   REACT_APP_FIREBASE_APP_ID=[app-id]
+   ```
+5. Go back to the firebase console and select **Authentication** on the homepage, click **Set up a new sign in provider** and choose Google as the provider.
 
 ### Running the Backend and Frontend
 

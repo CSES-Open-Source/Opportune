@@ -4,15 +4,15 @@ import { NavItem } from "../../types/NavItem";
 import { FiLogOut } from "react-icons/fi";
 import { useState } from "react";
 import Dialog from "../Dialog";
+import { useAuth } from "../../contexts/useAuth";
+import { FcGoogle } from "react-icons/fc";
+import AuthModal from "../AuthModal";
+import { requireLogin, roleGuard } from "../../constants/pathAccess";
+import { MdLockOutline } from "react-icons/md";
+// import { Tooltip } from "primereact/tooltip";
 
 const SideNav = () => {
-  const isAuthenticated = true;
-  const user = {
-    name: "King Triton",
-    profile:
-      "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg",
-    email: "ktriton@ucsd.edu",
-  };
+  const { user, isAuthenticated, login, logout } = useAuth();
 
   const [isLogOutDialogOpen, setIsLogOutDialogOpen] = useState<boolean>(false);
 
@@ -24,7 +24,7 @@ const SideNav = () => {
   };
 
   const onLogOutDialogConfirm = () => {
-    // TODO
+    logout().then(() => setIsLogOutDialogOpen(false));
   };
 
   const onLogOutDialogClose = () => {
@@ -43,56 +43,100 @@ const SideNav = () => {
         <nav className="flex-grow w-full">
           <ul className="h-full w-full">
             {navItems.map((navItem: NavItem, index: number) => {
-              return navItem.disabled ? (
-                <></>
-              ) : (
+              if (navItem.disabled) {
+                return <></>;
+              }
+
+              const pathIndex = roleGuard.findIndex(
+                (pair) => navItem.path === pair.path,
+              );
+              if (pathIndex !== -1) {
+                if (
+                  !isAuthenticated ||
+                  (user && roleGuard[pathIndex].role.includes(user.type))
+                ) {
+                  return <></>;
+                }
+              }
+
+              const isPathLocked =
+                !isAuthenticated && requireLogin.includes(navItem.path);
+
+              return (
                 <li key={index} className="h-[65px] px-2 py-1">
-                  <NavLink
-                    className={({ isActive }) =>
-                      `h-full w-full text-lg flex items-center rounded-md font-medium px-3 gap-3 transition ${
-                        isActive
-                          ? "bg-primary text-white"
-                          : "hover:bg-primary hover:bg-opacity-10 text-gray-700"
-                      }`
-                    }
-                    to={navItem.url}
-                  >
-                    {navItem.icon && <navItem.icon size={24} />}
-                    <div>{navItem.label}</div>
-                  </NavLink>
+                  {!isPathLocked && (
+                    <NavLink
+                      className={({ isActive }) =>
+                        `h-full w-full text-lg flex items-center rounded-md font-medium px-3 gap-3 transition ${
+                          isActive
+                            ? "bg-primary text-white"
+                            : "hover:bg-primary hover:bg-opacity-10 text-gray-700"
+                        }`
+                      }
+                      to={navItem.path}
+                    >
+                      {navItem.icon && <navItem.icon size={24} />}
+                      <div>{navItem.label}</div>
+                    </NavLink>
+                  )}
+                  {isPathLocked && (
+                    <div
+                      className={`nav-lock-${index} h-full w-full text-lg flex items-center rounded-md font-medium px-3 gap-3 transition text-gray-400 hover:cursor-default`}
+                    >
+                      {navItem.icon && <navItem.icon size={24} />}
+                      <div>{navItem.label}</div>
+                      <MdLockOutline className="mt-0.5" />
+                    </div>
+                  )}
+                  {/* <Tooltip
+                    target={`.nav-lock-${index}`}
+                    content={`Login to access ${navItem.label}`}
+                    showDelay={300}
+                    mouseTrack
+                  /> */}
                 </li>
               );
             })}
           </ul>
         </nav>
-        <hr className="w-[80%]" />
-        {isAuthenticated && (
-          <div className="h-[65px] py-1 w-full gap-3">
-            <NavLink
-              className="h-full w-full text-sm flex items-center rounded-md font-medium px-2 gap-3 text-gray-700"
-              to={"/profile"}
-            >
-              <img
-                src={user.profile}
-                alt={`${user.name} Profile Picture`}
-                className="rounded-full h-10 w-10"
-              />
-              <div className="flex flex-col flex-grow">
-                <div>{user.name}</div>
-                <div className="text-gray-400">{user.email}</div>
-              </div>
-              <button
-                className="p-2 h-[47px] rounded-full hover:bg-primary hover:bg-opacity-10 transition"
-                onClick={onLogOutClicked}
+        {isAuthenticated && user && (
+          <div className="w-full flex flex-col items-center justify-center">
+            <hr className="w-[80%]" />
+            <div className="h-[65px] w-full py-1 gap-3">
+              <NavLink
+                className="h-full w-full text-sm flex items-center rounded-md font-medium px-2 gap-3 text-gray-700"
+                to={"/profile"}
               >
-                <FiLogOut size={27} className="ml-1" />
-              </button>
-            </NavLink>
+                <img
+                  src={user.profilePicture}
+                  alt={`${user.name} Profile`}
+                  className="rounded-full h-10 w-10"
+                />
+                <div className="flex flex-col flex-grow">
+                  <div>{user.name}</div>
+                  <div className="text-gray-400">{user.email}</div>
+                </div>
+                <button onClick={onLogOutClicked}>
+                  <FiLogOut
+                    size={27}
+                    className="m-1 hover:stroke-primary transition"
+                  />
+                </button>
+              </NavLink>
+            </div>
           </div>
         )}
         {!isAuthenticated && (
-          <div className="h-18 w-full flex items-center p-4">
-            Google login here
+          <div className="h-[65px] py-1 px-2 w-full flex items-center">
+            <button
+              className={
+                "h-full w-full text-lg flex items-center rounded-md font-medium px-3 gap-3 transition justify-center border shadow-md hover:bg-black hover:bg-opacity-[0.03] hover:shadow-lg"
+              }
+              onClick={login}
+            >
+              <FcGoogle size={28} />
+              <div>Sign in with Google</div>
+            </button>
           </div>
         )}
       </aside>
@@ -100,8 +144,9 @@ const SideNav = () => {
         isDialogOpen={isLogOutDialogOpen}
         onConfirm={onLogOutDialogConfirm}
         onDialogClose={onLogOutDialogClose}
-        text="Are you sure you would like to log out?"
+        text="Are you sure you would like to logout?"
       />
+      <AuthModal />
     </div>
   );
 };

@@ -24,8 +24,8 @@ function App() {
               <Route path="saved" element={<SavedApplications />} />
             </Route>
             <Route path="sandbox" element={<Sandbox />} />
-            <Route path="*" element={<NotFound />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </div>
