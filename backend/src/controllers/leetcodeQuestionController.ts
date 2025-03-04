@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import LeetcodeQuestion from "src/models/LeetcodeQuestion";
 import asyncHandler from "express-async-handler";
 
