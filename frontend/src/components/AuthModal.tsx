@@ -161,7 +161,10 @@ const AuthModal = () => {
                           onChange={(e) =>
                             setNewUser((prev) => ({
                               ...prev,
-                              linkedIn: e.target.value,
+                              linkedIn:
+                                e.target.value == ""
+                                  ? undefined
+                                  : e.target.value,
                             }))
                           }
                         />
