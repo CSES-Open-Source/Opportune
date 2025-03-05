@@ -6,6 +6,7 @@ import {
   UpdateCompanyRequest,
 } from "../types/Company";
 import { PaginatedData } from "../types/PaginatedData";
+import objectToFormData from "../utils/objectToFormData";
 import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
 
 function parseCompany(company: CompanyJSON): Company {
@@ -67,7 +68,7 @@ export async function createCompany(
   company: CreateCompanyRequest & { name: string },
 ): Promise<APIResult<Company>> {
   try {
-    const response = await post("/api/companies", company);
+    const response = await post("/api/companies", objectToFormData(company));
     const json = (await response.json()) as CompanyJSON;
     return { success: true, data: parseCompany(json) };
   } catch (error) {
@@ -87,7 +88,10 @@ export async function updateCompany(
   company: UpdateCompanyRequest,
 ): Promise<APIResult<Company>> {
   try {
-    const response = await patch(`/api/companies/${id}`, company);
+    const response = await patch(
+      `/api/companies/${id}`,
+      objectToFormData(company),
+    );
     const json = (await response.json()) as CompanyJSON;
     return { success: true, data: parseCompany(json) };
   } catch (error) {
