@@ -162,7 +162,7 @@ const AuthModal = () => {
                             setNewUser((prev) => ({
                               ...prev,
                               linkedIn:
-                                e.target.value == ""
+                                e.target.value === ""
                                   ? undefined
                                   : e.target.value,
                             }))
