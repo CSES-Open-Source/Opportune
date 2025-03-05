@@ -35,16 +35,23 @@ async function fetchRequest(
   headers: Record<string, string>,
 ): Promise<Response> {
   const hasBody = body !== undefined;
-
   const newHeaders = { ...headers };
-  if (hasBody) {
+
+  if (hasBody && !(body instanceof FormData)) {
     newHeaders["Content-Type"] = "application/json";
   }
+
+  const requestBody =
+    body instanceof FormData
+      ? body
+      : hasBody
+      ? JSON.stringify(body)
+      : undefined;
 
   const response = await fetch(url, {
     method,
     headers: newHeaders,
-    body: hasBody ? JSON.stringify(body) : undefined,
+    body: requestBody,
   });
 
   return response;
