@@ -32,7 +32,6 @@ export const getAllApplications = asyncHandler(async (req, res, _) => {
   // Retrieve all applications from the database
   const applications = await Application.find()
     .populate({ path: "company", model: Company })
-    .lean()
     .exec();
 
   res.status(200).json(applications);
@@ -59,9 +58,7 @@ export const createApplication = asyncHandler(async (req, res, next) => {
     userId: applicationData.userId,
     company: applicationData.company,
     position: applicationData.position,
-  })
-    .lean()
-    .exec();
+  }).exec();
 
   if (existingApplication) {
     return next(createHttpError(409, "Application already exists"));
@@ -94,7 +91,6 @@ export const getApplicationByID = asyncHandler(async (req, res, next) => {
   // Find the application by ID
   const application = await Application.findById(id)
     .populate({ path: "company", model: Company })
-    .lean()
     .exec();
 
   if (!application) {
@@ -166,7 +162,7 @@ export const deleteApplicationByID = asyncHandler(async (req, res, next) => {
   const { id } = matchedData(req, { locations: ["params"] }) as { id: string };
 
   // Find and delete the application by ID
-  const application = await Application.findByIdAndDelete(id).lean().exec();
+  const application = await Application.findByIdAndDelete(id).exec();
 
   if (!application) {
     return next(createHttpError(404, "Application not found."));

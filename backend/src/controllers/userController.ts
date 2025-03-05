@@ -35,7 +35,6 @@ type UserResponse = StudentResponse | AlumniResponse;
 export const getUsers = asyncHandler(async (_, res) => {
   const users = await User.find()
     .populate({ path: "company", model: Company })
-    .lean()
     .exec();
 
   res.status(200).json(users);
@@ -66,9 +65,7 @@ export const createUser = asyncHandler(async (req, res, next) => {
   // check if the user already exists
   const foundUser = await User.findOne({
     $or: [{ _id }, { email }],
-  })
-    .lean()
-    .exec();
+  }).exec();
 
   if (foundUser) {
     return next(createHttpError(409, "User already exists."));
@@ -107,7 +104,6 @@ export const getUserById = asyncHandler(async (req, res, next) => {
       path: "company",
       model: Company,
     })
-    .lean()
     .exec();
   if (!foundUser) {
     return next(createHttpError(404, "User not found."));
@@ -231,7 +227,6 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
       .skip(page * perPage)
       .limit(perPage)
       .populate({ path: "company", model: Company })
-      .lean()
       .exec(),
   ]);
 
