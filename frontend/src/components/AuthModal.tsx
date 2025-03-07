@@ -453,6 +453,7 @@ const AuthModal = () => {
           <ProfileCompletion
             onConfirm={() => {
               setIsProfileComplete(true);
+              setStage(0);
             }}
           />
         )}

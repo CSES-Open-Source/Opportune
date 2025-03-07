@@ -51,10 +51,10 @@ const validateLinkedIn = body("linkedIn")
   .isURL({ require_valid_protocol: true })
   .withMessage("linkedIn must be a valid URL.");
 
-// todo: likely needs better parsing for international numbers
+// TODO: likely needs better parsing for international numbers (currently set to string to allow frontend format to pass)
 const validatePhoneNumber = body("phoneNumber")
   .optional()
-  .isMobilePhone("any")
+  .isString()
   .withMessage("phoneNumber must be a valid phone number.");
 
 // Only for students
