@@ -24,12 +24,15 @@ const AuthModal = () => {
   const [stage, setStage] = useState<number>(0);
   const totalStages = 3;
   const [selectedType, setSelectedType] = useState<UserType | null>(null);
+  const [isValidPhoneNumber, setIsValidPhoneNumber] = useState<boolean>(true);
+  const [isValidLinkedIn, setIsValidLinkedIn] = useState<boolean>(true);
   const [newUser, setNewUser] = useState<CreateUserRequest>({
     _id: "",
     email: "",
     name: "",
     type: UserType.Student,
   });
+  const [canProceed, setCanProceed] = useState<boolean>(false);
 
   const toast = useRef<Toast>(null);
 
@@ -61,6 +64,14 @@ const AuthModal = () => {
     }
   }, [toast, error, clearAuthError]);
 
+  useEffect(() => {
+    setCanProceed(
+      (stage === 0 && selectedType !== null) ||
+        (stage === 1 && isValidLinkedIn && isValidPhoneNumber) ||
+        stage === 2,
+    );
+  }, [stage, selectedType, isValidLinkedIn, isValidPhoneNumber]);
+
   const onSelectType = (type: UserType) => {
     setSelectedType(type);
     if (type === UserType.Student) {
@@ -70,6 +81,60 @@ const AuthModal = () => {
     } else {
       setNewUser({ ...newUser, type });
     }
+  };
+
+  const onLinkedInChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+
+    if (input === "") {
+      setNewUser((prev) => ({ ...prev, linkedIn: undefined }));
+      setIsValidLinkedIn(true);
+      return;
+    }
+
+    try {
+      new URL(input);
+      setIsValidLinkedIn(true);
+    } catch {
+      setIsValidLinkedIn(false);
+    }
+
+    setNewUser((prev) => ({ ...prev, linkedIn: input }));
+  };
+
+  const onPhoneNumberChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    const cleanedInput = input.replace(/\D/g, ""); // Remove non-digits
+
+    let formattedNumber = "";
+
+    if (cleanedInput.length > 0) {
+      if (cleanedInput.length < 4) {
+        formattedNumber = `(${cleanedInput}`;
+      } else if (cleanedInput.length < 7) {
+        formattedNumber = `(${cleanedInput.slice(0, 3)}) ${cleanedInput.slice(
+          3,
+        )}`;
+      } else {
+        formattedNumber = `(${cleanedInput.slice(0, 3)}) ${cleanedInput.slice(
+          3,
+          6,
+        )}-${cleanedInput.slice(6, 10)}`;
+      }
+      setNewUser((prev) => ({
+        ...prev,
+        phoneNumber: formattedNumber,
+      }));
+    } else {
+      setNewUser((prev) => ({
+        ...prev,
+        phoneNumber: undefined,
+      }));
+    }
+
+    setIsValidPhoneNumber(
+      !(cleanedInput.length > 0 && cleanedInput.length < 10),
+    );
   };
 
   return (
@@ -155,18 +220,14 @@ const AuthModal = () => {
                         <input
                           type="url"
                           id="linkedIn"
-                          className="block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                          className={`block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none ${
+                            isValidLinkedIn
+                              ? "focus:border-blue-500"
+                              : "border-red-600"
+                          }`}
                           placeholder="https://linkedin.com/in/yourprofile"
                           value={newUser.linkedIn || ""}
-                          onChange={(e) =>
-                            setNewUser((prev) => ({
-                              ...prev,
-                              linkedIn:
-                                e.target.value === ""
-                                  ? undefined
-                                  : e.target.value,
-                            }))
-                          }
+                          onChange={onLinkedInChanged}
                         />
                       </div>
                     </div>
@@ -192,15 +253,14 @@ const AuthModal = () => {
                         <input
                           type="tel"
                           id="phoneNumber"
-                          className="block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                          className={`block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none ${
+                            isValidPhoneNumber
+                              ? "focus:border-blue-500"
+                              : "border-red-600"
+                          }`}
                           placeholder="(555) 123-4567"
                           value={newUser.phoneNumber || ""}
-                          onChange={(e) =>
-                            setNewUser((prev) => ({
-                              ...prev,
-                              phoneNumber: e.target.value,
-                            }))
-                          }
+                          onChange={onPhoneNumberChanged}
                         />
                       </div>
                     </div>
@@ -367,9 +427,7 @@ const AuthModal = () => {
               </button>
               <button
                 className={`w-24 px-4 py-2 rounded-md text-white font-medium transition-colors ${
-                  selectedType !== null
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-blue-300"
+                  canProceed ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-300"
                 }`}
                 onClick={() => {
                   if (stage === totalStages - 1) {
@@ -382,7 +440,7 @@ const AuthModal = () => {
                     setStage(stage + 1);
                   }
                 }}
-                disabled={selectedType === null}
+                disabled={!canProceed}
               >
                 {stage === totalStages - 1 ? "Submit" : "Next"}
               </button>
