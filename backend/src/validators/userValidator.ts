@@ -78,8 +78,8 @@ const validateClassLevel = body("classLevel")
 // Only for alumni
 const validateCompany = body("company")
   .optional()
-  .isString()
-  .withMessage("company must be a valid string.")
+  .isMongoId()
+  .withMessage("invalid company. (Must be a Mongo ObjectID.)")
   .trim();
 
 // Only for alumni
