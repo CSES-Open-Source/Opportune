@@ -42,6 +42,17 @@ export async function getCompanies(
   }
 }
 
+export async function getAllCompanies(): Promise<APIResult<Company[]>> {
+  try {
+    const response = await get("/api/companies/all");
+    const json = (await response.json()) as CompanyJSON[];
+    const res = json.map(parseCompany) as Company[];
+    return { success: true, data: res };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
 /**
  * Fetch a single company by ID from the backend.
  *
