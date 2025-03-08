@@ -30,13 +30,19 @@ const validateName = body("name")
   .isString()
   .withMessage("name must be a string.")
   .trim()
-  .isLength({ min: 2 })
-  .withMessage("name must be at least 2 characters.")
+  .isLength({ min: 1 })
+  .withMessage("name must be at least 1 characters.")
   .notEmpty()
   .withMessage("name is required.");
 
+const validateProfilePicture = body("profilePicture")
+  .isString()
+  .withMessage("profilePicture must be a string.")
+  .trim()
+  .isURL({ require_valid_protocol: true })
+  .withMessage("profilePicture must be a valid URL.");
+
 const validateType = body("type")
-  .optional()
   .isString()
   .withMessage("type of account must be a string.")
   .trim()
@@ -110,6 +116,7 @@ export const createUserValidator = [
   validateIdBody,
   validateEmail,
   validateName,
+  validateProfilePicture,
   validateType,
   validateLinkedIn,
   validatePhoneNumber,
@@ -124,8 +131,9 @@ export const getUservalidator = [validateIdParam];
 export const updateUserValidator = [
   validateIdParam,
   validateName.optional(),
-  validateEmail,
-  validateType,
+  validateEmail.optional(),
+  validateProfilePicture.optional(),
+  validateType.optional(),
   validateLinkedIn,
   validatePhoneNumber,
   validateMajor,

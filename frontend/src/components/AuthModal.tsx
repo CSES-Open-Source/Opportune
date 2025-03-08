@@ -10,6 +10,7 @@ import { FiPhone } from "react-icons/fi";
 import { FaCheck, FaXmark } from "react-icons/fa6";
 import "../styles/Dropdown.css";
 import ProfileCompletion from "./ProfileCompletion";
+import CompanyDropdown from "./CompanyDropdown";
 
 const AuthModal = () => {
   const {
@@ -30,6 +31,7 @@ const AuthModal = () => {
     _id: "",
     email: "",
     name: "",
+    profilePicture: "",
     type: UserType.Student,
   });
   const [canProceed, setCanProceed] = useState<boolean>(false);
@@ -48,6 +50,7 @@ const AuthModal = () => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        profilePicture: user.profilePicture,
       }));
     }
   }, [user]);
@@ -225,7 +228,7 @@ const AuthModal = () => {
                               ? "focus:border-blue-500"
                               : "border-red-600"
                           }`}
-                          placeholder="https://linkedin.com/in/yourprofile"
+                          placeholder="Add LinkedIn profile"
                           value={newUser.linkedIn || ""}
                           onChange={onLinkedInChanged}
                         />
@@ -258,7 +261,7 @@ const AuthModal = () => {
                               ? "focus:border-blue-500"
                               : "border-red-600"
                           }`}
-                          placeholder="(555) 123-4567"
+                          placeholder="Add phone number"
                           value={newUser.phoneNumber || ""}
                           onChange={onPhoneNumberChanged}
                         />
@@ -341,19 +344,16 @@ const AuthModal = () => {
                       >
                         Company (Optional)
                       </label>
-                      <Dropdown
-                        id="company"
+                      <CompanyDropdown
                         value={newUser.company}
-                        options={[]}
                         onChange={(e) =>
                           setNewUser((prev) => ({
                             ...prev,
                             company: e.value,
                           }))
                         }
-                        placeholder="Select your company"
-                        className="border-2 p-[2px] border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
-                        filter
+                        className="w-full"
+                        dropdownClassName="w-full border-2 p-[2px] border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
                       />
                       <p className="text-xs text-gray-500 mt-2">
                         {
