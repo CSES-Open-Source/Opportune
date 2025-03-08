@@ -116,6 +116,7 @@ export const createUserValidator = [
   validateIdBody,
   validateEmail,
   validateName,
+  validateProfilePicture,
   validateType,
   validateLinkedIn,
   validatePhoneNumber,
