@@ -57,8 +57,6 @@ const NewApplicationModal = ({ isOpen, onClose }: NewApplicationModalProps) => {
     }
 
     // Save the application
-    console.log({ company, position, location });
-
     try {
       await createApplication({
         userId: user._id,
@@ -103,10 +101,9 @@ const NewApplicationModal = ({ isOpen, onClose }: NewApplicationModalProps) => {
               <CompanyDropdown
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
-                className={`w-full border-2 border-gray-200 rounded-lg ${
+                dropdownClassName={`w-full py-0.5 border-2 border-gray-200 rounded-lg ${
                   company ? "border-blue-500" : ""
                 }`}
-                dropdownClassName="w-full"
               />
             </div>
             <div className="flex flex-col">
@@ -128,9 +125,7 @@ const NewApplicationModal = ({ isOpen, onClose }: NewApplicationModalProps) => {
                 <input
                   type="text"
                   id="position"
-                  className={`block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none ${
-                    position.length >= 1 ? "focus:border-blue-500" : ""
-                  }`}
+                  className="block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
                   placeholder="Add Position"
                   value={position}
                   onChange={(e) => onPositionChange(e.target.value)}
@@ -156,9 +151,7 @@ const NewApplicationModal = ({ isOpen, onClose }: NewApplicationModalProps) => {
                 <input
                   type="text"
                   id="location"
-                  className={`block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none ${
-                    location.length >= 1 ? "focus:border-blue-500" : ""
-                  }`}
+                  className="block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
                   placeholder="Add Location"
                   value={location}
                   onChange={(e) => onLocationChange(e.target.value)}
@@ -170,7 +163,7 @@ const NewApplicationModal = ({ isOpen, onClose }: NewApplicationModalProps) => {
                 htmlFor="link"
                 className="text-sm font-medium text-gray-700 mb-1"
               >
-                Location (Optional)
+                Link (Optional)
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
