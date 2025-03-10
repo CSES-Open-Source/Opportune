@@ -8,6 +8,7 @@ import { Application } from "../types/Application";
 import { ColumnDef } from "../types/ColumnDef";
 import { PaginatedData } from "../types/PaginatedData";
 import { useAuth } from "../contexts/useAuth";
+import NewApplicationModal from "../components/NewApplicationModal";
 
 const applicationColumns: ColumnDef<Application>[] = [
   {
@@ -18,7 +19,9 @@ const applicationColumns: ColumnDef<Application>[] = [
           <div
             className={`w-[6px] h-[40.57px] mr-2 ${
               statusColors[
-                row.process ? row.process[row.process.length - 1].status : ""
+                row.process && row.process.length > 0
+                  ? row.process[row.process.length - 1].status
+                  : ""
               ]
             }`}
           />
@@ -45,7 +48,9 @@ const applicationColumns: ColumnDef<Application>[] = [
     cell: (row) => (
       <StatusBubble
         status={
-          row.process ? row.process[row.process.length - 1].status : "None"
+          row.process && row.process.length > 0
+            ? row.process[row.process.length - 1].status
+            : "None"
         }
       />
     ),
@@ -53,12 +58,14 @@ const applicationColumns: ColumnDef<Application>[] = [
   {
     header: "Date Applied",
     accessor: (row) =>
-      row.process ? row.process[0].date.toLocaleString() : "",
+      row.process && row.process.length > 0
+        ? row.process[0].date.toLocaleString()
+        : "",
   },
   {
     header: "Date Modified",
     accessor: (row) =>
-      row.process
+      row.process && row.process.length > 0
         ? row.process[row.process.length - 1].date.toLocaleString()
         : "",
   },
@@ -78,6 +85,8 @@ const Applications = () => {
     sortBy: [],
     status: [],
   });
+
+  const [newApplicationOpen, setNewApplicationOpen] = useState(false);
 
   // Fetch paginated applications whenever search options change
   const getPaginatedApplications = useCallback(
@@ -136,8 +145,7 @@ const Applications = () => {
   };
 
   const onNewApplicationClicked = () => {
-    // TODO: Toggle modal for new application
-    console.log("New application!");
+    setNewApplicationOpen(true);
   };
 
   return (
@@ -174,6 +182,10 @@ const Applications = () => {
       >
         New Application
       </button>
+      <NewApplicationModal
+        isOpen={newApplicationOpen}
+        onClose={() => setNewApplicationOpen(false)}
+      />
     </div>
   );
 };
