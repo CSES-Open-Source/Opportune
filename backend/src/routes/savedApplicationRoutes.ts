@@ -1,5 +1,6 @@
 import express from "express";
 import * as savedApplicationController from "src/controllers/savedApplicationController";
+import preprocessCompany from "src/middlewares/preprocessCompany";
 import * as savedApplicationValidator from "src/validators/savedApplicationValidator";
 const savedApplicationRouter = express.Router();
 
@@ -10,6 +11,7 @@ savedApplicationRouter.get(
 
 savedApplicationRouter.post(
   "/",
+  preprocessCompany,
   savedApplicationValidator.createSavedApplicationValidator,
   savedApplicationController.createSavedApplication,
 );
@@ -22,6 +24,7 @@ savedApplicationRouter.get(
 
 savedApplicationRouter.patch(
   "/:id",
+  preprocessCompany,
   savedApplicationValidator.updateSavedApplicationValidator,
   savedApplicationController.updateSavedApplicationByID,
 );

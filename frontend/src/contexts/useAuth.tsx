@@ -91,6 +91,11 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
               };
               setUser(userData);
               setIsProfileComplete(checkProfileComplete(userData));
+
+              // Update profile picture url to ensure it doesnt expire
+              update(userData._id, {
+                profilePicture: firebaseUser.photoURL || "",
+              });
             } else {
               const newUser: User = {
                 _id: firebaseUser.uid,
@@ -172,7 +177,7 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
         const response = await create(newUser);
 
         if (response.success) {
-          setUser({ ...response.data, profilePicture: user.profilePicture });
+          setUser(response.data);
         } else {
           setError(response.error);
         }
@@ -201,7 +206,7 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
         const response = await update(user._id, updates);
 
         if (response.success) {
-          setUser({ ...response.data, profilePicture: user.profilePicture });
+          setUser(response.data);
         } else {
           setError(response.error);
         }

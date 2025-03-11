@@ -54,6 +54,7 @@ export const createUser = asyncHandler(async (req, res, next) => {
     _id,
     email,
     name,
+    profilePicture,
     type,
     linkedIn,
     phoneNumber,
@@ -81,6 +82,7 @@ export const createUser = asyncHandler(async (req, res, next) => {
     email,
     name,
     type,
+    profilePicture,
     linkedIn,
     phoneNumber,
     major,
@@ -92,7 +94,17 @@ export const createUser = asyncHandler(async (req, res, next) => {
 
   await newUser.save();
 
-  res.status(201).json(newUser);
+  const populatedUser = await User.findById(newUser._id)
+    .populate({ path: "company", model: Company })
+    .exec();
+
+  if (!populatedUser) {
+    return next(
+      createHttpError(500, "Failed to populate company after user creation."),
+    );
+  }
+
+  res.status(201).json(populatedUser);
 });
 
 // @desc Get user by ID
@@ -169,7 +181,9 @@ export const updateUser = asyncHandler(async (req, res, next) => {
     id,
     { $set: validatedData },
     { new: true, runValidators: true },
-  );
+  )
+    .populate({ path: "company", model: Company })
+    .exec();
 
   // check if the user exists
   if (!foundUser) {

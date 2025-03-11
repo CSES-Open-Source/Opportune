@@ -62,7 +62,19 @@ export const createSavedApplication = asyncHandler(async (req, res, next) => {
   const newSavedApplication = new SavedApplication(savedApplicationData);
   await newSavedApplication.save();
 
-  res.status(200).json(newSavedApplication);
+  const populatedSavedApplication = await SavedApplication.findById(
+    newSavedApplication._id,
+  )
+    .populate({ path: "company", model: Company })
+    .exec();
+
+  if (!populatedSavedApplication) {
+    return next(
+      createHttpError(500, "Failed to populate company after user creation."),
+    );
+  }
+
+  res.status(201).json(populatedSavedApplication);
 });
 
 //  @desc Get saved application by ID
@@ -125,7 +137,9 @@ export const updateSavedApplicationByID = asyncHandler(
       id,
       { $set: validatedData },
       { new: true, runValidators: true },
-    );
+    )
+      .populate({ path: "company", model: Company })
+      .exec();
 
     if (!updatedSavedApplication) {
       return next(createHttpError(404, "Saved application not found."));

@@ -67,6 +67,15 @@ export const getCompanies = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc Get all companies
+// @route GET /api/companies/all
+// @access Private
+export const getAllCompanies = asyncHandler(async (_, res) => {
+  const companies = await Company.find().exec();
+
+  res.status(200).json(companies);
+});
+
 // @desc Create a new company
 // @route POST /api/companies
 // @access Private

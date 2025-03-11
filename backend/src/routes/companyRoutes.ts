@@ -13,6 +13,8 @@ companyRouter.get(
   companyController.getCompanies,
 );
 
+companyRouter.get("/all", companyController.getAllCompanies);
+
 companyRouter.post(
   "/",
   upload.single("logo"),

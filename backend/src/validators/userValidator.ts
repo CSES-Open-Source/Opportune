@@ -30,13 +30,19 @@ const validateName = body("name")
   .isString()
   .withMessage("name must be a string.")
   .trim()
-  .isLength({ min: 2 })
-  .withMessage("name must be at least 2 characters.")
+  .isLength({ min: 1 })
+  .withMessage("name must be at least 1 characters.")
   .notEmpty()
   .withMessage("name is required.");
 
+const validateProfilePicture = body("profilePicture")
+  .isString()
+  .withMessage("profilePicture must be a string.")
+  .trim()
+  .isURL({ require_valid_protocol: true })
+  .withMessage("profilePicture must be a valid URL.");
+
 const validateType = body("type")
-  .optional()
   .isString()
   .withMessage("type of account must be a string.")
   .trim()
@@ -51,10 +57,10 @@ const validateLinkedIn = body("linkedIn")
   .isURL({ require_valid_protocol: true })
   .withMessage("linkedIn must be a valid URL.");
 
-// todo: likely needs better parsing for international numbers
+// TODO: likely needs better parsing for international numbers (currently set to string to allow frontend format to pass)
 const validatePhoneNumber = body("phoneNumber")
   .optional()
-  .isMobilePhone("any")
+  .isString()
   .withMessage("phoneNumber must be a valid phone number.");
 
 // Only for students
@@ -78,8 +84,8 @@ const validateClassLevel = body("classLevel")
 // Only for alumni
 const validateCompany = body("company")
   .optional()
-  .isString()
-  .withMessage("company must be a valid string.")
+  .isMongoId()
+  .withMessage("invalid company. (Must be a Mongo ObjectID.)")
   .trim();
 
 // Only for alumni
@@ -135,6 +141,7 @@ export const createUserValidator = [
   validateIdBody,
   validateEmail,
   validateName,
+  validateProfilePicture,
   validateType,
   validateLinkedIn,
   validatePhoneNumber,
@@ -151,7 +158,8 @@ export const updateUserValidator = [
   validateIdParam,
   validateName.optional(),
   validateEmail.optional(),
-  validateType,
+  validateProfilePicture.optional(),
+  validateType.optional(),
   validateLinkedIn,
   validatePhoneNumber,
   validateMajor,
