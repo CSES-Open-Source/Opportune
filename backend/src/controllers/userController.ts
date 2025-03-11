@@ -25,6 +25,7 @@ interface AlumniResponse extends BaseUserResponse {
   phoneNumber?: string;
   company?: mongoose.Types.ObjectId;
   shareProfile?: boolean;
+  position?: string;
 }
 
 type UserResponse = StudentResponse | AlumniResponse;
@@ -60,6 +61,7 @@ export const createUser = asyncHandler(async (req, res, next) => {
     classLevel,
     company,
     shareProfile,
+    position,
   } = matchedData(req, { locations: ["body"] });
 
   // check if the user already exists
@@ -85,6 +87,7 @@ export const createUser = asyncHandler(async (req, res, next) => {
     classLevel,
     company,
     shareProfile,
+    position,
   });
 
   await newUser.save();
@@ -129,6 +132,7 @@ export const getUserById = asyncHandler(async (req, res, next) => {
       ...responseData,
       company: foundUser.company,
       shareProfile: foundUser.shareProfile,
+      position: foundUser.position,
     } as AlumniResponse;
 
     if (foundUser.shareProfile) {
@@ -205,7 +209,13 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
     return next(createHttpError(400, validationErrorParser(errors)));
   }
 
-  const { page, perPage, query } = matchedData(req, { locations: ["query"] });
+  // For the query field, also include user.company.name and user.positon in the fields that are being searched for
+  // Add a new query of industry, which will be a comma delimited string of potentially multiple industries.
+
+  const { page, perPage, query, company, position, industry } = matchedData(
+    req,
+    { locations: ["query"] },
+  );
 
   const dbQuery = User.find({
     type: UserType.Alumni,
@@ -215,6 +225,44 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
   // add a name search filter if provided
   if (query) {
     dbQuery.where("name").regex(new RegExp(query, "i"));
+  }
+
+  // add a position search filter if provided
+  if (position) {
+    dbQuery.where("position").regex(new RegExp(position, "i"));
+  }
+
+  // find the companies and industries that match the query
+  let companyDocs = null;
+  if (company) {
+    companyDocs = await Company.find({
+      name: { $regex: new RegExp(company, "i") },
+    }).exec();
+  }
+
+  let industryDocs = null;
+  if (industry) {
+    const industryArray = industry
+      .split(",")
+      .map((item: string) => new RegExp(item.trim(), "i"));
+
+    industryDocs = await Company.find({
+      industry: { $in: industryArray },
+    }).exec();
+  }
+
+  // combine the company and industry filters if they exist
+  const combinedDocs = new Set();
+  if (companyDocs) {
+    companyDocs.forEach((company) => combinedDocs.add(company._id.toString()));
+  }
+  if (industryDocs) {
+    industryDocs.forEach((company) => combinedDocs.add(company._id.toString()));
+  }
+
+  // combine the filters and apply it to the query
+  if (combinedDocs.size > 0) {
+    dbQuery.where("company").in([...combinedDocs]);
   }
 
   // ensure count and paginate do not conflict
@@ -242,6 +290,7 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
       phoneNumber: user.phoneNumber,
       company: user.company,
       shareProfile: user.shareProfile,
+      position: user.position,
     })),
   });
 });

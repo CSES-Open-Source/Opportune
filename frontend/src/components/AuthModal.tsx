@@ -299,6 +299,32 @@ const AuthModal = () => {
                       </p>
                     </div>
 
+                    {newUser.company && (
+                      <div className="flex flex-col">
+                        <label
+                          htmlFor="position"
+                          className="text-sm font-medium text-gray-700 mb-1"
+                        >
+                          Position (Optional)
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            id="position"
+                            className="block w-full pl-3 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                            placeholder="Software Engineer"
+                            value={newUser.position || ""}
+                            onChange={(e) =>
+                              setNewUser((prev) => ({
+                                ...prev,
+                                position: e.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
+
                     <div className="flex flex-col">
                       <label className="text-sm font-medium text-gray-700 mb-3">
                         Share your profile with students?
