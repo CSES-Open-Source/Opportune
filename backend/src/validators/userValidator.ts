@@ -94,6 +94,13 @@ const validateShareProfile = body("shareProfile")
   .isBoolean()
   .withMessage("shareProfile must be a boolean.");
 
+// only for alumni
+const validatePosition = body("position")
+  .optional()
+  .isString()
+  .withMessage("position must be a string.")
+  .trim();
+
 const validatePage = query("page")
   .default(DEFAULT_PAGE)
   .isInt({ min: 0 })
@@ -112,6 +119,24 @@ const validateQuery = query("query")
   .withMessage("query must be a string.")
   .trim();
 
+const validateCompanyName = query("company")
+  .optional()
+  .isString()
+  .withMessage("company (name) must be a string.")
+  .trim();
+
+const validatePositionQuery = query("position")
+  .optional()
+  .isString()
+  .withMessage("position must be a string.")
+  .trim();
+
+const validateIndustry = query("industry")
+  .optional()
+  .isString()
+  .withMessage("industry must be a string.")
+  .trim();
+
 export const createUserValidator = [
   validateIdBody,
   validateEmail,
@@ -124,6 +149,7 @@ export const createUserValidator = [
   validateClassLevel,
   validateCompany,
   validateShareProfile,
+  validatePosition,
 ];
 
 export const getUservalidator = [validateIdParam];
@@ -140,6 +166,7 @@ export const updateUserValidator = [
   validateClassLevel,
   validateCompany,
   validateShareProfile,
+  validatePosition,
 ];
 
 export const deleteUserValidator = [validateIdParam];
@@ -148,4 +175,7 @@ export const getOpenAlumniValidator = [
   validatePage,
   validatePerPage,
   validateQuery,
+  validateCompanyName,
+  validatePositionQuery,
+  validateIndustry,
 ];
