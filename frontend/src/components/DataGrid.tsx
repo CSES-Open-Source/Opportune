@@ -101,7 +101,7 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
 
   return (
     <div
-      style={{ ...gridStyle }}
+      style={{ ...gridStyle, gap: 0 }}
       className="flex flex-col h-full overflow-hidden"
     >
       {/* Grid container */}
@@ -124,7 +124,7 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
 
       {/* Pagination Controls */}
       {(useServerPagination || props.usePagination) && (
-        <div className="mt-4">
+        <div>
           <Paginator
             page={page}
             perPage={perPage}
