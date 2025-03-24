@@ -124,6 +124,7 @@ export async function getAlumni(
   try {
     const response = await get(`/api/users/alumni`, { ...queries });
     const json = (await response.json()) as PaginatedData<UserJSON>;
+    console.log(json);
     const result = { ...json, data: json.data.map(parseAlumni) };
     return { success: true, data: result };
   } catch (error) {
