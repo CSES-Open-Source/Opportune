@@ -72,6 +72,7 @@ const Connect = () => {
         {/* Alumni Grid */}
         {/* Temporary Solution until we make the sidebar sticky */}
         <div className="overflow-y-auto max-h-[500px]">
+          {/* Temporary Solution until we make a more permanent loading solution */}
           {loading ? (
             <p>Loading...</p>
           ) : (
