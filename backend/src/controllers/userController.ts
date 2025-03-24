@@ -209,60 +209,46 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
     return next(createHttpError(400, validationErrorParser(errors)));
   }
 
-  // For the query field, also include user.company.name and user.positon in the fields that are being searched for
-  // Add a new query of industry, which will be a comma delimited string of potentially multiple industries.
-
-  const { page, perPage, query, company, position, industry } = matchedData(
-    req,
-    { locations: ["query"] },
-  );
+  const { page, perPage, query, industry } = matchedData(req, {
+    locations: ["query"],
+  });
 
   const dbQuery = User.find({
     type: UserType.Alumni,
     shareProfile: true,
   });
 
-  // add a name search filter if provided
+  // combine company, position, and name filters
   if (query) {
-    dbQuery.where("name").regex(new RegExp(query, "i"));
-  }
-
-  // add a position search filter if provided
-  if (position) {
-    dbQuery.where("position").regex(new RegExp(position, "i"));
-  }
-
-  // find the companies and industries that match the query
-  let companyDocs = null;
-  if (company) {
-    companyDocs = await Company.find({
-      name: { $regex: new RegExp(company, "i") },
+    const companyDocs = await Company.find({
+      $or: [
+        { name: { $regex: new RegExp(query, "i") } },
+        { industry: { $regex: new RegExp(query, "i") } },
+      ],
     }).exec();
+
+    const companyIds = companyDocs.map((company) => company._id);
+
+    dbQuery.or([
+      { name: { $regex: new RegExp(query, "i") } },
+      { position: { $regex: new RegExp(query, "i") } },
+      { company: { $in: companyIds } },
+    ]);
   }
 
-  let industryDocs = null;
+  // industry filter
   if (industry) {
     const industryArray = industry
       .split(",")
       .map((item: string) => new RegExp(item.trim(), "i"));
 
-    industryDocs = await Company.find({
+    const industryDocs = await Company.find({
       industry: { $in: industryArray },
     }).exec();
-  }
 
-  // combine the company and industry filters if they exist
-  const combinedDocs = new Set();
-  if (companyDocs) {
-    companyDocs.forEach((company) => combinedDocs.add(company._id.toString()));
-  }
-  if (industryDocs) {
-    industryDocs.forEach((company) => combinedDocs.add(company._id.toString()));
-  }
+    const industryCompanyIds = industryDocs.map((company) => company._id);
 
-  // combine the filters and apply it to the query
-  if (combinedDocs.size > 0) {
-    dbQuery.where("company").in([...combinedDocs]);
+    dbQuery.where("company").in(industryCompanyIds);
   }
 
   // ensure count and paginate do not conflict
