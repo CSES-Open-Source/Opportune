@@ -4,7 +4,7 @@ import DataGrid from "../components/DataGrid";
 import AlumniTile from "../components/AlumniTile";
 import { getAlumni } from "../api/users";
 import { APIResult } from "../api/requests";
-import { Alumni, UserType } from "../types/User";
+import { Alumni } from "../types/User";
 import { PaginatedData } from "../types/PaginatedData";
 
 /**
@@ -35,202 +35,13 @@ const Connect = () => {
       if (result.success) {
         setAlumni(result.data);
       } else {
-        console.error(result.error); // Handle the error appropriately
+        console.error(result.error); // not sure how we want to handle errors
       }
       setLoading(false);
     };
 
     fetchAlumni();
   }, [alumni.page, alumni.perPage]);
-
-  const sampleAlumni: Alumni[] = [
-    {
-      _id: "1",
-      email: "bill@gmail.com",
-      name: "Bill Newman",
-      profilePicture:
-        "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
-      type: UserType.Alumni,
-      linkedIn: "https://linkedin.com/bill/",
-      phoneNumber: "(909) 101-2055",
-      company: {
-        _id: "1",
-        name: "Google",
-        city: "Mountain View",
-        state: "CA",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
-        employees: "100k+",
-        industry: "Tech",
-        url: "https://www.google.com",
-      },
-      shareProfile: true,
-    },
-    {
-      _id: "1",
-      email: "bill@gmail.com",
-      name: "Bill Newman",
-      profilePicture:
-        "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
-      type: UserType.Alumni,
-      linkedIn: "https://linkedin.com/bill/",
-      phoneNumber: "(909) 101-2055",
-      company: {
-        _id: "2",
-        name: "Apple",
-        city: "Cupertino",
-        state: "CA",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
-        employees: "100k+",
-        industry: "Consumer Electronics",
-        url: "https://www.apple.com",
-      },
-      shareProfile: true,
-    },
-    {
-      _id: "1",
-      email: "bill@gmail.com",
-      name: "Bill Newman",
-      profilePicture:
-        "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
-      type: UserType.Alumni,
-      linkedIn: "https://linkedin.com/bill/",
-      phoneNumber: "(909) 101-2055",
-      company: {
-        _id: "4",
-        name: "Amazon",
-        city: "Seattle",
-        state: "WA",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
-        employees: "1.5M+",
-        industry: "E-commerce",
-        url: "https://www.amazon.com",
-      },
-      shareProfile: true,
-    },
-    {
-      _id: "1",
-      email: "bill@gmail.com",
-      name: "Bill Newman",
-      profilePicture:
-        "https://cdn.iconscout.com/icon/free/png-256/free-meta-logo-icon-download-in-svg-png-gif-file-formats--messenger-chatting-social-media-pack-logos-icons-5582655.png",
-      type: UserType.Alumni,
-      linkedIn: "https://linkedin.com/bill/",
-      phoneNumber: "(909) 101-2055",
-      company: {
-        _id: "5",
-        name: "Meta",
-        city: "Menlo Park",
-        state: "CA",
-        logo: "https://cdn.iconscout.com/icon/free/png-256/free-meta-logo-icon-download-in-svg-png-gif-file-formats--messenger-chatting-social-media-pack-logos-icons-5582655.png",
-        industry: "Social Media",
-        url: "https://about.meta.com",
-      },
-      shareProfile: true,
-    },
-    {
-      _id: "1",
-      email: "bill@gmail.com",
-      name: "Bill Newman",
-      profilePicture:
-        "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
-      type: UserType.Alumni,
-      linkedIn: "https://linkedin.com/bill/",
-      phoneNumber: "(909) 101-2055",
-      company: {
-        _id: "1",
-        name: "Google",
-        city: "Mountain View",
-        state: "CA",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
-        employees: "100k+",
-        industry: "Tech",
-        url: "https://www.google.com",
-      },
-      shareProfile: true,
-    },
-    {
-      _id: "1",
-      email: "bill@gmail.com",
-      name: "Bill Newman",
-      profilePicture:
-        "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
-      type: UserType.Alumni,
-      linkedIn: "https://linkedin.com/bill/",
-      phoneNumber: "(909) 101-2055",
-      company: {
-        _id: "2",
-        name: "Apple",
-        city: "Cupertino",
-        state: "CA",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
-        employees: "100k+",
-        industry: "Consumer Electronics",
-        url: "https://www.apple.com",
-      },
-      shareProfile: true,
-    },
-    {
-      _id: "1",
-      email: "bill@gmail.com",
-      name: "Bill Newman",
-      profilePicture:
-        "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
-      type: UserType.Alumni,
-      linkedIn: "https://linkedin.com/bill/",
-      phoneNumber: "(909) 101-2055",
-      company: {
-        _id: "4",
-        name: "Amazon",
-        city: "Seattle",
-        state: "WA",
-        logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
-        employees: "1.5M+",
-        industry: "E-commerce",
-        url: "https://www.amazon.com",
-      },
-      shareProfile: true,
-    },
-    {
-      _id: "1",
-      email: "bill@gmail.com",
-      name: "Bill Newman",
-      profilePicture:
-        "https://cdn.iconscout.com/icon/free/png-256/free-meta-logo-icon-download-in-svg-png-gif-file-formats--messenger-chatting-social-media-pack-logos-icons-5582655.png",
-      type: UserType.Alumni,
-      linkedIn: "https://linkedin.com/bill/",
-      phoneNumber: "(909) 101-2055",
-      company: {
-        _id: "5",
-        name: "Meta",
-        city: "Menlo Park",
-        state: "CA",
-        logo: "https://cdn.iconscout.com/icon/free/png-256/free-meta-logo-icon-download-in-svg-png-gif-file-formats--messenger-chatting-social-media-pack-logos-icons-5582655.png",
-        industry: "Social Media",
-        url: "https://about.meta.com",
-      },
-      shareProfile: true,
-    },
-    {
-      _id: "1",
-      email: "bill@gmail.com",
-      name: "Bill Newman",
-      profilePicture:
-        "https://cdn.iconscout.com/icon/free/png-256/free-meta-logo-icon-download-in-svg-png-gif-file-formats--messenger-chatting-social-media-pack-logos-icons-5582655.png",
-      type: UserType.Alumni,
-      linkedIn: "https://linkedin.com/bill/",
-      phoneNumber: "(909) 101-2055",
-      company: {
-        _id: "5",
-        name: "Meta",
-        city: "Menlo Park",
-        state: "CA",
-        logo: "https://cdn.iconscout.com/icon/free/png-256/free-meta-logo-icon-download-in-svg-png-gif-file-formats--messenger-chatting-social-media-pack-logos-icons-5582655.png",
-        industry: "Social Media",
-        url: "https://about.meta.com",
-      },
-      shareProfile: true,
-    },
-  ];
 
   return (
     <div className="min-h-screen">
