@@ -6,6 +6,7 @@ import {
   UpdateCompanyRequest,
 } from "../types/Company";
 import { PaginatedData } from "../types/PaginatedData";
+import objectToFormData from "../utils/objectToFormData";
 import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
 
 function parseCompany(company: CompanyJSON): Company {
@@ -41,6 +42,17 @@ export async function getCompanies(
   }
 }
 
+export async function getAllCompanies(): Promise<APIResult<Company[]>> {
+  try {
+    const response = await get("/api/companies/all");
+    const json = (await response.json()) as CompanyJSON[];
+    const res = json.map(parseCompany) as Company[];
+    return { success: true, data: res };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
 /**
  * Fetch a single company by ID from the backend.
  *
@@ -67,7 +79,7 @@ export async function createCompany(
   company: CreateCompanyRequest & { name: string },
 ): Promise<APIResult<Company>> {
   try {
-    const response = await post("/api/companies", company);
+    const response = await post("/api/companies", objectToFormData(company));
     const json = (await response.json()) as CompanyJSON;
     return { success: true, data: parseCompany(json) };
   } catch (error) {
@@ -87,7 +99,10 @@ export async function updateCompany(
   company: UpdateCompanyRequest,
 ): Promise<APIResult<Company>> {
   try {
-    const response = await patch(`/api/companies/${id}`, company);
+    const response = await patch(
+      `/api/companies/${id}`,
+      objectToFormData(company),
+    );
     const json = (await response.json()) as CompanyJSON;
     return { success: true, data: parseCompany(json) };
   } catch (error) {

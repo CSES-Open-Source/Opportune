@@ -9,6 +9,7 @@ import SavedApplications from "./pages/SavedApplications";
 import Companies from "./pages/Companies";
 import Connect from "./pages/Connect";
 import Sandbox from "./pages/Sandbox";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               <Route path="applied" element={<Applications />} />
               <Route path="saved" element={<SavedApplications />} />
             </Route>
+            <Route path="profile" element={<Profile />} />
             <Route path="sandbox" element={<Sandbox />} />
           </Route>
           <Route path="*" element={<NotFound />} />
