@@ -91,7 +91,7 @@ const Connect = () => {
         </div>
         <div className="bg-white shadow-lg rounded-lg p-8 ">
           <h1 className="text-2xl font-bold mb-6">Find Alumni</h1>
-          <SearchBar
+          <SearchBar<SearchBarData>
             selections={[
               {
                 label: "Industry",
@@ -99,6 +99,7 @@ const Connect = () => {
               },
             ]}
             placeholder="Search by name, company, or industry"
+            onSubmitForm={setSearch}
           />
         </div>
         {/* Alumni Grid */}
