@@ -58,6 +58,12 @@ const userSchema = new Schema({
     required: false, // also eventually an enum?
   },
   // Only for alumni
+  position: {
+    type: String,
+    required: false,
+    trim: true,
+  },
+  // Only for alumni
   company: {
     type: Schema.Types.ObjectId,
     required: false,
