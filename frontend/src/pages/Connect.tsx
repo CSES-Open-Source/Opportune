@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import SearchBar from "../components/SearchBar";
 import DataGrid from "../components/DataGrid";
 import AlumniTile from "../components/AlumniTile";
 import { getAlumni } from "../api/users";
-import { APIResult } from "../api/requests";
 import { Alumni } from "../types/User";
 import { PaginatedData } from "../types/PaginatedData";
 import { IndustryType } from "../types/Company";
+import AlumniProfileModal from "../components/AlumniProfileModal";
 
 interface SearchBarData extends Record<string, string | string[]> {
   query: string;
@@ -15,32 +15,8 @@ interface SearchBarData extends Record<string, string | string[]> {
 }
 
 const Connect = () => {
-  const [alumni, setAlumni] = useState<PaginatedData<Alumni>>({
-    page: 0,
-    perPage: 10,
-    total: 0,
-    data: [],
-  });
-
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchAlumni = async () => {
-      setLoading(true);
-      const result: APIResult<PaginatedData<Alumni>> = await getAlumni({
-        page: alumni.page,
-        perPage: alumni.perPage,
-      });
-      if (result.success) {
-        setAlumni(result.data);
-      } else {
-        console.error(result.error); // not sure how we want to handle errors
-      }
-      setLoading(false);
-    };
-
-    fetchAlumni();
-  }, [alumni.page, alumni.perPage]);
+  const [selectedAlumni, setSelectedAlumni] = useState<Alumni | null>(null);
+  const [alumniProfileOpen, setAlumniProfileOpen] = useState(false);
 
   const [search, setSearch] = useState<SearchBarData>({
     query: "",
@@ -48,7 +24,7 @@ const Connect = () => {
     position: [],
   });
 
-  // Fetch paginated alumni whenever search options change
+  // fetch paginated alumni whenever search options change
   const getPaginatedOpenAlumni = useCallback(
     async (page: number, perPage: number) => {
       const res = await getAlumni({
@@ -74,12 +50,17 @@ const Connect = () => {
         } as PaginatedData<Alumni>;
       }
     },
-    [search, alumni],
+    [search],
   );
 
   const onAlumniClicked = (alumni: Alumni) => {
-    // TODO: Toggle modal for view alumni details
-    console.log(alumni);
+    setSelectedAlumni(alumni);
+    setAlumniProfileOpen(true);
+  };
+
+  const onAlumniProfileClose = () => {
+    setAlumniProfileOpen(false);
+    setSelectedAlumni(null);
   };
 
   return (
@@ -105,20 +86,21 @@ const Connect = () => {
         {/* Alumni Grid */}
         {/* Temporary Solution until we make the sidebar sticky */}
         <div className="overflow-y-auto max-h-[500px]">
-          {loading ? (
-            <p className="text-center">Loading...</p>
-          ) : (
-            <DataGrid<Alumni>
-              TileComponent={AlumniTile}
-              onTileClicked={onAlumniClicked}
-              cols={2}
-              maxRows={3}
-              useServerPagination
-              fetchData={getPaginatedOpenAlumni}
-            />
-          )}
+          <DataGrid<Alumni>
+            TileComponent={AlumniTile}
+            onTileClicked={onAlumniClicked}
+            cols={2}
+            maxRows={3}
+            useServerPagination
+            fetchData={getPaginatedOpenAlumni}
+          />
         </div>
       </div>
+      <AlumniProfileModal
+        isOpen={alumniProfileOpen}
+        onClose={onAlumniProfileClose}
+        alumni={selectedAlumni}
+      />
     </div>
   );
 };

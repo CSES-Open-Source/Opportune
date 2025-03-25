@@ -1,6 +1,5 @@
 import React from "react";
 import { Alumni } from "../types/User";
-import { FaExternalLinkAlt } from "react-icons/fa";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
@@ -31,22 +30,8 @@ const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
             <p className="text-sm text-gray-500">{"Class of "}</p>
           </div>
         </div>
-        {/* right: visit website link */}
-        <div className="p-8">
-          {data.linkedIn && (
-            <a
-              href={data.linkedIn}
-              onClick={(e) => e.stopPropagation()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-500 hover:text-primary transition-colors"
-            >
-              <FaExternalLinkAlt className="w-4 h-4" />
-            </a>
-          )}
-        </div>
       </div>
-      <div className="">
+      <div>
         {/* Company */}
         <div className="flex space-x-4 pl-2 pt-4">
           {data.company?.logo && (
@@ -81,11 +66,10 @@ const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
         </div>
         {/* Position, Email, Phone Number */}
         <ul className="pl-10 py-4 list-disc space-y-2">
-          {<li>{"position would go here"}</li>}
+          {data.position && <li>{data.position}</li>}
           {data.email && (
             <li>
               <a
-                href={"mailto::" + data.email}
                 onClick={(e) => e.stopPropagation()}
                 target="_blank"
                 rel="noopener noreferrer"
