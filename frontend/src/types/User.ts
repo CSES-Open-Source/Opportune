@@ -85,6 +85,5 @@ export interface GetAlumniQuery {
   page: number;
   perPage: number;
   query?: string;
-  company?: string;
-  position?: string;
+  industry?: string[];
 }

@@ -10,8 +10,7 @@ import AlumniProfileModal from "../components/AlumniProfileModal";
 
 interface SearchBarData extends Record<string, string | string[]> {
   query: string;
-  company: string[];
-  position: string[];
+  industry: string[];
 }
 
 const Connect = () => {
@@ -20,8 +19,7 @@ const Connect = () => {
 
   const [search, setSearch] = useState<SearchBarData>({
     query: "",
-    company: [],
-    position: [],
+    industry: [],
   });
 
   // fetch paginated alumni whenever search options change
@@ -31,8 +29,7 @@ const Connect = () => {
         page: page,
         perPage: perPage,
         query: search.query.length >= 1 ? search.query : undefined,
-        company: search.query,
-        position: search.query,
+        industry: search.industry,
       });
 
       if (res.success) {
