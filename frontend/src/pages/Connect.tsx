@@ -6,14 +6,7 @@ import { getAlumni } from "../api/users";
 import { APIResult } from "../api/requests";
 import { Alumni } from "../types/User";
 import { PaginatedData } from "../types/PaginatedData";
-
-/**
- * The users should be displayed in tile cards in a grid format.
- * Make sure to use server-side pagination to fetch the alumnis
- *    that are willing to share profile.
- * In the searchbar, there should be a dropdown querying for the
- *    industry of the company that the user works in.
- */
+import { IndustryType } from "../types/Company";
 
 const Connect = () => {
   const [alumni, setAlumni] = useState<PaginatedData<Alumni>>({
@@ -23,11 +16,8 @@ const Connect = () => {
     data: [],
   });
 
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const fetchAlumni = async () => {
-      setLoading(true);
       const result: APIResult<PaginatedData<Alumni>> = await getAlumni({
         page: alumni.page,
         perPage: alumni.perPage,
@@ -37,7 +27,6 @@ const Connect = () => {
       } else {
         console.error(result.error); // not sure how we want to handle errors
       }
-      setLoading(false);
     };
 
     fetchAlumni();
@@ -56,14 +45,7 @@ const Connect = () => {
             selections={[
               {
                 label: "Industry",
-                options: [
-                  "Tech",
-                  "Finance",
-                  "Healthcare",
-                  "Retail",
-                  "Software",
-                  "Consumer Electronics",
-                ],
+                options: [...Object.values(IndustryType)],
               },
             ]}
             placeholder="Search by name, company, or industry"
@@ -72,18 +54,13 @@ const Connect = () => {
         {/* Alumni Grid */}
         {/* Temporary Solution until we make the sidebar sticky */}
         <div className="overflow-y-auto max-h-[500px]">
-          {/* Temporary Solution until we make a more permanent loading solution */}
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <DataGrid
-              data={alumni.data}
-              usePagination={true}
-              TileComponent={AlumniTile}
-              cols={2}
-              maxRows={3}
-            />
-          )}
+          <DataGrid
+            data={alumni.data}
+            usePagination={true}
+            TileComponent={AlumniTile}
+            cols={2}
+            maxRows={3}
+          />
         </div>
       </div>
     </div>
