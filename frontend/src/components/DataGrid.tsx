@@ -12,6 +12,7 @@ interface GridStyle {
 
 interface BaseDataGridProps<T> {
   TileComponent: React.ComponentType<{ data: T }>;
+  onTileClicked?: (row: T) => void; // event emitter for item click
   cols: number; // Number of columns in the grid
   maxRows: number; // Maximum number of rows to display
   gridStyle?: GridStyle;
@@ -45,8 +46,14 @@ type DataGridProps<T> =
   | DataGridServerPaginationProps<T>;
 
 const DataGrid = <T extends object>(props: DataGridProps<T>) => {
-  const { TileComponent, cols, maxRows, useServerPagination, gridStyle } =
-    props;
+  const {
+    TileComponent,
+    onTileClicked,
+    cols,
+    maxRows,
+    useServerPagination,
+    gridStyle,
+  } = props;
 
   const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState<number>(0);
@@ -99,6 +106,12 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
     );
   }
 
+  const handleTileClick = (tile: T) => {
+    if (onTileClicked) {
+      onTileClicked(tile);
+    }
+  };
+
   return (
     <div
       style={{ ...gridStyle, gap: 0 }}
@@ -115,7 +128,11 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
           }}
         >
           {data.map((item, index) => (
-            <div key={index} className="card-wrapper">
+            <div
+              key={index}
+              className="card-wrapper"
+              onClick={() => handleTileClick(item)}
+            >
               <TileComponent data={item} />
             </div>
           ))}

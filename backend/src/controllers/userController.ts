@@ -286,6 +286,8 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
       id: user._id,
       email: user.email,
       name: user.name,
+      type: user.type,
+      profilePicture: user.profilePicture,
       linkedIn: user.linkedIn,
       phoneNumber: user.phoneNumber,
       company: user.company,
