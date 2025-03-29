@@ -4,42 +4,30 @@ import * as articleValidator from "src/validators/articleValidator";
 
 const userRouter = express.Router();
 
-/*
-For GET /api/articles, the return type should be { page, perPage, total, data }, 
-and the query is the search keyword, which should search both the title and 
-content of the article (feel free to just use the regex search built into mongoDB)
-*/
-
-userRouter.get(
-  "/alumni",
-  articleValidator.getOpenAlumniValidator,
-  articleController.getOpenAlumni,
-);
-
 userRouter.get(
   "/:id",
-  articleValidator.getarticleValidator,
-  articleController.getUserById,
+  articleValidator.getArticleValidator,
+  articleController.getArticleById,
 );
 
 userRouter.patch(
   "/:id",
-  articleValidator.updatearticleValidator,
-  articleController.updateUser,
+  articleValidator.updateArticleValidator,
+  articleController.updateArticle,
 );
 
 userRouter.delete(
   "/:id",
-  articleValidator.deletearticleValidator,
-  articleController.deleteUser,
+  articleValidator.deleteArticleValidator,
+  articleController.deleteArticle,
 );
 
-userRouter.get("/", articleController.getUsers);
+userRouter.get("/", articleController.getArticles);
 
 userRouter.post(
   "/",
-  articleValidator.createarticleValidator,
-  articleController.createUser,
+  articleValidator.createArticleValidator,
+  articleController.createArticle,
 );
 
 export default userRouter;
