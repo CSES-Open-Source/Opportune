@@ -22,7 +22,12 @@ export const getArticles = asyncHandler(async (req, res, next) => {
 
   // search by title if provided
   if (query) {
-    dbQuery.where("title").regex(new RegExp(query, "i"));
+    dbQuery.where({
+      $or: [
+        { title: { $regex: new RegExp(query, "i") } },
+        { content: { $regex: new RegExp(query, "i") } },
+      ],
+    });
   }
 
   // duplicate before pagination to get total count

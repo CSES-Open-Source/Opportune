@@ -1,7 +1,6 @@
 import express from "express";
-import * as userController from "src/controllers/userController";
-import preprocessCompany from "src/middlewares/preprocessCompany";
-import * as userValidator from "src/validators/userValidator";
+import * as articleController from "src/controllers/articleController";
+import * as articleValidator from "src/validators/articleValidator";
 
 const userRouter = express.Router();
 
@@ -13,36 +12,34 @@ content of the article (feel free to just use the regex search built into mongoD
 
 userRouter.get(
   "/alumni",
-  userValidator.getOpenAlumniValidator,
-  userController.getOpenAlumni,
+  articleValidator.getOpenAlumniValidator,
+  articleController.getOpenAlumni,
 );
 
 userRouter.get(
   "/:id",
-  userValidator.getUservalidator,
-  userController.getUserById,
+  articleValidator.getarticleValidator,
+  articleController.getUserById,
 );
 
 userRouter.patch(
   "/:id",
-  preprocessCompany,
-  userValidator.updateUserValidator,
-  userController.updateUser,
+  articleValidator.updatearticleValidator,
+  articleController.updateUser,
 );
 
 userRouter.delete(
   "/:id",
-  userValidator.deleteUserValidator,
-  userController.deleteUser,
+  articleValidator.deletearticleValidator,
+  articleController.deleteUser,
 );
 
-userRouter.get("/", userController.getUsers);
+userRouter.get("/", articleController.getUsers);
 
 userRouter.post(
   "/",
-  preprocessCompany,
-  userValidator.createUserValidator,
-  userController.createUser,
+  articleValidator.createarticleValidator,
+  articleController.createUser,
 );
 
 export default userRouter;
