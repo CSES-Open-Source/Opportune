@@ -6,7 +6,6 @@ import { getAlumni } from "../api/users";
 import { Alumni } from "../types/User";
 import { PaginatedData } from "../types/PaginatedData";
 import { IndustryType } from "../types/Company";
-import AlumniProfileModal from "../components/AlumniProfileModal";
 
 interface SearchBarData extends Record<string, string | string[]> {
   query: string;
@@ -14,9 +13,6 @@ interface SearchBarData extends Record<string, string | string[]> {
 }
 
 const Connect = () => {
-  const [selectedAlumni, setSelectedAlumni] = useState<Alumni | null>(null);
-  const [alumniProfileOpen, setAlumniProfileOpen] = useState(false);
-
   const [search, setSearch] = useState<SearchBarData>({
     query: "",
     industry: [],
@@ -50,24 +46,13 @@ const Connect = () => {
     [search],
   );
 
-  const onAlumniClicked = (alumni: Alumni) => {
-    setSelectedAlumni(alumni);
-    setAlumniProfileOpen(true);
-  };
-
-  const onAlumniProfileClose = () => {
-    setAlumniProfileOpen(false);
-    setSelectedAlumni(null);
-  };
-
   return (
     <div className="min-h-screen">
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="max-w-5xl h-screen mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-6">Alumni Directory</h1>
-          <p>Connect with graduates from your university</p>
         </div>
-        <div className="bg-white shadow-lg rounded-lg p-8 ">
+        <div className="bg-white border border-gray-300 shadow-sm rounded-lg px-8 py-5 mb-6">
           <h1 className="text-2xl font-bold mb-6">Find Alumni</h1>
           <SearchBar<SearchBarData>
             selections={[
@@ -76,28 +61,23 @@ const Connect = () => {
                 options: [...Object.values(IndustryType)],
               },
             ]}
-            placeholder="Search by name, company, or industry"
+            placeholder="Search by name, company, or position"
             onSubmitForm={setSearch}
           />
         </div>
         {/* Alumni Grid */}
         {/* Temporary Solution until we make the sidebar sticky */}
-        <div className="overflow-y-auto max-h-[500px]">
+        <div className="overflow-y-auto h-[70%]">
           <DataGrid<Alumni>
             TileComponent={AlumniTile}
-            onTileClicked={onAlumniClicked}
-            cols={2}
-            maxRows={3}
+            cols={3}
+            maxRows={5}
             useServerPagination
             fetchData={getPaginatedOpenAlumni}
+            className="p-2"
           />
         </div>
       </div>
-      <AlumniProfileModal
-        isOpen={alumniProfileOpen}
-        onClose={onAlumniProfileClose}
-        alumni={selectedAlumni}
-      />
     </div>
   );
 };
