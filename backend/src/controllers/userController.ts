@@ -25,6 +25,7 @@ interface AlumniResponse extends BaseUserResponse {
   phoneNumber?: string;
   company?: mongoose.Types.ObjectId;
   shareProfile?: boolean;
+  position?: string;
 }
 
 type UserResponse = StudentResponse | AlumniResponse;
@@ -35,7 +36,6 @@ type UserResponse = StudentResponse | AlumniResponse;
 export const getUsers = asyncHandler(async (_, res) => {
   const users = await User.find()
     .populate({ path: "company", model: Company })
-    .lean()
     .exec();
 
   res.status(200).json(users);
@@ -54,6 +54,7 @@ export const createUser = asyncHandler(async (req, res, next) => {
     _id,
     email,
     name,
+    profilePicture,
     type,
     linkedIn,
     phoneNumber,
@@ -61,14 +62,13 @@ export const createUser = asyncHandler(async (req, res, next) => {
     classLevel,
     company,
     shareProfile,
+    position,
   } = matchedData(req, { locations: ["body"] });
 
   // check if the user already exists
   const foundUser = await User.findOne({
     $or: [{ _id }, { email }],
-  })
-    .lean()
-    .exec();
+  }).exec();
 
   if (foundUser) {
     return next(createHttpError(409, "User already exists."));
@@ -82,17 +82,29 @@ export const createUser = asyncHandler(async (req, res, next) => {
     email,
     name,
     type,
+    profilePicture,
     linkedIn,
     phoneNumber,
     major,
     classLevel,
     company,
     shareProfile,
+    position,
   });
 
   await newUser.save();
 
-  res.status(201).json(newUser);
+  const populatedUser = await User.findById(newUser._id)
+    .populate({ path: "company", model: Company })
+    .exec();
+
+  if (!populatedUser) {
+    return next(
+      createHttpError(500, "Failed to populate company after user creation."),
+    );
+  }
+
+  res.status(201).json(populatedUser);
 });
 
 // @desc Get user by ID
@@ -107,7 +119,6 @@ export const getUserById = asyncHandler(async (req, res, next) => {
       path: "company",
       model: Company,
     })
-    .lean()
     .exec();
   if (!foundUser) {
     return next(createHttpError(404, "User not found."));
@@ -133,6 +144,7 @@ export const getUserById = asyncHandler(async (req, res, next) => {
       ...responseData,
       company: foundUser.company,
       shareProfile: foundUser.shareProfile,
+      position: foundUser.position,
     } as AlumniResponse;
 
     if (foundUser.shareProfile) {
@@ -169,7 +181,9 @@ export const updateUser = asyncHandler(async (req, res, next) => {
     id,
     { $set: validatedData },
     { new: true, runValidators: true },
-  );
+  )
+    .populate({ path: "company", model: Company })
+    .exec();
 
   // check if the user exists
   if (!foundUser) {
@@ -209,16 +223,46 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
     return next(createHttpError(400, validationErrorParser(errors)));
   }
 
-  const { page, perPage, query } = matchedData(req, { locations: ["query"] });
+  const { page, perPage, query, industry } = matchedData(req, {
+    locations: ["query"],
+  });
 
   const dbQuery = User.find({
     type: UserType.Alumni,
     shareProfile: true,
   });
 
-  // add a name search filter if provided
+  // combine company, position, and name filters
   if (query) {
-    dbQuery.where("name").regex(new RegExp(query, "i"));
+    const companyDocs = await Company.find({
+      $or: [
+        { name: { $regex: new RegExp(query, "i") } },
+        { industry: { $regex: new RegExp(query, "i") } },
+      ],
+    }).exec();
+
+    const companyIds = companyDocs.map((company) => company._id);
+
+    dbQuery.or([
+      { name: { $regex: new RegExp(query, "i") } },
+      { position: { $regex: new RegExp(query, "i") } },
+      { company: { $in: companyIds } },
+    ]);
+  }
+
+  // industry filter
+  if (industry) {
+    const industryArray = industry
+      .split(",")
+      .map((item: string) => new RegExp(item.trim(), "i"));
+
+    const industryDocs = await Company.find({
+      industry: { $in: industryArray },
+    }).exec();
+
+    const industryCompanyIds = industryDocs.map((company) => company._id);
+
+    dbQuery.where("company").in(industryCompanyIds);
   }
 
   // ensure count and paginate do not conflict
@@ -231,7 +275,6 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
       .skip(page * perPage)
       .limit(perPage)
       .populate({ path: "company", model: Company })
-      .lean()
       .exec(),
   ]);
 
@@ -243,10 +286,13 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
       id: user._id,
       email: user.email,
       name: user.name,
+      type: user.type,
+      profilePicture: user.profilePicture,
       linkedIn: user.linkedIn,
       phoneNumber: user.phoneNumber,
       company: user.company,
       shareProfile: user.shareProfile,
+      position: user.position,
     })),
   });
 });

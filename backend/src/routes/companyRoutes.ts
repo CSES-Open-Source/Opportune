@@ -1,8 +1,11 @@
 import express from "express";
+import multer from "multer";
 import * as companyController from "src/controllers/companyController";
 import * as companyValidator from "src/validators/companyValidator";
 
 const companyRouter = express.Router();
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 companyRouter.get(
   "/",
@@ -10,8 +13,11 @@ companyRouter.get(
   companyController.getCompanies,
 );
 
+companyRouter.get("/all", companyController.getAllCompanies);
+
 companyRouter.post(
   "/",
+  upload.single("logo"),
   companyValidator.createCompanyValidator,
   companyController.createCompany,
 );
@@ -24,6 +30,7 @@ companyRouter.get(
 
 companyRouter.patch(
   "/:id",
+  upload.single("logo"),
   companyValidator.updateCompanyValidator,
   companyController.updateCompany,
 );

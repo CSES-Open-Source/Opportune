@@ -1,5 +1,5 @@
 import { body, param, query } from "express-validator";
-import { Status } from "src/models/Application";
+import { SortingOptions, Status } from "src/models/Application";
 
 // Default values for page and perPage
 const DEFAULT_PAGE = 0;
@@ -19,8 +19,10 @@ const validateQuery = query("query")
 
 const validateStatusQuery = query("status")
   .optional()
+  .isString()
+  .toUpperCase()
   .custom((value) => {
-    const statuses = Array.isArray(value) ? value : [value];
+    const statuses = value.split(",");
     const validStatuses = Object.values(Status);
     for (const s of statuses) {
       if (!validStatuses.includes(s)) {
@@ -32,8 +34,10 @@ const validateStatusQuery = query("status")
 
 const validateSortBy = query("sortBy")
   .optional()
-  .isIn(["createdAt", "updatedAt", "process"])
-  .withMessage("Sort by must be one of: createdAt, updatedAt, process");
+  .isIn(Object.values(SortingOptions))
+  .withMessage(
+    `Sort by must be one of: ${Object.values(SortingOptions).join(", ")}.`,
+  );
 
 const validatePage = query("page")
   .default(DEFAULT_PAGE)
@@ -91,6 +95,7 @@ const validateProcess = [
     .isArray()
     .withMessage("process must be an array of application statuses."),
   body("process.*.status")
+    .toUpperCase()
     .isIn(["APPLIED", "OA", "PHONE", "FINAL", "OFFER", "REJECTED"])
     .withMessage(
       "Status must be one of: APPLIED, OA, PHONE, FINAL, OFFER, REJECTED",

@@ -122,7 +122,10 @@ export async function getAlumni(
   queries: GetAlumniQuery = { page: 0, perPage: 10 },
 ): Promise<APIResult<PaginatedData<Alumni>>> {
   try {
-    const response = await get(`/api/users/alumni`, { ...queries });
+    const response = await get(`/api/users/alumni`, {
+      ...queries,
+      industry: queries.industry?.join(",") || "",
+    });
     const json = (await response.json()) as PaginatedData<UserJSON>;
     const result = { ...json, data: json.data.map(parseAlumni) };
     return { success: true, data: result };

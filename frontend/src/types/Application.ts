@@ -24,27 +24,33 @@ export interface Application {
 
 export interface CreateApplicationRequest {
   userId: string;
-  companyId: string;
-  companyName: string;
+  company: Company;
   position: string;
   location?: string;
   link?: string;
-  process?: string;
+  process?: Array<{
+    status: Status;
+    date: string | Date;
+    note?: string;
+  }>;
 }
 
 export interface UpdateApplicationRequest {
   userId?: string;
-  companyId?: string;
-  companyName?: string;
+  company?: Company;
   position?: string;
   link?: string;
   location?: string;
-  process?: string;
+  process?: Array<{
+    status: Status;
+    date: string | Date;
+    note?: string;
+  }>;
 }
 
 export interface GetApplicationsByUserIDQuery {
-  page: number;
-  perPage: number;
+  page?: number;
+  perPage?: number;
   query?: string;
   status?: string;
   sortBy?: string;

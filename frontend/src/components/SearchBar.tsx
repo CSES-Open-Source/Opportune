@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaAngleDown, FaSistrix } from "react-icons/fa6";
+import camelize from "../utils/camelize";
 
 interface SelectionOption {
   label: string;
   options: string[];
+  single?: boolean; // Whether the selection option is single select
 }
 
 interface SearchBarProps<T> {
@@ -16,6 +18,7 @@ interface SearchBarProps<T> {
 interface CheckboxGroupProps {
   options: string[];
   selectedValues: string[];
+  single?: boolean;
   onUpdate: (values: string[]) => void;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -23,23 +26,29 @@ interface CheckboxGroupProps {
 // Subcomponent of the SearchBar component used to display a group of checkboxes for a selection option.
 const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   options,
+  single = false,
   selectedValues,
   onUpdate,
 }) => {
   const handleCheckboxChange = (value: string) => {
-    const newValues = selectedValues.includes(value)
-      ? selectedValues.filter((v) => v !== value)
-      : [...selectedValues, value];
+    let newValues;
+    if (single) {
+      newValues = [value];
+    } else {
+      newValues = selectedValues.includes(value)
+        ? selectedValues.filter((v) => v !== value)
+        : [...selectedValues, value];
+    }
     onUpdate(newValues);
   };
 
   return (
-    <div className="absolute top-12 flex flex-col gap-2 min-w-[150px] bg-background shadow-md rounded-md z-10">
+    <div className="absolute top-8 flex flex-col gap-2 min-w-[150px] bg-background shadow-md rounded-md z-10">
       <div className="flex flex-col gap-1 border border-gray-300 p-2 rounded-md">
         {options.map((option) => (
           <label key={option} className="flex items-center gap-2">
             <input
-              type="checkbox"
+              type={single ? "radio" : "checkbox"}
               checked={selectedValues.includes(option)}
               onChange={() => handleCheckboxChange(option)}
               className="form-checkbox"
@@ -64,14 +73,14 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
  * ```ts
  * interface FormData extends Record<string, string | string[]> {
  *     query: string;
- *     location: string[];
- *     department: string[];
- *     type: string[];
+ *     "location": string[];
+ *     "department": string[];
+ *     "type": string[];
  * }
  * ```
  *
  * @param {SearchBarProps<T>} props - The props for the SearchBar component.
- * @param {Array<{ label: string; options: string[] }>} props.selections - An array of selection objects, each containing a label and an array of options. The options will be displayed in a dropdown as checkboxes when the corresponding label is clicked.
+ * @param {Array<{ label: string; options: string[]; single: boolean }>} props.selections - An array of selection objects, each containing a label, an array of options, and whether or not it should be single select. The options will be displayed in a dropdown as checkboxes when the corresponding label is clicked.
  * @param {string} [props.placeholder="Search"] - The placeholder text for the search input field. Defaults to "Search".
  * @param {(formData: T) => void} [props.onSubmitForm] - A callback function to handle form submission. The function will be called with the current state of the form data as an argument when the form is submitted.
  * @param {string} [props.width="100%"] - The width of the search bar component. Defaults to "100%".
@@ -131,7 +140,16 @@ const SearchBar = <T extends Record<string, unknown>>({
 
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    const formData = { query, ...selectionValues } as unknown as T;
+
+    const camelizedSelectionValues = Object.keys(selectionValues).reduce(
+      (acc, key) => {
+        acc[camelize(key)] = selectionValues[key];
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    );
+
+    const formData = { query, ...camelizedSelectionValues } as unknown as T;
     if (onSubmitForm) {
       onSubmitForm(formData);
     }
@@ -184,6 +202,7 @@ const SearchBar = <T extends Record<string, unknown>>({
               <CheckboxGroup
                 options={selection.options}
                 selectedValues={selectionValues[selection.label]}
+                single={selection.single}
                 onUpdate={(values) =>
                   handleSelectionChange(selection.label, values)
                 }

@@ -25,6 +25,11 @@ const userSchema = new Schema({
     required: true,
     trim: true,
   },
+  profilePicture: {
+    type: String,
+    required: true,
+    trim: true,
+  },
   type: {
     type: String,
     required: true,
@@ -51,6 +56,12 @@ const userSchema = new Schema({
   classLevel: {
     type: String,
     required: false, // also eventually an enum?
+  },
+  // Only for alumni
+  position: {
+    type: String,
+    required: false,
+    trim: true,
   },
   // Only for alumni
   company: {

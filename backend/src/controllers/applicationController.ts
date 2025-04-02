@@ -1,19 +1,11 @@
-import Application from "src/models/Application";
+import Application, { SortingOptions } from "src/models/Application";
 import { Status } from "src/models/Application";
 import { matchedData, validationResult } from "express-validator";
 import validationErrorParser from "src/util/validationErrorParser";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import Company from "src/models/Company";
-import mongoose from "mongoose";
-
-// Interface for MongoDB query to fetch applications based on certain conditions
-// @interface getApplicationsByUserID
-interface ApplicationQuery {
-  userId: string;
-  $or?: { [key: string]: { $regex: string; $options: string } }[];
-  "process.status"?: { $in: string[] };
-}
+import mongoose, { PipelineStage } from "mongoose";
 
 // Interface for creating/updating an application
 // @interface CreateApplicationRequest
@@ -40,7 +32,6 @@ export const getAllApplications = asyncHandler(async (req, res, _) => {
   // Retrieve all applications from the database
   const applications = await Application.find()
     .populate({ path: "company", model: Company })
-    .lean()
     .exec();
 
   res.status(200).json(applications);
@@ -67,9 +58,7 @@ export const createApplication = asyncHandler(async (req, res, next) => {
     userId: applicationData.userId,
     company: applicationData.company,
     position: applicationData.position,
-  })
-    .lean()
-    .exec();
+  }).exec();
 
   if (existingApplication) {
     return next(createHttpError(409, "Application already exists"));
@@ -79,7 +68,17 @@ export const createApplication = asyncHandler(async (req, res, next) => {
   const newApplication = new Application(applicationData);
   await newApplication.save();
 
-  res.status(201).json(newApplication);
+  const populatedApplication = await Application.findById(newApplication._id)
+    .populate({ path: "company", model: Company })
+    .exec();
+
+  if (!populatedApplication) {
+    return next(
+      createHttpError(500, "Failed to populate company after user creation."),
+    );
+  }
+
+  res.status(201).json(populatedApplication);
 });
 
 //  @desc Get application by ID
@@ -102,7 +101,6 @@ export const getApplicationByID = asyncHandler(async (req, res, next) => {
   // Find the application by ID
   const application = await Application.findById(id)
     .populate({ path: "company", model: Company })
-    .lean()
     .exec();
 
   if (!application) {
@@ -147,7 +145,9 @@ export const updateApplicationByID = asyncHandler(async (req, res, next) => {
     id,
     { $set: validatedData },
     { new: true, runValidators: true },
-  );
+  )
+    .populate({ path: "company", model: Company })
+    .exec();
 
   if (!updatedApplication) {
     return next(createHttpError(404, "Application not found."));
@@ -174,7 +174,7 @@ export const deleteApplicationByID = asyncHandler(async (req, res, next) => {
   const { id } = matchedData(req, { locations: ["params"] }) as { id: string };
 
   // Find and delete the application by ID
-  const application = await Application.findByIdAndDelete(id).lean().exec();
+  const application = await Application.findByIdAndDelete(id).exec();
 
   if (!application) {
     return next(createHttpError(404, "Application not found."));
@@ -211,61 +211,96 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
   });
 
   // Get applications from specific users
-  const dbQuery: ApplicationQuery = { userId };
+  const dbQuery: PipelineStage[] = [
+    { $match: { userId: userId } },
+    {
+      $lookup: {
+        from: "companies",
+        localField: "company",
+        foreignField: "_id",
+        as: "company",
+      },
+    },
+    { $unwind: "$company" },
+  ];
 
   // Convert status to an array
-  const statusArray = status ? (Array.isArray(status) ? status : [status]) : [];
+  const statusArray = status ? status.split(",") : [];
 
   // Search query provided then filter by position & companyName
   if (query) {
-    dbQuery.$or = [
-      { position: { $regex: query, $options: "i" } },
-      { companyName: { $regex: query, $options: "i" } },
-    ];
+    dbQuery.push({
+      $match: {
+        $or: [
+          { "company.name": { $regex: query, $options: "i" } },
+          { position: { $regex: query, $options: "i" } },
+          { location: { $regex: query, $options: "i" } },
+        ],
+      },
+    });
   }
 
   // If status filter is provided and non empty then filter by status
   if (statusArray.length > 0) {
-    dbQuery["process.status"] = { $in: statusArray };
+    dbQuery.push({
+      $match: { "process.status": { $in: statusArray } },
+    });
   }
 
   // The sorting logic depending on the query
   let sortOptions = {};
   switch (sortBy) {
-    case "createdAt":
-      sortOptions = { createdAt: -1 };
-      break;
-    case "updatedAt":
+    case SortingOptions.Modified:
       sortOptions = { updatedAt: -1 };
       break;
-    case "process":
-      sortOptions = { "process.date": -1 };
+    case SortingOptions.Company:
+      sortOptions = { "company.name": 1 };
+      break;
+    case SortingOptions.Position:
+      sortOptions = { position: 1 };
       break;
     default:
       sortOptions = { createdAt: -1 };
   }
 
+  // Add sorting and pagination to the aggregation pipeline
+  dbQuery.push({
+    $sort: {
+      ...sortOptions,
+    },
+  });
+
   // Build up the result that will be outputted (Aggregation)
   const applications = await Application.aggregate([
-    { $match: dbQuery },
-    { $addFields: { latestProcessDate: { $max: "$process.date" } } },
-    { $sort: sortOptions },
+    ...dbQuery,
     { $skip: page * perPage },
     { $limit: perPage },
-    {
-      $project: {
-        userId: 1,
-        companyName: 1,
-        position: 1,
-        process: 1,
-        createdAt: 1,
-        updatedAt: 1,
-      },
-    },
-  ]);
+  ]).exec();
 
   // Count total documents found from query
-  const total = await Application.countDocuments(dbQuery);
+  const countResults = await Application.aggregate([
+    ...dbQuery,
+    { $count: "total" },
+  ]).exec();
+
+  // Extract total count from the aggregation result
+  const total = countResults.length > 0 ? countResults[0].total : 0;
+
+  // Sort by date applied
+  if (sortBy === SortingOptions.Applied) {
+    applications.sort(
+      (a, b) => b.process[0].date.getTime() - a.process[0].date.getTime(),
+    );
+  }
+
+  // Sort by status
+  if (sortBy === SortingOptions.Status) {
+    applications.sort((a, b) => {
+      const statusA = a.process[a.process.length - 1].status;
+      const statusB = b.process[b.process.length - 1].status;
+      return statusA.localeCompare(statusB);
+    });
+  }
 
   res.status(200).json({
     page,

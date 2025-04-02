@@ -6,6 +6,7 @@ import {
   UpdateCompanyRequest,
 } from "../types/Company";
 import { PaginatedData } from "../types/PaginatedData";
+import objectToFormData from "../utils/objectToFormData";
 import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
 
 function parseCompany(company: CompanyJSON): Company {
@@ -19,7 +20,14 @@ function parseCompany(company: CompanyJSON): Company {
  * @returns A list of companies
  */
 export async function getCompanies(
-  query?: CompanyQuery,
+  query?: CompanyQuery & {
+    page?: number;
+    perPage?: number;
+    query?: string;
+    state?: string;
+    industry?: string;
+    employees?: string;
+  },
 ): Promise<APIResult<PaginatedData<Company>>> {
   try {
     const response = await get("/api/companies", { ...query });
@@ -28,6 +36,17 @@ export async function getCompanies(
       ...json,
       data: json.data.map(parseCompany),
     } as PaginatedData<Company>;
+    return { success: true, data: res };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+export async function getAllCompanies(): Promise<APIResult<Company[]>> {
+  try {
+    const response = await get("/api/companies/all");
+    const json = (await response.json()) as CompanyJSON[];
+    const res = json.map(parseCompany) as Company[];
     return { success: true, data: res };
   } catch (error) {
     return handleAPIError(error);
@@ -57,10 +76,10 @@ export async function getCompanyById(id: string): Promise<APIResult<Company>> {
  * @returns The created company object
  */
 export async function createCompany(
-  company: CreateCompanyRequest,
+  company: CreateCompanyRequest & { name: string },
 ): Promise<APIResult<Company>> {
   try {
-    const response = await post("/api/companies", company);
+    const response = await post("/api/companies", objectToFormData(company));
     const json = (await response.json()) as CompanyJSON;
     return { success: true, data: parseCompany(json) };
   } catch (error) {
@@ -80,7 +99,10 @@ export async function updateCompany(
   company: UpdateCompanyRequest,
 ): Promise<APIResult<Company>> {
   try {
-    const response = await patch(`/api/companies/${id}`, company);
+    const response = await patch(
+      `/api/companies/${id}`,
+      objectToFormData(company),
+    );
     const json = (await response.json()) as CompanyJSON;
     return { success: true, data: parseCompany(json) };
   } catch (error) {

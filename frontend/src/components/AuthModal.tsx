@@ -10,6 +10,7 @@ import { FiPhone } from "react-icons/fi";
 import { FaCheck, FaXmark } from "react-icons/fa6";
 import "../styles/Dropdown.css";
 import ProfileCompletion from "./ProfileCompletion";
+import CompanyDropdown from "./CompanyDropdown";
 
 const AuthModal = () => {
   const {
@@ -24,12 +25,16 @@ const AuthModal = () => {
   const [stage, setStage] = useState<number>(0);
   const totalStages = 3;
   const [selectedType, setSelectedType] = useState<UserType | null>(null);
+  const [isValidPhoneNumber, setIsValidPhoneNumber] = useState<boolean>(true);
+  const [isValidLinkedIn, setIsValidLinkedIn] = useState<boolean>(true);
   const [newUser, setNewUser] = useState<CreateUserRequest>({
     _id: "",
     email: "",
     name: "",
+    profilePicture: "",
     type: UserType.Student,
   });
+  const [canProceed, setCanProceed] = useState<boolean>(false);
 
   const toast = useRef<Toast>(null);
 
@@ -45,6 +50,7 @@ const AuthModal = () => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        profilePicture: user.profilePicture,
       }));
     }
   }, [user]);
@@ -61,6 +67,14 @@ const AuthModal = () => {
     }
   }, [toast, error, clearAuthError]);
 
+  useEffect(() => {
+    setCanProceed(
+      (stage === 0 && selectedType !== null) ||
+        (stage === 1 && isValidLinkedIn && isValidPhoneNumber) ||
+        stage === 2,
+    );
+  }, [stage, selectedType, isValidLinkedIn, isValidPhoneNumber]);
+
   const onSelectType = (type: UserType) => {
     setSelectedType(type);
     if (type === UserType.Student) {
@@ -70,6 +84,60 @@ const AuthModal = () => {
     } else {
       setNewUser({ ...newUser, type });
     }
+  };
+
+  const onLinkedInChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+
+    if (input === "") {
+      setNewUser((prev) => ({ ...prev, linkedIn: undefined }));
+      setIsValidLinkedIn(true);
+      return;
+    }
+
+    try {
+      new URL(input);
+      setIsValidLinkedIn(true);
+    } catch {
+      setIsValidLinkedIn(false);
+    }
+
+    setNewUser((prev) => ({ ...prev, linkedIn: input }));
+  };
+
+  const onPhoneNumberChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    const cleanedInput = input.replace(/\D/g, ""); // Remove non-digits
+
+    let formattedNumber = "";
+
+    if (cleanedInput.length > 0) {
+      if (cleanedInput.length < 4) {
+        formattedNumber = `(${cleanedInput}`;
+      } else if (cleanedInput.length < 7) {
+        formattedNumber = `(${cleanedInput.slice(0, 3)}) ${cleanedInput.slice(
+          3,
+        )}`;
+      } else {
+        formattedNumber = `(${cleanedInput.slice(0, 3)}) ${cleanedInput.slice(
+          3,
+          6,
+        )}-${cleanedInput.slice(6, 10)}`;
+      }
+      setNewUser((prev) => ({
+        ...prev,
+        phoneNumber: formattedNumber,
+      }));
+    } else {
+      setNewUser((prev) => ({
+        ...prev,
+        phoneNumber: undefined,
+      }));
+    }
+
+    setIsValidPhoneNumber(
+      !(cleanedInput.length > 0 && cleanedInput.length < 10),
+    );
   };
 
   return (
@@ -155,15 +223,14 @@ const AuthModal = () => {
                         <input
                           type="url"
                           id="linkedIn"
-                          className="block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
-                          placeholder="https://linkedin.com/in/yourprofile"
+                          className={`block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none ${
+                            isValidLinkedIn
+                              ? "focus:border-blue-500"
+                              : "border-red-600"
+                          }`}
+                          placeholder="Add LinkedIn profile"
                           value={newUser.linkedIn || ""}
-                          onChange={(e) =>
-                            setNewUser((prev) => ({
-                              ...prev,
-                              linkedIn: e.target.value,
-                            }))
-                          }
+                          onChange={onLinkedInChanged}
                         />
                       </div>
                     </div>
@@ -189,15 +256,14 @@ const AuthModal = () => {
                         <input
                           type="tel"
                           id="phoneNumber"
-                          className="block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
-                          placeholder="(555) 123-4567"
+                          className={`block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none ${
+                            isValidPhoneNumber
+                              ? "focus:border-blue-500"
+                              : "border-red-600"
+                          }`}
+                          placeholder="Add phone number"
                           value={newUser.phoneNumber || ""}
-                          onChange={(e) =>
-                            setNewUser((prev) => ({
-                              ...prev,
-                              phoneNumber: e.target.value,
-                            }))
-                          }
+                          onChange={onPhoneNumberChanged}
                         />
                       </div>
                     </div>
@@ -278,19 +344,16 @@ const AuthModal = () => {
                       >
                         Company (Optional)
                       </label>
-                      <Dropdown
-                        id="company"
+                      <CompanyDropdown
                         value={newUser.company}
-                        options={[]}
                         onChange={(e) =>
                           setNewUser((prev) => ({
                             ...prev,
                             company: e.value,
                           }))
                         }
-                        placeholder="Select your company"
-                        className="border-2 p-[2px] border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
-                        filter
+                        className="w-full"
+                        dropdownClassName="w-full border-2 p-[2px] border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
                       />
                       <p className="text-xs text-gray-500 mt-2">
                         {
@@ -298,6 +361,32 @@ const AuthModal = () => {
                         }
                       </p>
                     </div>
+
+                    {newUser.company && (
+                      <div className="flex flex-col">
+                        <label
+                          htmlFor="position"
+                          className="text-sm font-medium text-gray-700 mb-1"
+                        >
+                          Position (Optional)
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            id="position"
+                            className="block w-full pl-3 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                            placeholder="Software Engineer"
+                            value={newUser.position || ""}
+                            onChange={(e) =>
+                              setNewUser((prev) => ({
+                                ...prev,
+                                position: e.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     <div className="flex flex-col">
                       <label className="text-sm font-medium text-gray-700 mb-3">
@@ -364,9 +453,7 @@ const AuthModal = () => {
               </button>
               <button
                 className={`w-24 px-4 py-2 rounded-md text-white font-medium transition-colors ${
-                  selectedType !== null
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-blue-300"
+                  canProceed ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-300"
                 }`}
                 onClick={() => {
                   if (stage === totalStages - 1) {
@@ -379,7 +466,7 @@ const AuthModal = () => {
                     setStage(stage + 1);
                   }
                 }}
-                disabled={selectedType === null}
+                disabled={!canProceed}
               >
                 {stage === totalStages - 1 ? "Submit" : "Next"}
               </button>
@@ -392,6 +479,7 @@ const AuthModal = () => {
           <ProfileCompletion
             onConfirm={() => {
               setIsProfileComplete(true);
+              setStage(0);
             }}
           />
         )}

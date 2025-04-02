@@ -30,13 +30,19 @@ const validateName = body("name")
   .isString()
   .withMessage("name must be a string.")
   .trim()
-  .isLength({ min: 2 })
-  .withMessage("name must be at least 2 characters.")
+  .isLength({ min: 1 })
+  .withMessage("name must be at least 1 characters.")
   .notEmpty()
   .withMessage("name is required.");
 
+const validateProfilePicture = body("profilePicture")
+  .isString()
+  .withMessage("profilePicture must be a string.")
+  .trim()
+  .isURL({ require_valid_protocol: true })
+  .withMessage("profilePicture must be a valid URL.");
+
 const validateType = body("type")
-  .optional()
   .isString()
   .withMessage("type of account must be a string.")
   .trim()
@@ -51,10 +57,10 @@ const validateLinkedIn = body("linkedIn")
   .isURL({ require_valid_protocol: true })
   .withMessage("linkedIn must be a valid URL.");
 
-// todo: likely needs better parsing for international numbers
+// TODO: likely needs better parsing for international numbers (currently set to string to allow frontend format to pass)
 const validatePhoneNumber = body("phoneNumber")
   .optional()
-  .isMobilePhone("any")
+  .isString()
   .withMessage("phoneNumber must be a valid phone number.");
 
 // Only for students
@@ -78,8 +84,8 @@ const validateClassLevel = body("classLevel")
 // Only for alumni
 const validateCompany = body("company")
   .optional()
-  .isString()
-  .withMessage("company must be a valid string.")
+  .isMongoId()
+  .withMessage("invalid company. (Must be a Mongo ObjectID.)")
   .trim();
 
 // Only for alumni
@@ -87,6 +93,13 @@ const validateShareProfile = body("shareProfile")
   .optional()
   .isBoolean()
   .withMessage("shareProfile must be a boolean.");
+
+// only for alumni
+const validatePosition = body("position")
+  .optional()
+  .isString()
+  .withMessage("position must be a string.")
+  .trim();
 
 const validatePage = query("page")
   .default(DEFAULT_PAGE)
@@ -106,10 +119,29 @@ const validateQuery = query("query")
   .withMessage("query must be a string.")
   .trim();
 
+const validateCompanyName = query("company")
+  .optional()
+  .isString()
+  .withMessage("company (name) must be a string.")
+  .trim();
+
+const validatePositionQuery = query("position")
+  .optional()
+  .isString()
+  .withMessage("position must be a string.")
+  .trim();
+
+const validateIndustry = query("industry")
+  .optional()
+  .isString()
+  .withMessage("industry must be a string.")
+  .trim();
+
 export const createUserValidator = [
   validateIdBody,
   validateEmail,
   validateName,
+  validateProfilePicture,
   validateType,
   validateLinkedIn,
   validatePhoneNumber,
@@ -117,6 +149,7 @@ export const createUserValidator = [
   validateClassLevel,
   validateCompany,
   validateShareProfile,
+  validatePosition,
 ];
 
 export const getUservalidator = [validateIdParam];
@@ -124,14 +157,16 @@ export const getUservalidator = [validateIdParam];
 export const updateUserValidator = [
   validateIdParam,
   validateName.optional(),
-  validateEmail,
-  validateType,
+  validateEmail.optional(),
+  validateProfilePicture.optional(),
+  validateType.optional(),
   validateLinkedIn,
   validatePhoneNumber,
   validateMajor,
   validateClassLevel,
   validateCompany,
   validateShareProfile,
+  validatePosition,
 ];
 
 export const deleteUserValidator = [validateIdParam];
@@ -140,4 +175,7 @@ export const getOpenAlumniValidator = [
   validatePage,
   validatePerPage,
   validateQuery,
+  validateCompanyName,
+  validatePositionQuery,
+  validateIndustry,
 ];
