@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { LuGraduationCap, LuBriefcase, LuMail, LuShare2 } from "react-icons/lu";
+import {
+  LuGraduationCap,
+  LuBriefcase,
+  LuMail,
+  LuShare2,
+  LuBuilding2,
+} from "react-icons/lu";
 import { FaLinkedin } from "react-icons/fa";
 import { FiPhone } from "react-icons/fi";
 import { FiEdit } from "react-icons/fi";
@@ -385,65 +391,104 @@ const Profile = () => {
 
             {/* Alumni-specific Information */}
             {user.type === UserType.Alumni && !isEditing && (
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                  Professional Information
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      <div className="flex items-center gap-2">
-                        <LuBriefcase size={16} />
-                        <span>Company</span>
-                      </div>
-                    </label>
-                    <p className="text-gray-800">
-                      {user.company?.name || "Not specified"}
-                    </p>
-                  </div>
+              <div>
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                    Professional Information
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500 mb-1">
+                        <div className="flex items-center gap-2">
+                          <LuBuilding2 size={16} />
+                          <span>Company</span>
+                        </div>
+                      </label>
+                      <p className="text-gray-800">
+                        {user.company?.name || "Not specified"}
+                      </p>
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      <div className="flex items-center gap-2">
-                        <LuShare2 size={16} />
-                        <span>Share Profile</span>
-                      </div>
-                    </label>
-                    <p className="text-gray-800">
-                      {user.shareProfile
-                        ? "Visible to students"
-                        : "Not shared with students"}
-                    </p>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500 mb-1">
+                        <div className="flex items-center gap-2">
+                          <LuBriefcase size={16} />
+                          <span>Position</span>
+                        </div>
+                      </label>
+                      <p className="text-gray-800">
+                        {user.position || "Not specified"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500 mb-1">
+                        <div className="flex items-center gap-2">
+                          <LuShare2 size={16} />
+                          <span>Share Profile</span>
+                        </div>
+                      </label>
+                      <p className="text-gray-800">
+                        {user.shareProfile
+                          ? "Visible to students"
+                          : "Not shared with students"}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
             {updatedUser.type === UserType.Alumni && isEditing && (
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                  Professional Information
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      <div className="flex items-center gap-2">
-                        <LuBriefcase size={16} />
-                        <span>Company</span>
-                      </div>
-                    </label>
-                    <CompanyDropdown
-                      value={updatedUser.company}
-                      onChange={(e) =>
-                        setUpdatedUser((prev) => {
-                          return { ...prev, company: e.target.value };
-                        })
-                      }
-                      className="w-full px-1"
-                      dropdownClassName="w-full border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
+              <div>
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                    Professional Information
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500 mb-1">
+                        <div className="flex items-center gap-2">
+                          <LuBuilding2 size={16} />
+                          <span>Company</span>
+                        </div>
+                      </label>
+                      <CompanyDropdown
+                        value={updatedUser.company}
+                        onChange={(e) =>
+                          setUpdatedUser((prev) => {
+                            return { ...prev, company: e.target.value };
+                          })
+                        }
+                        className="w-full px-1"
+                        dropdownClassName="w-full border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                      />
+                    </div>
 
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500 mb-1">
+                        <div className="flex items-center gap-2">
+                          <LuBriefcase size={16} />
+                          <span>Position</span>
+                        </div>
+                      </label>
+                      <input
+                        type="text"
+                        value={updatedUser.position}
+                        placeholder="Enter your position"
+                        onChange={(e) =>
+                          handleInputChange("position", e.target.value)
+                        }
+                        className="w-full p-2 border-2 focus:outline-none focus:border-blue-500 border-gray-300 rounded-md"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">
                       <div className="flex items-center gap-2">
