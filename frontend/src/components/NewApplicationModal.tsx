@@ -11,9 +11,14 @@ import { Toast } from "primereact/toast";
 interface NewApplicationModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onNewApplication: () => void;
 }
 
-const NewApplicationModal = ({ isOpen, onClose }: NewApplicationModalProps) => {
+const NewApplicationModal = ({
+  isOpen,
+  onClose,
+  onNewApplication,
+}: NewApplicationModalProps) => {
   const { user } = useAuth();
 
   const toast = useRef<Toast>(null);
@@ -51,6 +56,15 @@ const NewApplicationModal = ({ isOpen, onClose }: NewApplicationModalProps) => {
     }
   };
 
+  const resetInputs = () => {
+    setCompany(undefined);
+    setPosition("");
+    setLocation("");
+    setLink("");
+    setIsValidPosition(false);
+    setIsValidLink(true);
+  };
+
   const onSave = async () => {
     if (!user || !company || !isValidPosition || !isValidLink) {
       return;
@@ -80,6 +94,8 @@ const NewApplicationModal = ({ isOpen, onClose }: NewApplicationModalProps) => {
       });
     }
 
+    resetInputs();
+    onNewApplication();
     onClose();
   };
 

@@ -146,7 +146,7 @@ const AuthModal = () => {
         isOpen={!isProfileComplete}
         disableClose={true}
         useOverlay={true}
-        className="w-[75vh] h-[55vh] rounded-xl flex flex-col px-8 py-4"
+        className="w-[70vh] h-[70vh] rounded-xl flex flex-col px-8 py-4"
       >
         {/* Complete Profile */}
         {stage !== totalStages && (
@@ -161,7 +161,7 @@ const AuthModal = () => {
               showValue={false}
             ></ProgressBar>
 
-            <div className="w-full h-[70%] flex items-center justify-center">
+            <div className="w-full h-[80%] flex items-center justify-center">
               {/* Type */}
               {stage === 0 && (
                 <div className="w-full flex items-center justify-center flex-col flex-1">
@@ -171,7 +171,7 @@ const AuthModal = () => {
                   <div className="flex gap-6 w-full mb-auto">
                     <button
                       onClick={() => onSelectType(UserType.Student)}
-                      className={`flex-1 border-2 rounded-lg px-6 py-10 flex flex-col items-center justify-center transition-all ${
+                      className={`flex-1 border-2 rounded-lg px-6 py-14 flex flex-col items-center justify-center transition-all ${
                         selectedType === UserType.Student
                           ? "border-blue-500 bg-blue-50"
                           : "border-gray-200 hover:border-blue-300 hover:bg-blue-50/50"
@@ -182,7 +182,7 @@ const AuthModal = () => {
                     </button>
                     <button
                       onClick={() => onSelectType(UserType.Alumni)}
-                      className={`flex-1 border-2 rounded-lg px-6 py-10 flex flex-col items-center justify-center transition-all ${
+                      className={`flex-1 border-2 rounded-lg px-6 py-14 flex flex-col items-center justify-center transition-all ${
                         selectedType === UserType.Alumni
                           ? "border-blue-500 bg-blue-50"
                           : "border-gray-200 hover:border-blue-300 hover:bg-blue-50/50"
@@ -375,7 +375,7 @@ const AuthModal = () => {
                             type="text"
                             id="position"
                             className="block w-full pl-3 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
-                            placeholder="Software Engineer"
+                            placeholder="Enter your position"
                             value={newUser.position || ""}
                             onChange={(e) =>
                               setNewUser((prev) => ({

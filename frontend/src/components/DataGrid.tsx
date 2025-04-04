@@ -11,16 +11,21 @@ interface GridStyle {
 }
 
 interface BaseDataGridProps<T> {
+  data?: T[];
+  fetchData?: (page: number, perPage: number) => Promise<PaginatedData<T>>;
   TileComponent: React.ComponentType<{ data: T }>;
   onTileClicked?: (row: T) => void; // event emitter for item click
   cols: number; // Number of columns in the grid
   maxRows: number; // Maximum number of rows to display
   gridStyle?: GridStyle;
+  className?: string;
   useServerPagination?: boolean;
+  usePagination?: boolean;
 }
 
 interface DataGridNoPaginationProps<T> extends BaseDataGridProps<T> {
   data: T[];
+  fetchData?: undefined;
   usePagination?: false;
   useServerPagination?: false;
 }
@@ -29,6 +34,7 @@ interface DataGridPaginationProps<T>
   extends BaseDataGridProps<T>,
     UsePagination {
   data: T[];
+  fetchData?: undefined;
   usePagination: true;
   useServerPagination?: false;
 }
@@ -36,7 +42,9 @@ interface DataGridPaginationProps<T>
 interface DataGridServerPaginationProps<T>
   extends BaseDataGridProps<T>,
     UsePagination {
+  data?: undefined;
   fetchData: (page: number, perPage: number) => Promise<PaginatedData<T>>;
+  usePagination?: undefined;
   useServerPagination: true;
 }
 
@@ -52,6 +60,7 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
     cols,
     maxRows,
     useServerPagination,
+    className = "",
     gridStyle,
   } = props;
 
@@ -82,7 +91,15 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
 
       setLoading(false);
     }
-  }, [props, page, perPage, useServerPagination, maxRows, cols]);
+  }, [
+    props.data,
+    props.usePagination,
+    page,
+    perPage,
+    useServerPagination,
+    maxRows,
+    cols,
+  ]);
 
   // Handle server-side pagination
   useEffect(() => {
@@ -98,7 +115,7 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
     };
 
     loadData();
-  }, [page, perPage, props, useServerPagination]);
+  }, [page, perPage, props.fetchData, useServerPagination]);
 
   if (loading) {
     return (
@@ -115,7 +132,7 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
   return (
     <div
       style={{ ...gridStyle, gap: 0 }}
-      className="flex flex-col h-full overflow-hidden"
+      className={`flex flex-col h-full overflow-hidden ${className}`}
     >
       {/* Grid container */}
       <div className="flex-1 overflow-y-auto">
@@ -124,7 +141,6 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
           style={{
             gridTemplateColumns: `repeat(${cols}, 1fr)`,
             gap: gridStyle?.gap || "1rem",
-            padding: "1rem",
           }}
         >
           {data.map((item, index) => (

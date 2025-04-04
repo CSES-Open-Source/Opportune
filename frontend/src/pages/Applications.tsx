@@ -185,6 +185,7 @@ const Applications = () => {
       <NewApplicationModal
         isOpen={newApplicationOpen}
         onClose={() => setNewApplicationOpen(false)}
+        onNewApplication={() => setSearch({ ...search })}
       />
     </div>
   );
