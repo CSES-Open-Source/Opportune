@@ -96,7 +96,7 @@ const Modal = (props: ModalProps): React.JSX.Element => {
       {/* modal container */}
       <div
         {...props}
-        className={`relative bg-white mx-auto w-[50%] p-2 hover:cursor-default ${className}`}
+        className={`relative bg-white mx-auto w-[50%] hover:cursor-default ${className}`}
       >
         {!disableClose && (
           <FaXmark
