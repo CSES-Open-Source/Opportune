@@ -6,7 +6,7 @@ import companyRouter from "src/routes/companyRoutes";
 import applicationRouter from "src/routes/applicationRoutes";
 import savedApplicationRouter from "src/routes/savedApplicationRoutes";
 import leetcodeQuestionRouter from "src/routes/leetcodeQuestionRoutes";
-import interviewQuestionRouter from "./routes/InterviewQuestionRoutes";
+import interviewQuestionRouter from "../src/routes/InterviewQuestionRoutes";
 import errorHandler from "src/middlewares/errorHandler";
 import { logger } from "src/middlewares/logger";
 
