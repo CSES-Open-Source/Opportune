@@ -88,7 +88,6 @@ export const createLeetcodeQuestion = asyncHandler(async (req, res, next) => {
     title: leetcodeQuestionData.title,
     url: leetcodeQuestionData.url,
   })
-    .populate({ path: "company", model: Company })
     .lean()
     .exec();
 
@@ -99,6 +98,18 @@ export const createLeetcodeQuestion = asyncHandler(async (req, res, next) => {
   // Create new leetcodeQuestion with validated data
   const newLeetcodeQuestion = new LeetcodeQuestion(leetcodeQuestionData);
   await newLeetcodeQuestion.save();
+
+  const populatedLeetcodeQuestion = await LeetcodeQuestion.findById(
+    newLeetcodeQuestion._id,
+  )
+    .populate({ path: "company", model: Company })
+    .exec();
+
+  if (!populatedLeetcodeQuestion) {
+    return next(
+      createHttpError(500, "Failed to populate company after user creation."),
+    );
+  }
 
   res.status(201).json(newLeetcodeQuestion);
 });
