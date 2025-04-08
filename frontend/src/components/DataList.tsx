@@ -10,13 +10,17 @@ interface ListStyle {
 }
 
 interface BaseDataListProps<T> {
+  data?: T[];
+  fetchData?: (page: number, perPage: number) => Promise<PaginatedData<T>>;
   TileComponent: React.ComponentType<{ data: T }>; // Custom tile component to display each item
   useServerPagination?: boolean; // Toggle server-side pagination
+  usePagination?: boolean;
   listStyle?: ListStyle; // Style for the DataList container
 }
 
 interface DataListNoPaginationProps<T> extends BaseDataListProps<T> {
   data: T[]; // Data to display when not using server pagination
+  fetchData?: undefined;
   usePagination?: false;
   useServerPagination?: false; // Toggle server-side pagination
 }
@@ -25,6 +29,7 @@ interface DataListPaginationProps<T>
   extends BaseDataListProps<T>,
     UsePagination {
   data: T[]; // Data to display when not using server pagination
+  fetchData?: undefined;
   usePagination: true;
   useServerPagination?: false; // Toggle server-side pagination
 }
@@ -32,7 +37,9 @@ interface DataListPaginationProps<T>
 interface DataListServerPaginationProps<T>
   extends BaseDataListProps<T>,
     UsePagination {
+  data?: undefined;
   fetchData: (page: number, perPage: number) => Promise<PaginatedData<T>>; // Function to fetch data for server pagination
+  usePagination?: undefined;
   useServerPagination: true; // Enable server-side pagination
   listStyle?: ListStyle; // Style for the DataList container
 }
@@ -66,7 +73,7 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
         setLoading(false);
       }
     }
-  }, [props, page, perPage, useServerPagination]);
+  }, [props.data, props.usePagination, page, perPage, useServerPagination]);
 
   // Handle server-side pagination
   useEffect(() => {
@@ -82,7 +89,7 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
     };
 
     loadData();
-  }, [page, perPage, props, useServerPagination]);
+  }, [page, perPage, props.fetchData, useServerPagination]);
 
   // TODO: style loading with spinner
   if (loading) {
