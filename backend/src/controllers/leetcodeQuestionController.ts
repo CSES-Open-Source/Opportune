@@ -88,6 +88,7 @@ export const createLeetcodeQuestion = asyncHandler(async (req, res, next) => {
     title: leetcodeQuestionData.title,
     url: leetcodeQuestionData.url,
   })
+    .populate({ path: "company", model: Company })
     .lean()
     .exec();
 
@@ -156,7 +157,7 @@ export const updateLeetcodeQuestion = asyncHandler(async (req, res, next) => {
     id,
     { $set: validatedData },
     { new: true, runValidators: true },
-  );
+  ).populate({ path: "company", model: Company });
 
   if (!updatedLeetcodeQuestion) {
     return next(createHttpError(404, "Leetcode Question not found"));
