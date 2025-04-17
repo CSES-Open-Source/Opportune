@@ -9,6 +9,7 @@ import leetcodeQuestionRouter from "src/routes/leetcodeQuestionRoutes";
 import interviewQuestionRouter from "./routes/InterviewQuestionRoutes";
 import errorHandler from "src/middlewares/errorHandler";
 import { logger } from "src/middlewares/logger";
+import tipRouter from "./routes/tipRoutes";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/api/companies", companyRouter);
 app.use("/api/applications/saved", savedApplicationRouter);
 app.use("/api/questions/leetcode", leetcodeQuestionRouter);
 app.use("/api/questions/interview", interviewQuestionRouter);
+app.use("/api/tips", tipRouter);
 
 /**
  * Error handler; all errors thrown by server are handled here.
