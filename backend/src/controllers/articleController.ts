@@ -141,7 +141,7 @@ export const deleteArticle = asyncHandler(async (req, res, next) => {
 
   const foundArticle = await Article.findByIdAndDelete(id);
 
-  // check if the user already exists
+  // check if the article already exists
   if (!foundArticle) {
     return next(createHttpError(404, "Article not found."));
   }

@@ -2,32 +2,32 @@ import express from "express";
 import * as articleController from "src/controllers/articleController";
 import * as articleValidator from "src/validators/articleValidator";
 
-const userRouter = express.Router();
+const articleRouter = express.Router();
 
-userRouter.get(
+articleRouter.get(
   "/:id",
   articleValidator.getArticleValidator,
   articleController.getArticleById,
 );
 
-userRouter.patch(
+articleRouter.patch(
   "/:id",
   articleValidator.updateArticleValidator,
   articleController.updateArticle,
 );
 
-userRouter.delete(
+articleRouter.delete(
   "/:id",
   articleValidator.deleteArticleValidator,
   articleController.deleteArticle,
 );
 
-userRouter.get("/", articleController.getArticles);
+articleRouter.get("/", articleController.getArticles);
 
-userRouter.post(
+articleRouter.post(
   "/",
   articleValidator.createArticleValidator,
   articleController.createArticle,
 );
 
-export default userRouter;
+export default articleRouter;
