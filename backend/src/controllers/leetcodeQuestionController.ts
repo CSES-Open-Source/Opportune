@@ -41,7 +41,7 @@ export const getLeetcodeQuestions = asyncHandler(async (req, res, next) => {
 
   // Filter by difficulty if provided
   if (difficulty) {
-    dbQuery.where("difficulty").regex(new RegExp(sortBy, "i"));
+    dbQuery.where("difficulty").equals(difficulty);
   }
 
   // Sort by sortBy if provided
