@@ -16,6 +16,7 @@ interface BaseDataListProps<T> {
   useServerPagination?: boolean; // Toggle server-side pagination
   usePagination?: boolean;
   listStyle?: ListStyle; // Style for the DataList container
+  listClassName?: string;
 }
 
 interface DataListNoPaginationProps<T> extends BaseDataListProps<T> {
@@ -50,7 +51,8 @@ type DataListProps<T> =
   | DataListServerPaginationProps<T>;
 
 const DataList = <T extends object>(props: DataListProps<T>) => {
-  const { TileComponent, useServerPagination, listStyle } = props;
+  const { TileComponent, useServerPagination, listStyle, listClassName } = props;
+
 
   const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState<number>(0);
@@ -99,10 +101,10 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
   return (
     <div
       style={{ ...listStyle, overflowY: "auto" }}
-      className="flex flex-col h-full overflow-y-auto"
+      className=" h-full overflow-y-auto"
     >
-      <div className="flex-1 overflow-y-auto">
-        <div className="flex flex-col gap-4">
+      <div className="flex-1 overflow-y-auto" >
+        <div className={listClassName ?? "flex flex-col"}>
           {data.map((item, index) => (
             <TileComponent key={index} data={item} />
           ))}
