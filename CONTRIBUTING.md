@@ -142,8 +142,9 @@ By participating in this project, you agree to uphold the [Code of Conduct](CODE
    AWS_ACCESS_KEY_ID=[access-key-id]
    AWS_SECRET_ACCESS_KEY=[secret-access-key]
    AWS_REGION=[region-of-bucket]
+   AWS_BUCKET_NAME=[your-bucket-name]
    ```
-   Make sure to copy the **Access Key ID** and **Secrete Access Key** from the page in step 4 and fill in the region if your bucket.
+   Make sure to copy the **Access Key ID** and **Secrete Access Key** from the page in step 4 and fill in the region of your bucket.
 
 #### Firebase
 
