@@ -9,17 +9,34 @@ export enum Status {
   Rejected = "REJECTED",
 }
 
+export interface ApplicationProcess {
+  status: Status;
+  date: Date;
+  note?: string;
+}
+
 export interface Application {
+  _id: string;
   userId: string;
   company: Company;
   position: string;
   link?: string;
   location?: string;
-  process?: Array<{
-    status: Status;
-    date: string | Date;
-    note?: string;
-  }>;
+  process?: Array<ApplicationProcess>;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface ApplicationJSON {
+  _id: string;
+  userId: string;
+  company: Company;
+  position: string;
+  link?: string;
+  location?: string;
+  process?: Array<ApplicationProcess>;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CreateApplicationRequest {
@@ -28,11 +45,7 @@ export interface CreateApplicationRequest {
   position: string;
   location?: string;
   link?: string;
-  process?: Array<{
-    status: Status;
-    date: string | Date;
-    note?: string;
-  }>;
+  process?: Array<ApplicationProcess>;
 }
 
 export interface UpdateApplicationRequest {
@@ -41,11 +54,7 @@ export interface UpdateApplicationRequest {
   position?: string;
   link?: string;
   location?: string;
-  process?: Array<{
-    status: Status;
-    date: string | Date;
-    note?: string;
-  }>;
+  process?: Array<ApplicationProcess>;
 }
 
 export interface GetApplicationsByUserIDQuery {
