@@ -9,6 +9,7 @@ import { ColumnDef } from "../types/ColumnDef";
 import { PaginatedData } from "../types/PaginatedData";
 import { useAuth } from "../contexts/useAuth";
 import NewApplicationModal from "../components/NewApplicationModal";
+import ApplicationModal from "../components/ApplicationModal";
 
 const applicationColumns: ColumnDef<Application>[] = [
   {
@@ -17,7 +18,7 @@ const applicationColumns: ColumnDef<Application>[] = [
       return (
         <div className="flex flex-row items-center">
           <div
-            className={`w-[6px] h-[40.57px] mr-2 ${
+            className={`w-[6px] h-[40.57px] mr-2 bg-opacity-60 ${
               statusColors[
                 row.process && row.process.length > 0
                   ? row.process[row.process.length - 1].status
@@ -50,7 +51,7 @@ const applicationColumns: ColumnDef<Application>[] = [
         status={
           row.process && row.process.length > 0
             ? row.process[row.process.length - 1].status
-            : "None"
+            : "NONE"
         }
       />
     ),
@@ -59,14 +60,14 @@ const applicationColumns: ColumnDef<Application>[] = [
     header: "Date Applied",
     accessor: (row) =>
       row.process && row.process.length > 0
-        ? row.process[0].date.toLocaleString()
+        ? row.process[0].date.toLocaleDateString()
         : "",
   },
   {
-    header: "Date Modified",
+    header: "Date Updated",
     accessor: (row) =>
       row.process && row.process.length > 0
-        ? row.process[row.process.length - 1].date.toLocaleString()
+        ? row.process[row.process.length - 1].date.toLocaleDateString()
         : "",
   },
 ];
@@ -87,6 +88,13 @@ const Applications = () => {
   });
 
   const [newApplicationOpen, setNewApplicationOpen] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState<Application>({
+    _id: "",
+    userId: "",
+    company: { _id: "", name: "" },
+    position: "",
+  });
+  const [applicationModalOpen, setApplicationModalOpen] = useState(false);
 
   // Fetch paginated applications whenever search options change
   const getPaginatedApplications = useCallback(
@@ -121,7 +129,7 @@ const Applications = () => {
               app.process &&
               app.process.map((proc) => ({
                 ...proc,
-                date: new Date(proc.date).toLocaleDateString(),
+                date: new Date(proc.date),
               })),
           })),
         };
@@ -141,7 +149,18 @@ const Applications = () => {
 
   const onApplicationClicked = (application: Application) => {
     // TODO: Toggle modal for view application details
-    console.log(application);
+    setSelectedApplication(application);
+    setApplicationModalOpen(true);
+  };
+
+  const onApplicationModalClosed = () => {
+    setApplicationModalOpen(false);
+    setSelectedApplication({
+      _id: "",
+      userId: "",
+      company: { _id: "", name: "" },
+      position: "",
+    });
   };
 
   const onNewApplicationClicked = () => {
@@ -186,6 +205,13 @@ const Applications = () => {
         isOpen={newApplicationOpen}
         onClose={() => setNewApplicationOpen(false)}
         onNewApplication={() => setSearch({ ...search })}
+      />
+      <ApplicationModal
+        isOpen={applicationModalOpen}
+        onClose={onApplicationModalClosed}
+        application={selectedApplication}
+        setApplication={setSelectedApplication}
+        onSaveApplication={() => setSearch({ ...search })}
       />
     </div>
   );

@@ -9,7 +9,8 @@ const tailwindConfig = {
         accent: {
           pink: "#D462AD",
           blue: "#00C6D7",
-        }
+        },
+        ring: "#a6d5fa",
       }
     },
   },

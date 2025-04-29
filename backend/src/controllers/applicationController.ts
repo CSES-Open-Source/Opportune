@@ -1,4 +1,7 @@
-import Application, { SortingOptions } from "src/models/Application";
+import Application, {
+  ApplicationStatus,
+  SortingOptions,
+} from "src/models/Application";
 import { Status } from "src/models/Application";
 import { matchedData, validationResult } from "express-validator";
 import validationErrorParser from "src/util/validationErrorParser";
@@ -33,6 +36,13 @@ export const getAllApplications = asyncHandler(async (req, res, _) => {
   const applications = await Application.find()
     .populate({ path: "company", model: Company })
     .exec();
+
+  applications.forEach((application) =>
+    application.process.sort(
+      (a: ApplicationStatus, b: ApplicationStatus) =>
+        a.date.getTime() - b.date.getTime(),
+    ),
+  );
 
   res.status(200).json(applications);
 });
@@ -78,6 +88,11 @@ export const createApplication = asyncHandler(async (req, res, next) => {
     );
   }
 
+  populatedApplication.process.sort(
+    (a: ApplicationStatus, b: ApplicationStatus) =>
+      a.date.getTime() - b.date.getTime(),
+  );
+
   res.status(201).json(populatedApplication);
 });
 
@@ -106,6 +121,11 @@ export const getApplicationByID = asyncHandler(async (req, res, next) => {
   if (!application) {
     return next(createHttpError(404, "Application not found."));
   }
+
+  application.process.sort(
+    (a: ApplicationStatus, b: ApplicationStatus) =>
+      a.date.getTime() - b.date.getTime(),
+  );
 
   res.status(200).json(application);
 });
@@ -152,6 +172,11 @@ export const updateApplicationByID = asyncHandler(async (req, res, next) => {
   if (!updatedApplication) {
     return next(createHttpError(404, "Application not found."));
   }
+
+  updatedApplication.process.sort(
+    (a: ApplicationStatus, b: ApplicationStatus) =>
+      a.date.getTime() - b.date.getTime(),
+  );
 
   res.status(200).json(updatedApplication);
 });
@@ -276,6 +301,16 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
     { $skip: page * perPage },
     { $limit: perPage },
   ]).exec();
+
+  for (const application of applications) {
+    // TODO: Temporary solution, using aggregate queries bypass mongoose and therefore doesnt have virtuals
+    const company = await Company.findById(application.company._id);
+    application.company = company?.toJSON();
+    application.process.sort(
+      (a: ApplicationStatus, b: ApplicationStatus) =>
+        a.date.getTime() - b.date.getTime(),
+    );
+  }
 
   // Count total documents found from query
   const countResults = await Application.aggregate([

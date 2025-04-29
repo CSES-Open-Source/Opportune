@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { PaginatedData } from "../types/PaginatedData";
 import Paginator, { UsePagination } from "./Paginator";
 import { ColumnDef } from "../types/ColumnDef";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 interface TableStyle {
   width?: string;
@@ -128,9 +129,9 @@ const DataTable = <T extends object>(props: DataTableProps<T>) => {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan={columns.length} className="text-center">
-                  Loading...
+              <tr className="w-full">
+                <td colSpan={columns.length} className="h-[500px] text-center">
+                  <ProgressSpinner className="h-16 w-16" strokeWidth="3" />
                 </td>
               </tr>
             ) : data.length === 0 ? (

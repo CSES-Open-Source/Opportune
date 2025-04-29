@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { PaginatedData } from "../types/PaginatedData";
 import Paginator, { UsePagination } from "./Paginator";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 interface ListStyle {
   width?: string;
@@ -91,9 +92,12 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
     loadData();
   }, [page, perPage, props.fetchData, useServerPagination]);
 
-  // TODO: style loading with spinner
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full">
+        <ProgressSpinner className="h-16 w-16" strokeWidth="3" />
+      </div>
+    );
   }
 
   return (
