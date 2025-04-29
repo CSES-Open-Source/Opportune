@@ -136,13 +136,31 @@ By participating in this project, you agree to uphold the [Code of Conduct](CODE
 1. go to [https://aws.amazon.com/](https://aws.amazon.com/) and create a new account (or login to an existing account if you already have one).
 2. Search for S3 in the search bar and **create a new bucket**.
 3. Then search for IAM in the search bar and create a new user (feel free to name it anything you like), make sure to give the user the **AmazonS3FullAccess** policy. This allows the users to have access to your S3 bucket.
-4. For the user created, **add a new access key**. Make sure to keep this page open so that we can copy the Access Key.
-5. Then go to the `.env` file under the `backend` folder again and add the following to the file:
+4. Then, go to the permissions tab of your bucket and disable "block all public access", and then paste the following into a new bucket policy:
+   ```
+   {
+       "Version": "2012-10-17",
+       "Statement": [
+           {
+               "Sid": "PublicReadPolicy",
+               "Effect": "Allow",
+               "Principal": "*",
+               "Action": "s3:GetObject",
+               "Resource": "arn:aws:s3:::[bucket-name]/logos/*"
+           }
+       ]
+   }
+   ```
+   In the end this should look something like the following:
+   ![image](https://github.com/user-attachments/assets/4dadb3c1-6135-4305-addb-843fb840ad37)
+
+6. For the user created, **add a new access key**. Make sure to keep this page open so that we can copy the Access Key.
+7. Then go to the `.env` file under the `backend` folder again and add the following to the file:
    ```
    AWS_ACCESS_KEY_ID=[access-key-id]
    AWS_SECRET_ACCESS_KEY=[secret-access-key]
    AWS_REGION=[region-of-bucket]
-   AWS_BUCKET_NAME=[your-bucket-name]
+   AWS_BUCKET_NAME=[bucket-name]
    ```
    Make sure to copy the **Access Key ID** and **Secrete Access Key** from the page in step 4 and fill in the region of your bucket.
 
