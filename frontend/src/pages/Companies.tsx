@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { FaSearch, FaFilter, FaTimes } from "react-icons/fa";
+import { FaSearch, FaSlidersH, FaTimes } from "react-icons/fa";
 import DataList from "../components/DataList";
 import CompanyRow from "../components/CompanyTile";
 import { CompanyPage } from "../types/Company";
@@ -63,15 +63,9 @@ const Companies: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Companies Directory</h1>
 
-        {/* ==== Search + Filter Bar ==== */}
+        {/*  search + filter bar  */}
         <div className="bg-white rounded-2xl shadow p-6 mb-8 flex items-center space-x-4">
-          <button
-            onClick={() => setShowFilters(true)}
-            className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition"
-          >
-            <FaFilter className="w-5 h-5 mr-2" /> Filters
-          </button>
-          <div className="relative flex-1">
+          <div className="relative flex-1 min-w-0">
             <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
             <input
               value={query}
@@ -86,9 +80,17 @@ const Companies: React.FC = () => {
               "
             />
           </div>
-        </div>
 
-        {/* ==== Filter Modal ==== */}
+          {/* collapse to icon only on small, and shrink icon slightly */}
+          <button
+            onClick={() => setShowFilters(true)}
+            className="inline-flex items-center px-2 sm:px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition"
+          >
+            <FaSlidersH className="w-4 h-4 sm:w-5 sm:h-5 mr-0 sm:mr-2" />
+            <span className="hidden sm:inline">Filters</span>
+          </button>
+        </div>
+        {/*  filter modal */}
         {showFilters && (
           <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-20">
             <div className="bg-white rounded-2xl w-96 p-6 relative shadow-lg">
