@@ -5,7 +5,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 
 interface ListStyle {
   width?: string;
-  height?: string;
+  height?: string; 
   maxWidth?: string;
   maxHeight?: string;
 }
@@ -101,34 +101,31 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
       </div>
     );
   }
-
+  // height
   return (
     <div
-      style={{ ...listStyle, overflowY: "auto" }}
-      className=" h-full overflow-y-auto"
-    >
-      <div className="flex-1 overflow-y-auto" >
-        <div className={listClassName ?? "flex flex-col"}>
-          {data.map((item, index) => (
-            <TileComponent key={index} data={item} />
-          ))}
-        </div>
-      </div>
-
-      {/* Pagination Controls */}
-      {(useServerPagination || props.usePagination) && (
-        <div>
-          <Paginator
-            page={page}
-            perPage={perPage}
-            onPageChange={setPage}
-            onPerPageChange={setPerPage}
-            totalItems={totalItems}
-            paginatorContent={props.paginatorContent}
-          />
-        </div>
-      )}
+    style={listStyle}
+    className="flex flex-col h-full"
+  >
+    {/* 1) scrollable list region */}
+    <div className={`flex-1 overflow-y-auto ${listClassName ?? ""}`}>
+      {data.map((item, i) => <TileComponent key={i} data={item} />)}
     </div>
+
+    {/* 2) paginator “below” the scroll region */}
+    {(useServerPagination || props.usePagination) && (
+      <div className="mt-4">
+        <Paginator
+          page={page}
+          perPage={perPage}
+          onPageChange={setPage}
+          onPerPageChange={setPerPage}
+          totalItems={totalItems}
+          paginatorContent={props.paginatorContent}
+        />
+      </div>
+    )}
+  </div>
   );
 };
 

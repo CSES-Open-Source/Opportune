@@ -1,3 +1,4 @@
+import React, { useMemo } from "react";
 import {
   RxChevronLeft,
   RxChevronRight,
@@ -10,24 +11,21 @@ interface PaginatorContent {
   goToPage?: boolean;
 }
 
-interface PaginatorProps {
-  page: number; // Current page index
-  perPage: number; // Current page size
-  totalItems: number; // Total number of items
-  onPageChange: (page: number) => void; // Function to change the page
-  onPerPageChange: (size: number) => void; // Function to change the page size
-  perPageOptions?: number[];
-  paginatorContent?: PaginatorContent;
-}
-
-/**
- * When component uses paginator, props should extend this interface to allow the user to customize pagination content and style
- */
 export interface UsePagination {
   paginatorContent?: PaginatorContent;
 }
 
-const Paginator = ({
+interface PaginatorProps {
+  page: number;                // zero-based
+  perPage: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+  onPerPageChange: (size: number) => void;
+  perPageOptions?: number[];
+  paginatorContent?: PaginatorContent;
+}
+
+const Paginator: React.FC<PaginatorProps> = ({
   page,
   perPage,
   totalItems,
@@ -35,71 +33,136 @@ const Paginator = ({
   onPerPageChange,
   perPageOptions = [10, 20, 30, 40, 50],
   paginatorContent = { setPerPage: false, goToPage: false },
-}: PaginatorProps) => {
-  const totalPages = Math.ceil(totalItems / perPage);
+}) => {
+  const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
+
+  const pagesToShow = useMemo<(number | "...")[]>(() => {
+    const result: (number | "...")[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) result.push(i);
+    } else {
+      if (page + 1 <= 4) {
+        for (let i = 1; i <= 5; i++) result.push(i);
+        result.push("...", totalPages);
+      } else if (page + 1 >= totalPages - 3) {
+        result.push(1, "...");
+        for (let i = totalPages - 4; i <= totalPages; i++) result.push(i);
+      } else {
+        result.push(1, "...", page, page + 1, page + 2, "...", totalPages);
+      }
+    }
+    return result;
+  }, [page, totalPages]);
 
   return (
-    <div className="relative mt-4 flex justify-center items-center gap-6">
+    <div className="flex flex-wrap items-center justify-between py-4 px-4 bg-white border-t">
       {paginatorContent.setPerPage && (
-        <select
-          className="absolute  left-0 hover:cursor-pointer"
-          value={perPage}
-          onChange={(e) => onPerPageChange(Number(e.target.value))}
-        >
-          {perPageOptions.map((size) => (
-            <option key={size} value={size}>
-              Show {size}
-            </option>
-          ))}
-        </select>
+        <div className="hidden md:block">
+          <select
+            className="
+              h-8 px-2
+              border border-gray-300
+              bg-white text-gray-600
+              rounded-md text-sm
+              focus:outline-none focus:ring-1 focus:ring-blue-500
+              cursor-pointer
+            "
+            value={perPage}
+            onChange={(e) => {
+              onPerPageChange(Number(e.target.value));
+              onPageChange(0);
+            }}
+          >
+            {perPageOptions.map((n) => (
+              <option key={n} value={n}>
+                {n} / page
+              </option>
+            ))}
+          </select>
+        </div>
       )}
-      <button
-        className="hover:cursor-pointer hover:text-primary transition"
-        onClick={() => onPageChange(0)}
-        disabled={page === 0}
-      >
-        <RxDoubleArrowLeft size={18} className="stroke-[0.75]" />
-      </button>
-      <button
-        className="hover:cursor-pointer hover:text-primary transition"
-        onClick={() => onPageChange(Math.max(page - 1, 0))}
-        disabled={page === 0}
-      >
-        <RxChevronLeft size={18} className="stroke-[0.75]" />
-      </button>
-      <span>
-        Page {page + 1} of {totalPages === 0 ? 1 : totalPages}
-      </span>
-      <button
-        className="hover:cursor-pointer hover:text-primary transition"
-        onClick={() => onPageChange(Math.min(page + 1, totalPages - 1))}
-        disabled={(page + 1) * perPage >= totalItems}
-      >
-        <RxChevronRight size={18} className="stroke-[0.75]" />
-      </button>
-      <button
-        className="hover:cursor-pointer hover:text-primary transition"
-        onClick={() => onPageChange(totalPages - 1)}
-        disabled={(page + 1) * perPage >= totalItems}
-      >
-        <RxDoubleArrowRight size={18} className="stroke-[0.75]" />
-      </button>
+      {/* first/prev ... next/last) */}
+      <div className="inline-flex items-center bg-gray-100 rounded-full p-1 space-x-1">
+        <button
+          onClick={() => onPageChange(0)}
+          disabled={page === 0}
+          className="p-2 rounded-full text-gray-500 disabled:text-gray-300 disabled:cursor-not-allowed"
+        >
+          <RxDoubleArrowLeft size={20} />
+        </button>
+        <button
+          onClick={() => onPageChange(page - 1)}
+          disabled={page === 0}
+          className="p-2 rounded-full text-gray-500 disabled:text-gray-300 disabled:cursor-not-allowed"
+        >
+          <RxChevronLeft size={20} />
+        </button>
+
+        {pagesToShow.map((p, idx) =>
+          p === "..." ? (
+            <span key={idx} className="px-2 text-gray-500">
+              …
+            </span>
+          ) : (
+            <button
+              key={p}
+              onClick={() => onPageChange(p - 1)}
+              disabled={p - 1 === page}
+              className={`
+                px-3 py-1 rounded-full text-sm
+                ${
+                  p - 1 === page
+                    ? "bg-blue-600 text-white cursor-default"
+                    : "bg-white text-gray-700 hover:bg-gray-200"
+                }
+              `}
+            >
+              {p}
+            </button>
+          )
+        )}
+
+        <button
+          onClick={() => onPageChange(page + 1)}
+          disabled={page + 1 >= totalPages}
+          className="p-2 rounded-full text-gray-500 disabled:text-gray-300 disabled:cursor-not-allowed"
+        >
+          <RxChevronRight size={20} />
+        </button>
+        <button
+          onClick={() => onPageChange(totalPages - 1)}
+          disabled={page + 1 >= totalPages}
+          className="p-2 rounded-full text-gray-500 disabled:text-gray-300 disabled:cursor-not-allowed"
+        >
+          <RxDoubleArrowRight size={20} />
+        </button>
+      </div>
+
+      {/* per page dropdown */}
+      {/* go to page */}
       {paginatorContent.goToPage && (
-        <span>
-          Go to page:{" "}
+        <div className="hidden md:flex items-center space-x-1 text-sm text-gray-600">
+          <span>Go to:</span>
           <input
             type="number"
-            defaultValue={page + 1}
             min={1}
             max={totalPages}
-            onChange={(e) => {
-              const newPage = Number(e.target.value) - 1;
-              onPageChange(
-                newPage >= 0 && newPage < totalPages ? newPage : page,
-              );
+            defaultValue={page + 1}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                const v = Number((e.target as HTMLInputElement).value) - 1;
+                if (v >= 0 && v < totalPages) onPageChange(v);
+              }
             }}
+            className="
+              w-16 h-8 px-2
+              border border-gray-300
+              bg-white text-gray-700
+              rounded-md text-sm
+              focus:outline-none focus:ring-1 focus:ring-blue-500
+            "
           />
-        </span>
+        </div>
       )}
     </div>
   );

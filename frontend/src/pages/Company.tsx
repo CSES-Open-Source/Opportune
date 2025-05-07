@@ -7,6 +7,7 @@ import { APIResult } from "../api/requests";
 import { Company, ExpandedCardData } from "../types/Company";
 import {InterviewAPIItem} from "../types/Interview"
 import {LCAPIItem} from "../types/Leetcode"
+import {getEmployeesLabel, getIndustryLabel} from "../utils/valueToLabels"
 
 
 const defaultLogo = "/assets/defaultLogo.png";
@@ -171,9 +172,9 @@ const CompanyProfile: React.FC = () => {
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold">{company.name}</h1>
               <p className="text-sm text-gray-500">
-                {company.industry} • {company.city}, {company.state}
+                {getIndustryLabel(company.industry || "")} • {company.city}, {company.state}
               </p>
-              <p className="text-sm text-gray-500">{company.employees} employees</p>
+              <p className="text-sm text-gray-500">{ getEmployeesLabel(company.employees ?? "")}</p>
             </div>
           </div>
           {company.url && (
