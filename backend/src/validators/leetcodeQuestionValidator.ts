@@ -5,11 +5,6 @@ import { Difficulty } from "src/models/LeetcodeQuestion";
 const DEFAULT_PAGE = 0;
 const DEFAULT_PER_PAGE = 10;
 
-const validateIdBody = body("_id")
-  .isMongoId()
-  .withMessage("invalid application id. (Must be a Mongo ObjectID.)")
-  .trim();
-
 const validateIdParam = param("id")
   .isMongoId()
   .withMessage("invalid application id. (Must be a Mongo ObjectID.)")
@@ -95,7 +90,6 @@ export const getLeetcodeQuestionsValidator = [
 ];
 
 export const createLeetcodeQuestionValidator = [
-  validateIdBody,
   validateCompany,
   validateTitle,
   validateURL,

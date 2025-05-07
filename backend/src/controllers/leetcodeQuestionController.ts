@@ -184,7 +184,7 @@ export const deleteLeetcodeQuestion = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    next(createHttpError(400, validationErrorParser(errors)));
+    return next(createHttpError(400, validationErrorParser(errors)));
   }
 
   // Extract id parameter from request
@@ -214,15 +214,15 @@ export const getLeetcodeQuestionByCompanyId = asyncHandler(
     }
 
     // Extract validated Company Id parameter from request
-    const { id } = matchedData(req, { locations: ["params"] }) as {
-      id: string;
+    const { company } = matchedData(req, { locations: ["params"] }) as {
+      company: string;
     };
 
     // Extract validate fields from request query
     const { page, perPage } = matchedData(req, { locations: ["query"] });
 
     // Find Leetcode Questions by Company Id
-    const dbQuery = LeetcodeQuestion.find({ company: id });
+    const dbQuery = LeetcodeQuestion.find({ company: company });
 
     // Create clone to prevent pagination changes to original
     const countQuery = dbQuery.clone();
