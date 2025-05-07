@@ -6,6 +6,8 @@ import { CompanyPage } from "../types/Company";
 import { getCompanies as apiGetCompanies } from "../api/companies";
 import { APIResult } from "../api/requests";
 import { PaginatedData } from "../types/PaginatedData";
+import { getEmployeesLabel, getIndustryLabel } from "../utils/valueToLabels";
+import { NumEmployees, IndustryType } from "../types/Company";
 
 const Companies: React.FC = () => {
   const [query, setQuery] = useState("");
@@ -113,12 +115,11 @@ const Companies: React.FC = () => {
                     "
                   >
                     <option value="">Any</option>
-                    <option>1–10</option>
-                    <option>11–50</option>
-                    <option>51–200</option>
-                    <option>201–500</option>
-                    <option>501–1000</option>
-                    <option>1001+</option>
+                    {Object.values(NumEmployees).map((ind) => (
+                      <option key={ind} value={ind}>
+                        {getEmployeesLabel(ind)}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -136,9 +137,11 @@ const Companies: React.FC = () => {
                     "
                   >
                     <option value="">Any</option>
-                    <option>Software Development</option>
-                    <option>Cybersecurity</option>
-                    <option>Entertainment & Media</option>
+                    {Object.values(IndustryType).map((ind) => (
+                      <option key={ind} value={ind}>
+                        {getIndustryLabel(ind)}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
