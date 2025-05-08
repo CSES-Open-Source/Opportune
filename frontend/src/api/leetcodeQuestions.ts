@@ -3,15 +3,14 @@ import {
   LeetcodeQuestion,
   CreateLeetcodeQuestionRequest,
   UpdateLeetcodeQuestionRequest,
-  GetLeetcodeQuestionsByCompanyIDQuery,
   GetLeetcodeQuestionsQuery,
 } from "../types/LeetcodeQuestion";
 import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
 
 /**
  * Fetch all leetcode questions from the backend.
- * 
- * @param queries 
+ *
+ * @param queries
  * @returns PaginatedData object containing all leetcode questions
  */
 export async function getLeetcodeQuestions(
@@ -31,7 +30,7 @@ export async function getLeetcodeQuestions(
 
 /**
  * Create a new leetcode question in the backend.
- * 
+ *
  * @param leetcodeQuestion new leetcode question to create
  * @returns created leetcode question object
  */
@@ -49,7 +48,7 @@ export async function createLeetcodeQuestion(
 
 /**
  * Get a single leetcode question by ID.
- * 
+ *
  * @param id ID of leetcode question to retrieve
  * @returns leetcode question with matching ID
  */
@@ -67,7 +66,7 @@ export async function getLeetcodeQuestionById(
 
 /**
  * Update a leetcode question in the backend.
- * 
+ *
  * @param id ID of leetcode question to update
  * @param leetcodeQuestion fields to update
  * @returns updated leetcode question
@@ -90,7 +89,7 @@ export async function updateLeetcodeQuestion(
 
 /**
  * Delete a leetcode question in the backend.
- * 
+ *
  * @param id ID of leetcode question to delete
  * @returns a success message or error
  */
@@ -107,23 +106,19 @@ export async function deleteLeetcodeQuestion(
 
 /**
  * Get leetcode questions by company ID.
- * 
+ *
  * @param _id company ID of leetcode questions to retrieve
- * @param queries 
+ * @param queries
  * @returns PaginatedData object containing leetcode questions with matching
  * company ID
  */
 export async function getLeetcodeQuestionByCompanyId(
   _id: string,
-  queries: GetLeetcodeQuestionsByCompanyIDQuery = { page: 0, perPage: 10},
-): Promise<APIResult<PaginatedData<LeetcodeQuestion[]>>> {
+): Promise<APIResult<LeetcodeQuestion[]>> {
   try {
-    const response = await get(`/api/questions/leetcode/company/${_id}`, {
-      ...queries,
-  });
-    const json = await response.json() as PaginatedData<LeetcodeQuestion[]>;
-    const result = { ...json, data: json.data};
-    return { success: true, data: result };
+    const response = await get(`/api/questions/leetcode/company/${_id}`);
+    const json = (await response.json()) as LeetcodeQuestion[];
+    return { success: true, data: json };
   } catch (error) {
     return handleAPIError(error);
   }

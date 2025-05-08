@@ -6,10 +6,12 @@ import validationErrorParser from "src/util/validationErrorParser";
 import createHttpError from "http-errors";
 import Company from "src/models/Company";
 import mongoose from "mongoose";
+import User from "src/models/User";
 
 // interface for creating/updating leetcodeQuestions
 interface leetcodeQuestionCreate {
   company: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId;
   title: string;
   url: string;
   difficulty: Difficulty;
@@ -59,6 +61,7 @@ export const getLeetcodeQuestions = asyncHandler(async (req, res, next) => {
       .skip(page * perPage)
       .limit(perPage)
       .populate({ path: "company", model: Company })
+      .populate({ path: "user", model: User })
       .lean()
       .exec(),
   ]);
@@ -103,6 +106,7 @@ export const createLeetcodeQuestion = asyncHandler(async (req, res, next) => {
     newLeetcodeQuestion._id,
   )
     .populate({ path: "company", model: Company })
+    .populate({ path: "user", model: User })
     .exec();
 
   if (!populatedLeetcodeQuestion) {
@@ -111,7 +115,7 @@ export const createLeetcodeQuestion = asyncHandler(async (req, res, next) => {
     );
   }
 
-  res.status(201).json(newLeetcodeQuestion);
+  res.status(201).json(populatedLeetcodeQuestion);
 });
 
 // @desc Get Leetcode question by ID
@@ -129,6 +133,7 @@ export const getLeetcodeQuestionById = asyncHandler(async (req, res, next) => {
   // Find leetcodeQuestion by ID
   const leetcodeQuestion = await LeetcodeQuestion.findById(id)
     .populate({ path: "company", model: Company })
+    .populate({ path: "user", model: User })
     .lean()
     .exec();
 
@@ -168,7 +173,9 @@ export const updateLeetcodeQuestion = asyncHandler(async (req, res, next) => {
     id,
     { $set: validatedData },
     { new: true, runValidators: true },
-  ).populate({ path: "company", model: Company });
+  )
+    .populate({ path: "company", model: Company })
+    .populate({ path: "user", model: User });
 
   if (!updatedLeetcodeQuestion) {
     return next(createHttpError(404, "Leetcode Question not found"));
@@ -191,15 +198,9 @@ export const deleteLeetcodeQuestion = asyncHandler(async (req, res, next) => {
   const { id } = matchedData(req, { locations: ["params"] }) as { id: string };
 
   // Find and delete leetcode question by ID
-  const leetcodeQuestion = await LeetcodeQuestion.findByIdAndDelete(id)
-    .lean()
-    .exec();
+  await LeetcodeQuestion.findByIdAndDelete(id).lean().exec();
 
-  if (!leetcodeQuestion) {
-    return next(createHttpError(404, "Leetcode Question not found"));
-  }
-
-  res.status(200).json(leetcodeQuestion);
+  res.status(200);
 });
 
 // @desc Get Leetcode question by company ID
@@ -218,31 +219,12 @@ export const getLeetcodeQuestionByCompanyId = asyncHandler(
       id: string;
     };
 
-    // Extract validate fields from request query
-    const { page, perPage } = matchedData(req, { locations: ["query"] });
+    const leetcodeQuestions = LeetcodeQuestion.find({ company: id })
+      .populate({ path: "company", model: Company })
+      .populate({ path: "user", model: User })
+      .lean()
+      .exec();
 
-    // Find Leetcode Questions by Company Id
-    const dbQuery = LeetcodeQuestion.find({ company: id });
-
-    // Create clone to prevent pagination changes to original
-    const countQuery = dbQuery.clone();
-
-    // Execute count and paginate in parallel
-    const [total, leetcodeQuestions] = await Promise.all([
-      countQuery.countDocuments().exec(),
-      dbQuery
-        .skip(page * perPage)
-        .limit(perPage)
-        .populate({ path: "company", model: Company })
-        .lean()
-        .exec(),
-    ]);
-
-    res.status(200).json({
-      page,
-      perPage,
-      total,
-      data: leetcodeQuestions,
-    });
+    res.status(200).json(leetcodeQuestions);
   },
 );

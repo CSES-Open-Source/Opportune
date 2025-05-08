@@ -5,12 +5,21 @@ import { requireLogin, roleGuard } from "../../constants/pathAccess";
 import { pathToRegexp } from "path-to-regexp";
 import LoginRequired from "../../pages/LoginRequired";
 import Forbidden from "../../pages/Forbidden";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 const Layout = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isLoading } = useAuth();
   const location = useLocation();
 
   const loginPaths = requireLogin.map((path) => pathToRegexp(path));
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-[100vh]">
+        <ProgressSpinner className="h-16 w-16" strokeWidth="3" />
+      </div>
+    );
+  }
 
   if (
     !isAuthenticated &&
