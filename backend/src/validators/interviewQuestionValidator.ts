@@ -6,12 +6,22 @@ const DEFAULT_PER_PAGE = 10;
 
 const validateIdParam = param("id")
   .isMongoId()
-  .withMessage("invalid application id. (Must be a Mongo ObjectID.)")
+  .withMessage("invalid interview question id. (Must be a Mongo ObjectID.)")
   .trim();
 
 const validateCompany = body("company")
   .isMongoId()
   .withMessage("invalid company id. (Must be a Mongo ObjectID.)")
+  .trim();
+
+const validateCompanyIdParam = param("companyId")
+  .isMongoId()
+  .withMessage("invalid company id. (Must be a Mongo ObjectID.)")
+  .trim();
+
+const validateUser = body("user")
+  .isString()
+  .withMessage("invalid user id. (Must be a string)")
   .trim();
 
 const validateQuestion = body("question")
@@ -45,8 +55,8 @@ const validateQuery = query("query")
 
 const validateSortBy = query("sortBy")
   .optional()
-  .isIn(["createdAt", "updatedAt", "process"])
-  .withMessage("Sort by must be one of: createdAt, updatedAt, process");
+  .isIn(["date"])
+  .withMessage("Sort by must be one of: date");
 
 export const getInterviewQuestionsValidator = [
   validatePage,
@@ -57,6 +67,7 @@ export const getInterviewQuestionsValidator = [
 
 export const createInterviewQuestionValidator = [
   validateCompany,
+  validateUser,
   validateQuestion,
   validateDate,
 ];
@@ -72,7 +83,5 @@ export const updateInterviewQuestionValidator = [
 export const deleteInterviewQuestionValidator = [validateIdParam];
 
 export const getInterviewQuestionsByCompanyIdValidator = [
-  validateCompany,
-  validatePage,
-  validatePerPage,
+  validateCompanyIdParam,
 ];

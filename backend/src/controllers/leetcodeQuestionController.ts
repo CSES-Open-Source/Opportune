@@ -107,6 +107,7 @@ export const createLeetcodeQuestion = asyncHandler(async (req, res, next) => {
   )
     .populate({ path: "company", model: Company })
     .populate({ path: "user", model: User })
+    .lean()
     .exec();
 
   if (!populatedLeetcodeQuestion) {
@@ -175,7 +176,9 @@ export const updateLeetcodeQuestion = asyncHandler(async (req, res, next) => {
     { new: true, runValidators: true },
   )
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User });
+    .populate({ path: "user", model: User })
+    .lean()
+    .exec();
 
   if (!updatedLeetcodeQuestion) {
     return next(createHttpError(404, "Leetcode Question not found"));
@@ -215,11 +218,13 @@ export const getLeetcodeQuestionByCompanyId = asyncHandler(
     }
 
     // Extract validated Company Id parameter from request
-    const { company } = matchedData(req, { locations: ["params"] }) as {
-      company: string;
+    const { companyId } = matchedData(req, { locations: ["params"] }) as {
+      companyId: string;
     };
 
-    const leetcodeQuestions = LeetcodeQuestion.find({ company: id })
+    const leetcodeQuestions = await LeetcodeQuestion.find({
+      company: companyId,
+    })
       .populate({ path: "company", model: Company })
       .populate({ path: "user", model: User })
       .lean()
