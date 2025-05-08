@@ -191,7 +191,7 @@ export const deleteLeetcodeQuestion = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    next(createHttpError(400, validationErrorParser(errors)));
+    return next(createHttpError(400, validationErrorParser(errors)));
   }
 
   // Extract id parameter from request
@@ -215,8 +215,8 @@ export const getLeetcodeQuestionByCompanyId = asyncHandler(
     }
 
     // Extract validated Company Id parameter from request
-    const { id } = matchedData(req, { locations: ["params"] }) as {
-      id: string;
+    const { company } = matchedData(req, { locations: ["params"] }) as {
+      company: string;
     };
 
     const leetcodeQuestions = LeetcodeQuestion.find({ company: id })
