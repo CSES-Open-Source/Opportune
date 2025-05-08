@@ -12,6 +12,10 @@ const leetcodeQuestionSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true,
   },
+  user: {
+    type: String,
+    required: true,
+  },
   title: {
     type: String,
     required: true,

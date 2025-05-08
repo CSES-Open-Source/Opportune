@@ -7,12 +7,17 @@ const DEFAULT_PER_PAGE = 10;
 
 const validateIdParam = param("id")
   .isMongoId()
-  .withMessage("invalid application id. (Must be a Mongo ObjectID.)")
+  .withMessage("invalid leetcode question id. (Must be a Mongo ObjectID.)")
   .trim();
 
 const validateCompany = body("company")
   .isMongoId()
   .withMessage("invalid company id. (Must be a Mongo ObjectID.)")
+  .trim();
+
+const validateUser = body("user")
+  .isString()
+  .withMessage("invalid user id. (Must be a string)")
   .trim();
 
 const validateTitle = body("title")
@@ -21,7 +26,7 @@ const validateTitle = body("title")
   .notEmpty()
   .withMessage("title is required.");
 
-const validateURL = body("URL")
+const validateURL = body("url")
   .isURL({
     require_valid_protocol: true,
   })
@@ -66,16 +71,20 @@ const validateQuery = query("query")
 
 const validateSortBy = query("sortBy")
   .optional()
-  .isIn(["createdAt", "updatedAt", "process"])
+  .isIn(["date", "difficulty"])
   .withMessage("Sort by must be one of: createdAt, updatedAt, process");
 
 const validateDifficultyQuery = query("difficulty").custom((value) => {
+  if (!value) {
+    return true;
+  }
   const difficulties = Array.isArray(value) ? value : [value];
   const validDifficulties = Object.values(Difficulty);
   for (const s of difficulties) {
     if (!validDifficulties.includes(s)) {
-      throw new Error(`Difficulty must be one of:
-            ${validDifficulties.join(", ")}`);
+      throw new Error(
+        `Difficulty must be one of: ${validDifficulties.join(", ")}`,
+      );
     }
   }
   return true;
@@ -91,6 +100,7 @@ export const getLeetcodeQuestionsValidator = [
 
 export const createLeetcodeQuestionValidator = [
   validateCompany,
+  validateUser,
   validateTitle,
   validateURL,
   validateDifficulty,
@@ -109,8 +119,4 @@ export const updateLeetcodeQuestionValidator = [
 
 export const deleteLeetcodeQuestionValidator = [validateIdParam];
 
-export const getLeetcodeQuestionByCompanyValidator = [
-  validateCompany,
-  validatePage,
-  validatePerPage,
-];
+export const getLeetcodeQuestionByCompanyValidator = [validateCompany];
