@@ -282,17 +282,6 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
     page,
     perPage,
     total,
-    data: users.map((user) => ({
-      id: user._id,
-      email: user.email,
-      name: user.name,
-      type: user.type,
-      profilePicture: user.profilePicture,
-      linkedIn: user.linkedIn,
-      phoneNumber: user.phoneNumber,
-      company: user.company,
-      shareProfile: user.shareProfile,
-      position: user.position,
-    })),
+    data: users,
   });
 });
