@@ -16,7 +16,7 @@ interface InterviewQuestionCreate {
 interface InterviewQuestionUpdate extends Partial<InterviewQuestionCreate> {}
 
 // @desc Retrieve all interview questions
-// @route GET /api/questions/behavioral
+// @route GET /api/questions/interview
 // @access Private
 //
 // @returns {InterviewQuestion[]} 200 - Array of interview questions
