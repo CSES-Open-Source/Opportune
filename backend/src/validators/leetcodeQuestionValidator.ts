@@ -15,6 +15,11 @@ const validateCompany = body("company")
   .withMessage("invalid company id. (Must be a Mongo ObjectID.)")
   .trim();
 
+const validateCompanyIdParam = param("companyId")
+  .isMongoId()
+  .withMessage("invalid company id. (Must be a Mongo ObjectID.)")
+  .trim();
+
 const validateUser = body("user")
   .isString()
   .withMessage("invalid user id. (Must be a string)")
@@ -72,7 +77,7 @@ const validateQuery = query("query")
 const validateSortBy = query("sortBy")
   .optional()
   .isIn(["date", "difficulty"])
-  .withMessage("Sort by must be one of: createdAt, updatedAt, process");
+  .withMessage("Sort by must be one of: date, difficulty");
 
 const validateDifficultyQuery = query("difficulty").custom((value) => {
   if (!value) {
@@ -119,4 +124,4 @@ export const updateLeetcodeQuestionValidator = [
 
 export const deleteLeetcodeQuestionValidator = [validateIdParam];
 
-export const getLeetcodeQuestionByCompanyValidator = [validateCompany];
+export const getLeetcodeQuestionByCompanyValidator = [validateCompanyIdParam];

@@ -5,6 +5,7 @@ import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import Company from "src/models/Company";
 import mongoose from "mongoose";
+import User from "src/models/User";
 
 // Interface for creating/updating an interview question
 interface InterviewQuestionCreate {
@@ -20,7 +21,16 @@ interface InterviewQuestionUpdate extends Partial<InterviewQuestionCreate> {}
 // @access Private
 //
 // @returns {InterviewQuestion[]} 200 - Array of interview questions
-export const getAllInterviewQuestions = asyncHandler(async (req, res, _) => {});
+export const getAllInterviewQuestions = asyncHandler(async (req, res, _) => {
+  // TODO: Implement with paginated date, for now it will just return all interview questions for testing
+  const interviewQuestions = await InterviewQuestion.find()
+    .populate({ path: "company", model: Company })
+    .populate({ path: "user", model: User })
+    .lean()
+    .exec();
+
+  res.status(200).json(interviewQuestions);
+});
 
 // @desc Create a new interview question
 // @route POST /api/questions/interview
@@ -53,6 +63,8 @@ export const createInterviewQuestion = asyncHandler(async (req, res, next) => {
     question: interviewQuestionData.question,
   })
     .populate({ path: "company", model: Company })
+    .populate({ path: "user", model: User })
+    .lean()
     .exec();
 
   if (!populatedInterviewQuestion) {
@@ -61,7 +73,7 @@ export const createInterviewQuestion = asyncHandler(async (req, res, next) => {
     );
   }
 
-  res.status(201).json(newInterviewQuestion);
+  res.status(201).json(populatedInterviewQuestion);
 });
 
 // @desc Retrieve interview questions by ID
@@ -81,6 +93,7 @@ export const getInterviewQuestionById = asyncHandler(async (req, res, next) => {
   // Find interview question by ID
   const interviewQuestion = await InterviewQuestion.findById(id)
     .populate({ path: "company", model: Company })
+    .populate({ path: "user", model: User })
     .lean()
     .exec();
 
@@ -104,36 +117,19 @@ export const getInterviewQuestionsByCompanyId = asyncHandler(
     }
 
     // Extract validated Company Id parameter from request
-    const { company } = matchedData(req, { locations: ["params"] }) as {
-      company: string;
+    const { companyId } = matchedData(req, { locations: ["params"] }) as {
+      companyId: string;
     };
 
-    // Extract validate fields from request query
-    const { page, perPage } = matchedData(req, { locations: ["query"] });
+    const interviewQuestions = await InterviewQuestion.find({
+      company: companyId,
+    })
+      .populate({ path: "company", model: Company })
+      .populate({ path: "user", model: User })
+      .lean()
+      .exec();
 
-    // Find interview questions by company ID
-    const dbQuery = InterviewQuestion.find({ company: company });
-
-    // Create clone to prevent pagination changes to original
-    const countQuery = dbQuery.clone();
-
-    // Execute count and paginate in parallel
-    const [total, interviewQuestions] = await Promise.all([
-      countQuery.countDocuments().exec(),
-      dbQuery
-        .skip(page * perPage)
-        .limit(perPage)
-        .populate({ path: "company", model: Company })
-        .lean()
-        .exec(),
-    ]);
-
-    res.status(200).json({
-      page,
-      perPage,
-      total,
-      data: interviewQuestions,
-    });
+    res.status(200).json(interviewQuestions);
   },
 );
 
@@ -178,7 +174,11 @@ export const updateInterviewQuestion = asyncHandler(async (req, res, next) => {
     id,
     { $set: validatedData },
     { new: true, runValidators: true },
-  ).populate({ path: "company", model: Company });
+  )
+    .populate({ path: "company", model: Company })
+    .populate({ path: "user", model: User })
+    .lean()
+    .exec();
 
   if (!updatedInterviewQuestion) {
     return next(createHttpError(404, "Interview Question not found"));
@@ -200,13 +200,7 @@ export const deleteInterviewQuestion = asyncHandler(async (req, res, next) => {
   const { id } = matchedData(req, { locations: ["params"] }) as { id: string };
 
   // Find and delete interview question by ID
-  const interviewQuestion = await InterviewQuestion.findByIdAndDelete(id)
-    .lean()
-    .exec();
+  await InterviewQuestion.findByIdAndDelete(id).exec();
 
-  if (!interviewQuestion) {
-    return next(createHttpError(404, "Interview Question not found"));
-  }
-
-  res.status(200).json(interviewQuestion);
+  res.status(200);
 });
