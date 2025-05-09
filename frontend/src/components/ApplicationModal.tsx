@@ -196,16 +196,6 @@ const ApplicationModal = ({
           process: updatedApplication.process?.splice(index, 1),
         }),
     );
-    // confirmDialog({
-    //   message:
-    //     "Are you sure you want to delete this status? This action cannot be undone.",
-    //   header: "Delete Status",
-    //   accept: () => {
-    //     onSave(application._id, {
-    //       process: updatedApplication.process?.splice(index, 1),
-    //     });
-    //   },
-    // });
   };
 
   const onLinkChange = (e: ChangeEvent<HTMLInputElement>) => {
