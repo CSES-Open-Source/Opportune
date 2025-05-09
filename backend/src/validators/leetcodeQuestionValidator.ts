@@ -52,7 +52,7 @@ const validateDifficulty = body("difficulty").custom((value) => {
 
 const validateDate = body("date")
   .optional()
-  .isDate()
+  .isISO8601({ strict: true })
   .withMessage("must be a valid date.")
   .trim();
 

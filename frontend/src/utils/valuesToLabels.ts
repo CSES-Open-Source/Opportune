@@ -1,5 +1,6 @@
 import { Status } from "../types/Application";
 import { IndustryType, NumEmployees } from "../types/Company";
+import { Difficulty } from "../types/LeetcodeQuestion";
 
 const industryLabelMap = {
   AERO_DEF: "Aerospace & Defense",
@@ -45,6 +46,12 @@ const applicationStatusLabelMap = {
   REJECTED: "Rejected",
 };
 
+const difficultyLabelMap = {
+  EASY: "Easy",
+  MEDIUM: "Medium",
+  HARD: "Hard",
+};
+
 export const getIndustryLabel = (value: string): string => {
   return industryLabelMap[value as IndustryType] || "Other";
 };
@@ -55,4 +62,8 @@ export const getEmployeesLabel = (value: string): string => {
 
 export const getApplicationStatusLabel = (value: string): string => {
   return applicationStatusLabelMap[value as Status] || "None";
+};
+
+export const getDifficultyLabel = (value: string): string => {
+  return difficultyLabelMap[value as Difficulty] || "Easy";
 };
