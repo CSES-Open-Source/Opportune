@@ -1,72 +1,77 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { CompanyPage } from "../types/Company";
-import { FaExternalLinkAlt } from "react-icons/fa";
+import { CompanyPage, IndustryType } from "../types/Company";
+import { getIndustryLabel } from "../utils/valuesToLabels";
+import { INDUSTRY_COLOR_MAP } from "../utils/valuesToLabels";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
-interface CompanyTileProps {
-  data: CompanyPage;
-}
-
-const CompanyTile: React.FC<CompanyTileProps> = ({ data }) => {
+const CompanyTile: React.FC<{ data: CompanyPage }> = ({ data }) => {
   const navigate = useNavigate();
-
-  const handleTileClick = () => {
-    navigate(`/companies/${data._id}`);
-  };
-
   const location =
     data.city && data.state
       ? `${data.city}, ${data.state}`
       : "Location not specified";
+  const logoSrc = data.logo?.trim() ? data.logo : defaultLogo;
+  const colorClasses =
+    INDUSTRY_COLOR_MAP[data.industry as IndustryType] ??
+    "bg-gray-100 text-gray-900";
 
   return (
     <div
-      onClick={handleTileClick}
-      className="bg-white border border-gray-300 rounded-md ps-10 pe-8 py-4 mt-4 mx-2 shadow-sm hover:bg-primary hover:bg-opacity-[0.02] hover:shadow-md transition cursor-pointer"
+      onClick={() => navigate(`/companies/${data._id}`)}
+      className="
+        relative
+        flex items-center justify-between
+        bg-white border-[1.5px] border-gray-200
+        rounded-2xl
+        px-4 py-6
+        transition-colors cursor-pointer
+        hover:bg-gray-50
+      "
     >
-      <div className="flex sm:items-start items-center space-x-4 w-full">
-        {/* Left: logo and company info */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 w-full gap-3">
-          <div className="w-16 h-16 overflow-hidden rounded flex-shrink-0">
-            <img
-              src={
-                data.logo && data.logo.trim() !== "" ? data.logo : defaultLogo
-              }
-              alt={`${data.name} logo`}
-              className="object-contain w-full h-full"
-            />
+      {/* 1. Top-right arrow */}
+      <a
+        href={data.url}
+        onClick={(e) => e.stopPropagation()}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="
+          absolute top-3 right-3      /* pin to the top-right */
+          text-blue-500
+          hover:text-blue-600
+        "
+      >
+        ↗
+      </a>
+
+      {/* 2. Logo + text */}
+      <div className="flex items-center">
+        <div className="flex-shrink-0 w-14 h-12">
+          <img
+            src={logoSrc}
+            alt={`${data.name} logo`}
+            className="object-contain w-full h-full rounded-full bg-transparent"
+          />
+        </div>
+        <div className="ml-4">
+          <div className="text-lg font-semibold text-gray-800">
+            {data.name}
           </div>
-          <div className="flex-1">
-            <h2 className="text-lg font-semibold text-gray-800">{data.name}</h2>
-            <p className="text-sm text-gray-500">{location}</p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {data.industry && (
-                <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">
-                  {data.industry}
-                </span>
-              )}
-              {data.employees && (
-                <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">
-                  {data.employees} employees
-                </span>
-              )}
-            </div>
+          <div className="text-sm text-gray-500">{location}</div>
+          <div className="mt-1">
+            <span
+              className={`
+                inline-flex items-center
+                px-2 py-0.5 rounded-full
+                text-xs font-medium
+                ${colorClasses}
+              `}
+            >
+              {getIndustryLabel(data.industry as IndustryType)}
+            </span>
           </div>
         </div>
-        {/* right: visit website link */}
-        {data.url && (
-          <a
-            href={data.url}
-            onClick={(e) => e.stopPropagation()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-500 hover:text-primary transition-colors"
-          >
-            <FaExternalLinkAlt className="w-4 h-4" />
-          </a>
-        )}
       </div>
     </div>
   );

@@ -1,153 +1,187 @@
-import React from "react";
-import SearchBar from "../components/SearchBar";
+import React, { useCallback, useState, useEffect } from "react";
+import { FaSearch, FaSlidersH, FaTimes } from "react-icons/fa";
 import DataList from "../components/DataList";
-import CompanyTile from "../components/CompanyTile";
+import CompanyRow from "../components/CompanyTile";
 import { CompanyPage } from "../types/Company";
-
-const sampleCompanies: CompanyPage[] = [
-  {
-    _id: "1",
-    name: "Google",
-    city: "Mountain View",
-    state: "CA",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
-    employees: "100k+",
-    industry: "Tech",
-    url: "https://www.google.com",
-  },
-  {
-    _id: "2",
-    name: "Apple",
-    city: "Cupertino",
-    state: "CA",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
-    employees: "100k+",
-    industry: "Consumer Electronics",
-    url: "https://www.apple.com",
-  },
-  {
-    _id: "3",
-    name: "Netflix",
-    city: "Los Gatos",
-    state: "CA",
-    employees: "12k+",
-    industry: "Entertainment",
-    url: "https://www.netflix.com",
-  },
-  {
-    _id: "4",
-    name: "Amazon",
-    city: "Seattle",
-    state: "WA",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
-    employees: "1.5M+",
-    industry: "E-commerce",
-    url: "https://www.amazon.com",
-  },
-  {
-    _id: "5",
-    name: "Meta",
-    city: "Menlo Park",
-    state: "CA",
-    logo: "https://cdn.iconscout.com/icon/free/png-256/free-meta-logo-icon-download-in-svg-png-gif-file-formats--messenger-chatting-social-media-pack-logos-icons-5582655.png",
-    industry: "Social Media",
-    url: "https://about.meta.com",
-  },
-  {
-    _id: "7",
-    name: "Tesla",
-    city: "Austin",
-    state: "TX",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tesla_Motors.svg",
-    employees: "127k+",
-    industry: "Automotive",
-    url: "https://www.tesla.com",
-  },
-  {
-    _id: "6",
-    name: "Microsoft",
-    city: "Redmond",
-    state: "WA",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg",
-    employees: "220k+",
-    industry: "Software",
-    url: "https://www.microsoft.com",
-  },
-  {
-    _id: "8",
-    name: "GitHub",
-    city: "San Francisco",
-    state: "CA",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg",
-    employees: "2k+",
-    industry: "Software Development",
-    url: "https://www.github.com",
-  },
-  {
-    _id: "9",
-    name: "Adobe",
-    city: "San Jose",
-    state: "CA",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYwOg7gTWZyeood7eZeaJGPk1sljXfddkROA&s",
-    employees: "30k+",
-    industry: "Software",
-    url: "https://www.adobe.com",
-  },
-  {
-    _id: "10",
-    name: "Salesforce",
-    city: "San Francisco",
-    state: "CA",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Salesforce.com_logo.svg/2560px-Salesforce.com_logo.svg.png",
-    employees: "70k+",
-    industry: "Cloud Computing",
-    url: "https://www.salesforce.com",
-  },
-];
+import { getCompanies as apiGetCompanies } from "../api/companies";
+import { APIResult } from "../api/requests";
+import { PaginatedData } from "../types/PaginatedData";
+import { getEmployeesLabel, getIndustryLabel } from "../utils/valuesToLabels";
+import { NumEmployees, IndustryType } from "../types/Company";
 
 const Companies: React.FC = () => {
+  const [query, setQuery] = useState("");
+  const [employeesInput, setEmployeesInput] = useState("");
+  const [industryInput, setIndustryInput] = useState("");
+
+  // “applied” filters & search
+  const [filters, setFilters] = useState({
+    query: "",
+    employees: "",
+    industry: "",
+  });
+  // debounce search‐as‐you‐type (500ms)
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setFilters((f) => ({ ...f, query }));
+    }, 500);
+    return () => clearTimeout(handle);
+  }, [query]);
+
+  // filter modal toggle
+  const [showFilters, setShowFilters] = useState(false);
+
+  // apply filters from modal
+  const applyFilters = () => {
+    setFilters({
+      query,
+      employees: employeesInput,
+      industry: industryInput,
+    });
+    setShowFilters(false);
+  };
+
+  // fetcher (no spinner logic - looked cleaner in my opinion)
+  const fetchCompanies = useCallback(
+    (page: number, perPage: number) =>
+      apiGetCompanies({
+        page,
+        perPage,
+        query: filters.query,
+        employees: filters.employees,
+        industry: filters.industry,
+      }).then((res: APIResult<PaginatedData<CompanyPage>>) =>
+        res.success
+          ? { page, perPage, total: res.data.total, data: res.data.data }
+          : { page, perPage, total: 0, data: [] }
+      ),
+    [filters]
+  );
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Companies</h1>
-        <SearchBar
-          selections={[
-            {
-              label: "Employees",
-              options: [
-                "1-10",
-                "11-50",
-                "51-200",
-                "201-500",
-                "501-1000",
-                "1001+",
-              ],
-            },
-            {
-              label: "Industry",
-              options: [
-                "Tech",
-                "Finance",
-                "Healthcare",
-                "Retail",
-                "Software",
-                "Consumer Electronics",
-              ],
-            },
-          ]}
-        />
-        {/* dataList container with paginator at the bottom */}
-        <div className="mt-4 h-[75vh] flex flex-col">
-          <DataList
-            TileComponent={CompanyTile}
-            data={sampleCompanies}
-            usePagination={true}
-            paginatorContent={{ setPerPage: true, goToPage: true }}
-          />
+        <h1 className="text-3xl font-bold mb-6">Companies Directory</h1>
+
+        {/*  search + filter bar  */}
+        <div className="bg-white rounded-2xl shadow p-6 mb-8 flex items-center space-x-4">
+          <div className="relative flex-1 min-w-0">
+            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              type="text"
+              placeholder="Search companies..."
+              className="
+                w-full border border-gray-300 rounded-full
+                py-2 pl-12 pr-4 text-sm
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                transition
+              "
+            />
+          </div>
+
+          {/* collapse to icon only on small, and shrink icon slightly */}
+          <button
+            onClick={() => setShowFilters(true)}
+            className="inline-flex items-center px-2 sm:px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition"
+          >
+            <FaSlidersH className="w-4 h-4 sm:w-5 sm:h-5 mr-0 sm:mr-2" />
+            <span className="hidden sm:inline">Filters</span>
+          </button>
+        </div>
+        {/*  filter modal */}
+        {showFilters && (
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-20">
+            <div className="bg-white rounded-2xl w-96 p-6 relative shadow-lg">
+              <button
+                onClick={() => setShowFilters(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              >
+                <FaTimes className="w-5 h-5" />
+              </button>
+              <h3 className="text-xl font-semibold mb-4">Filter Companies</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Employees
+                  </label>
+                  <select
+                    value={employeesInput}
+                    onChange={(e) => setEmployeesInput(e.target.value)}
+                    className="
+                      block w-full bg-gray-50 border border-gray-200
+                      rounded-lg py-2 px-3 text-sm
+                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                      transition
+                    "
+                  >
+                    <option value="">Any</option>
+                    {Object.values(NumEmployees).map((ind) => (
+                      <option key={ind} value={ind}>
+                        {getEmployeesLabel(ind)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Industry
+                  </label>
+                  <select
+                    value={industryInput}
+                    onChange={(e) => setIndustryInput(e.target.value)}
+                    className="
+                      block w-full bg-gray-50 border border-gray-200
+                      rounded-lg py-2 px-3 text-sm
+                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                      transition
+                    "
+                  >
+                    <option value="">Any</option>
+                    {Object.values(IndustryType).map((ind) => (
+                      <option key={ind} value={ind}>
+                        {getIndustryLabel(ind)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowFilters(false)}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={applyFilters}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                >
+                  Apply Filters
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ==== Results ==== */}
+        <div className="overflow-visible">
+        <div className="flex flex-col h-[75vh]">
+            <DataList<CompanyPage>
+              key={`${filters.query}_${filters.employees}_${filters.industry}`}
+              fetchData={fetchCompanies}
+              useServerPagination
+              listStyle={{}} 
+              listClassName="space-y-2"
+              TileComponent={CompanyRow}
+              paginatorContent={{ setPerPage: true, goToPage: true }}
+            />
+          </div>
         </div>
       </div>
     </div>
   );
-};
+  };
 
 export default Companies;

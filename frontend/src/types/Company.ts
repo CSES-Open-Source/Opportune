@@ -97,3 +97,13 @@ export interface CompanyPage {
   industry?: string;
   url?: string;
 }
+
+
+export interface ExpandedCardData {
+  title?: string;
+  postedDate?: string;
+  difficulty?: string;
+  name?: string;
+  role?: string;
+  text?: string;
+}
