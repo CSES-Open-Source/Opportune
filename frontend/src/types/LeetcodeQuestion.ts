@@ -8,6 +8,7 @@ export enum Difficulty {
 }
 
 export interface LeetcodeQuestion {
+  _id: string;
   company: Company;
   user: User;
   title: string;

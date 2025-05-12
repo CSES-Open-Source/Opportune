@@ -112,7 +112,7 @@ export async function deleteLeetcodeQuestion(
  * @returns PaginatedData object containing leetcode questions with matching
  * company ID
  */
-export async function getLeetcodeQuestionByCompanyId(
+export async function getLeetcodeQuestionsByCompanyId(
   _id: string,
 ): Promise<APIResult<LeetcodeQuestion[]>> {
   try {
