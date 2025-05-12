@@ -6,7 +6,7 @@ import { CompanyPage } from "../types/Company";
 import { getCompanies as apiGetCompanies } from "../api/companies";
 import { APIResult } from "../api/requests";
 import { PaginatedData } from "../types/PaginatedData";
-import { getEmployeesLabel, getIndustryLabel } from "../utils/valueToLabels";
+import { getEmployeesLabel, getIndustryLabel } from "../utils/valuesToLabels";
 import { NumEmployees, IndustryType } from "../types/Company";
 
 const Companies: React.FC = () => {

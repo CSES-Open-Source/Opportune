@@ -7,7 +7,7 @@ import { APIResult } from "../api/requests";
 import { Company, ExpandedCardData } from "../types/Company";
 import {InterviewAPIItem} from "../types/Interview"
 import {LCAPIItem} from "../types/Leetcode"
-import {getEmployeesLabel, getIndustryLabel} from "../utils/valueToLabels"
+import {getEmployeesLabel, getIndustryLabel} from "../utils/valuesToLabels"
 
 
 const defaultLogo = "/assets/defaultLogo.png";

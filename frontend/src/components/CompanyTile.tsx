@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { CompanyPage, IndustryType } from "../types/Company";
-import { getIndustryLabel } from "../utils/valueToLabels";
-import { INDUSTRY_COLOR_MAP } from "../utils/valueToLabels";
+import { getIndustryLabel } from "../utils/valuesToLabels";
+import { INDUSTRY_COLOR_MAP } from "../utils/valuesToLabels";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
