@@ -232,7 +232,7 @@ const TipModal = ({
               </div>
             </div>
 
-            {user?._id === tip.user._id || (
+            {user?._id === tip.user._id && (
               <div className="flex mt-4 justify-end gap-4">
                 <button
                   onClick={handleEdit}

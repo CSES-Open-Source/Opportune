@@ -21,6 +21,8 @@ import { UserType } from "../types/User";
 import { Tip } from "../types/Tip";
 import NewTipModal from "../components/NewTipModal";
 import TipModal from "../components/TipModal";
+import { ProgressSpinner } from "primereact/progressspinner";
+import { Toast } from "primereact/toast";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
@@ -57,7 +59,7 @@ const sampleAlumni: Tip[] = [
       _id: "",
       name: "",
     },
-    text: "was more that there wasn't enough there that anyone wanted to take the time to understand him. This was a shame as Kevin had many of the answers to the important questions most people who knew him had. It was even more of a shame that they'd refuse to listen even if Kevin offered to give them the answers. So, Kevin remained silent, misunderstood, and kept those important answers to life to himself.",
+    text: "Bad WLB, very hard interview process. ",
   },
   {
     _id: "",
@@ -116,10 +118,14 @@ const getDifficultyBadgeClasses = (difficulty?: string) => {
 
 const CompanyProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+
+  const toast = useRef<Toast>(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [company, setCompany] = useState<Company | null>(null);
+
   const [leetcodeQuestions, setLeetcodeQuestions] = useState<
     LeetcodeQuestion[]
   >([]);
@@ -157,13 +163,35 @@ const CompanyProfile: React.FC = () => {
     text: "",
   });
 
+  const [leetcodeQuestionsLoading, setLeetcodeQuestionsLoading] =
+    useState(true);
+  const [interviewQuestionsLoading, setInterviewQuestionsLoading] =
+    useState(true);
+  const [tipsLoading, setTipsLoading] = useState(true);
+
   const fetchLeetcodeQuestions = useCallback(() => {
     if (company) {
-      getLeetcodeQuestionsByCompanyId(company._id).then((response) => {
-        if (response.success) {
-          setLeetcodeQuestions(response.data);
-        }
-      });
+      setLeetcodeQuestionsLoading(true);
+      getLeetcodeQuestionsByCompanyId(company._id)
+        .then((response) => {
+          if (response.success) {
+            setLeetcodeQuestions(response.data);
+            setLeetcodeQuestionsLoading(false);
+          } else {
+            toast.current?.show({
+              severity: "error",
+              summary: "Error",
+              detail: "Failed to fetch leetcode questions: " + response.error,
+            });
+          }
+        })
+        .catch((error: unknown) => {
+          toast.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Failed to create tip: " + (error as Error).message,
+          });
+        });
     }
   }, [company]);
 
@@ -171,6 +199,7 @@ const CompanyProfile: React.FC = () => {
     if (company) {
       // TODO: Connect to backend
       setInterviewQuestions(sampleInterview);
+      setInterviewQuestionsLoading(false);
     }
   }, [company]);
 
@@ -178,6 +207,7 @@ const CompanyProfile: React.FC = () => {
     if (company) {
       // TODO: Connect to backend
       setTips(sampleAlumni);
+      setTipsLoading(false);
     }
   }, [company]);
 
@@ -216,7 +246,7 @@ const CompanyProfile: React.FC = () => {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading…
+        <ProgressSpinner className="h-16 w-16" strokeWidth="3" />
       </div>
     );
   if (error)
@@ -267,7 +297,7 @@ const CompanyProfile: React.FC = () => {
       <div className="bg-white h-screen overflow-auto text-gray-800 relative">
         <div className="max-w-5xl mx-auto px-4 py-8">
           {/* Company Info */}
-          <div className="bg-white rounded-lg p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
+          <div className="bg-white border rounded-lg p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
               <div className="w-14 h-14">
                 <img
@@ -307,12 +337,14 @@ const CompanyProfile: React.FC = () => {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">LeetCode Questions</h2>
               <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setModalType("NEW_LEETCODE")}
-                  className="py-1.5 px-3 mr-4 opacity-0 group-hover/leetcode:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
-                >
-                  Add
-                </button>
+                {!leetcodeQuestionsLoading && (
+                  <button
+                    onClick={() => setModalType("NEW_LEETCODE")}
+                    className="py-1.5 px-3 mr-4 opacity-0 group-hover/leetcode:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
+                  >
+                    Add
+                  </button>
+                )}
                 <button
                   onClick={() =>
                     document
@@ -335,34 +367,42 @@ const CompanyProfile: React.FC = () => {
                 </button>
               </div>
             </div>
-            {leetcodeQuestions.length > 0 ? (
-              <CardCarousel id="leetcode-carousel">
-                {leetcodeQuestions.map((item, i) => (
-                  <div
-                    key={i}
-                    className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
-                    onClick={() => {
-                      setSelectedLeetcodeQuestion(item);
-                      setModalType("LEETCODE");
-                    }}
-                  >
-                    <h3 className="font-semibold line-clamp-2">{item.title}</h3>
-                    <p className="text-sm text-gray-600 line-clamp-1">
-                      {item.date?.toLocaleDateString()}
-                    </p>
-                    <span
-                      className={`text-xs font-medium px-2 py-0.5 rounded inline-block mt-1 ${getDifficultyBadgeClasses(
-                        item.difficulty,
-                      )}`}
+            {!leetcodeQuestionsLoading ? (
+              leetcodeQuestions.length > 0 ? (
+                <CardCarousel id="leetcode-carousel">
+                  {leetcodeQuestions.map((item, i) => (
+                    <div
+                      key={i}
+                      className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
+                      onClick={() => {
+                        setSelectedLeetcodeQuestion(item);
+                        setModalType("LEETCODE");
+                      }}
                     >
-                      {getDifficultyLabel(item.difficulty)}
-                    </span>
-                  </div>
-                ))}
-              </CardCarousel>
+                      <h3 className="font-semibold line-clamp-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 line-clamp-1">
+                        {item.date?.toLocaleDateString()}
+                      </p>
+                      <span
+                        className={`text-xs font-medium px-2 py-0.5 rounded inline-block mt-1 ${getDifficultyBadgeClasses(
+                          item.difficulty,
+                        )}`}
+                      >
+                        {getDifficultyLabel(item.difficulty)}
+                      </span>
+                    </div>
+                  ))}
+                </CardCarousel>
+              ) : (
+                <div className="text-gray-500 italic py-8 text-center">
+                  No LeetCode questions found.
+                </div>
+              )
             ) : (
-              <div className="text-gray-500 italic py-8 text-center">
-                No LeetCode questions found.
+              <div className="py-8 flex justify-center items-center">
+                <ProgressSpinner className="h-10 w-10" strokeWidth="3" />
               </div>
             )}
           </div>
@@ -372,12 +412,14 @@ const CompanyProfile: React.FC = () => {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Interview Questions</h2>
               <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setModalType("NEW_INTERVIEW")}
-                  className="py-1.5 px-3 mr-4 opacity-0 group-hover/interview:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
-                >
-                  Add
-                </button>
+                {!interviewQuestionsLoading && (
+                  <button
+                    onClick={() => setModalType("NEW_INTERVIEW")}
+                    className="py-1.5 px-3 mr-4 opacity-0 group-hover/interview:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
+                  >
+                    Add
+                  </button>
+                )}
                 <button
                   onClick={() =>
                     document
@@ -400,26 +442,34 @@ const CompanyProfile: React.FC = () => {
                 </button>
               </div>
             </div>
-            {interviewQuestions.length > 0 ? (
-              <CardCarousel id="interview-carousel">
-                {interviewQuestions.map((item, i) => (
-                  <div
-                    key={i}
-                    className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
-                    onClick={() => {
-                      setModalType("INTERVIEW");
-                    }}
-                  >
-                    <h3 className="font-semibold line-clamp-2">{item.title}</h3>
-                    <p className="text-sm text-gray-600 line-clamp-1">
-                      {item.postedDate}
-                    </p>
-                  </div>
-                ))}
-              </CardCarousel>
+            {!interviewQuestionsLoading ? (
+              interviewQuestions.length > 0 ? (
+                <CardCarousel id="interview-carousel">
+                  {interviewQuestions.map((item, i) => (
+                    <div
+                      key={i}
+                      className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
+                      onClick={() => {
+                        setModalType("INTERVIEW");
+                      }}
+                    >
+                      <h3 className="font-semibold line-clamp-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 line-clamp-1">
+                        {item.postedDate}
+                      </p>
+                    </div>
+                  ))}
+                </CardCarousel>
+              ) : (
+                <div className="text-gray-500 italic py-8 text-center">
+                  No interview questions found.
+                </div>
+              )
             ) : (
-              <div className="text-gray-500 italic py-8 text-center">
-                No interview questions found.
+              <div className="py-8 flex justify-center items-center">
+                <ProgressSpinner className="h-10 w-10" strokeWidth="3" />
               </div>
             )}
           </div>
@@ -429,12 +479,14 @@ const CompanyProfile: React.FC = () => {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Alumni Insights</h2>
               <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setModalType("NEW_TIP")}
-                  className="py-1.5 px-3 mr-4 opacity-0 group-hover/tip:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
-                >
-                  Add
-                </button>
+                {!tipsLoading && (
+                  <button
+                    onClick={() => setModalType("NEW_TIP")}
+                    className="py-1.5 px-3 mr-4 opacity-0 group-hover/tip:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
+                  >
+                    Add
+                  </button>
+                )}
                 <button
                   onClick={() =>
                     document
@@ -457,28 +509,41 @@ const CompanyProfile: React.FC = () => {
                 </button>
               </div>
             </div>
-            {tips.length > 0 ? (
-              <CardCarousel id="alumni-carousel">
-                {tips.map((tip, i) => (
-                  <div
-                    key={i}
-                    className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
-                    onClick={() => {
-                      setModalType("TIP");
-                      setSelectedTip(tip);
-                    }}
-                  >
-                    <p className="font-medium">{tip.user.name}</p>
+            {!tipsLoading ? (
+              tips.length > 0 ? (
+                <CardCarousel id="alumni-carousel">
+                  {tips.map((tip, i) => (
                     <div
-                      className="text-sm line-clamp-4 mt-2"
-                      dangerouslySetInnerHTML={{ __html: tip.text }}
-                    ></div>
-                  </div>
-                ))}
-              </CardCarousel>
+                      key={i}
+                      className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
+                      onClick={() => {
+                        setModalType("TIP");
+                        setSelectedTip(tip);
+                      }}
+                    >
+                      <div className="flex flex-row gap-2">
+                        <img
+                          src={tip.user.profilePicture}
+                          alt={tip.user.name}
+                          className="w-7 h-7 rounded-full"
+                        />
+                        <p className="font-medium">{tip.user.name}</p>
+                      </div>
+                      <div
+                        className="text-sm line-clamp-4 mt-2"
+                        dangerouslySetInnerHTML={{ __html: tip.text }}
+                      ></div>
+                    </div>
+                  ))}
+                </CardCarousel>
+              ) : (
+                <div className="text-gray-500 italic py-8 text-center">
+                  No alumni tips found.
+                </div>
+              )
             ) : (
-              <div className="text-gray-500 italic py-8 text-center">
-                No alumni tips found.
+              <div className="py-8 flex justify-center items-center">
+                <ProgressSpinner className="h-10 w-10" strokeWidth="3" />
               </div>
             )}
           </div>
@@ -514,6 +579,8 @@ const CompanyProfile: React.FC = () => {
         company={company}
         onNewTip={() => fetchTips()}
       />
+
+      <Toast ref={toast} />
     </div>
   );
 };
