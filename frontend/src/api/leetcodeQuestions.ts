@@ -4,8 +4,18 @@ import {
   CreateLeetcodeQuestionRequest,
   UpdateLeetcodeQuestionRequest,
   GetLeetcodeQuestionsQuery,
+  LeetcodeQuestionJSON,
 } from "../types/LeetcodeQuestion";
 import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
+
+function parseLeetcodeQuestion(
+  leetcodeQuestion: LeetcodeQuestionJSON,
+): LeetcodeQuestion {
+  return {
+    ...leetcodeQuestion,
+    date: leetcodeQuestion.date ? new Date(leetcodeQuestion.date) : undefined,
+  };
+}
 
 /**
  * Fetch all leetcode questions from the backend.
@@ -15,13 +25,16 @@ import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
  */
 export async function getLeetcodeQuestions(
   queries: GetLeetcodeQuestionsQuery = { page: 0, perPage: 10 },
-): Promise<APIResult<PaginatedData<LeetcodeQuestion[]>>> {
+): Promise<APIResult<PaginatedData<LeetcodeQuestion>>> {
   try {
     const response = await get(`/api/questions/leetcode`, {
       ...queries,
     });
-    const json = (await response.json()) as PaginatedData<LeetcodeQuestion[]>;
-    const result = { ...json, data: json.data };
+    const json = (await response.json()) as PaginatedData<LeetcodeQuestionJSON>;
+    const leetcodeQuestions = json.data.map((item) =>
+      parseLeetcodeQuestion(item),
+    );
+    const result = { ...json, data: leetcodeQuestions };
     return { success: true, data: result };
   } catch (error) {
     return handleAPIError(error);
@@ -39,8 +52,8 @@ export async function createLeetcodeQuestion(
 ): Promise<APIResult<LeetcodeQuestion>> {
   try {
     const response = await post(`/api/questions/leetcode`, leetcodeQuestion);
-    const json = (await response.json()) as LeetcodeQuestion;
-    return { success: true, data: json };
+    const json = (await response.json()) as LeetcodeQuestionJSON;
+    return { success: true, data: parseLeetcodeQuestion(json) };
   } catch (error) {
     return handleAPIError(error);
   }
@@ -57,8 +70,8 @@ export async function getLeetcodeQuestionById(
 ): Promise<APIResult<LeetcodeQuestion>> {
   try {
     const response = await get(`/api/questions/leetcode/${id}`);
-    const json = (await response.json()) as LeetcodeQuestion;
-    return { success: true, data: json };
+    const json = (await response.json()) as LeetcodeQuestionJSON;
+    return { success: true, data: parseLeetcodeQuestion(json) };
   } catch (error) {
     return handleAPIError(error);
   }
@@ -80,8 +93,8 @@ export async function updateLeetcodeQuestion(
       `/api/questions/leetcode/${id}`,
       leetcodeQuestion,
     );
-    const json = (await response.json()) as LeetcodeQuestion;
-    return { success: true, data: json };
+    const json = (await response.json()) as LeetcodeQuestionJSON;
+    return { success: true, data: parseLeetcodeQuestion(json) };
   } catch (error) {
     return handleAPIError(error);
   }
@@ -117,8 +130,11 @@ export async function getLeetcodeQuestionsByCompanyId(
 ): Promise<APIResult<LeetcodeQuestion[]>> {
   try {
     const response = await get(`/api/questions/leetcode/company/${_id}`);
-    const json = (await response.json()) as LeetcodeQuestion[];
-    return { success: true, data: json };
+    const json = (await response.json()) as LeetcodeQuestionJSON[];
+    return {
+      success: true,
+      data: json.map((item) => parseLeetcodeQuestion(item)),
+    };
   } catch (error) {
     return handleAPIError(error);
   }

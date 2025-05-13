@@ -86,19 +86,6 @@ export interface UpdateCompanyRequest {
   url?: string;
 }
 
-export interface CompanyPage {
-  _id: string;
-  name: string;
-  city?: string;
-  state?: string;
-  logo?: string;
-  logoKey?: string;
-  employees?: string;
-  industry?: string;
-  url?: string;
-}
-
-
 export interface ExpandedCardData {
   title?: string;
   postedDate?: string;

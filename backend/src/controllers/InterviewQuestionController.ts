@@ -202,5 +202,5 @@ export const deleteInterviewQuestion = asyncHandler(async (req, res, next) => {
   // Find and delete interview question by ID
   await InterviewQuestion.findByIdAndDelete(id).exec();
 
-  res.status(200);
+  res.status(200).json({ message: "Success" });
 });

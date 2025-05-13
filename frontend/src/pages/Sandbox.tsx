@@ -1,8 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NewLeetcodeQuestionModal from "../components/NewLeetcodeQuestionModal";
+import { useAuth } from "../contexts/useAuth";
+import { Difficulty, LeetcodeQuestion } from "../types/LeetcodeQuestion";
+import LeetcodeQuestionModal from "../components/LeetcodeQuestionModal";
+import { User, UserType } from "../types/User";
 
 const Sandbox = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const user: User = {
+    _id: "123",
+    name: "Kevin",
+    email: "kevin123@gmail.com",
+    type: UserType.Alumni,
+    profilePicture: "",
+  };
+
   const company = {
     _id: "6744401901ea4031b0848bfe",
     name: "Waymo",
@@ -12,6 +23,44 @@ const Sandbox = () => {
     employees: "ENTERPRISEPLUS",
     logoKey: "logos/ef56058e-3635-4167-9352-c20b36d131d7.png",
   };
+
+  const lq: LeetcodeQuestion = {
+    _id: "12345678",
+    title: "Two Sum",
+    company: company,
+    user: user,
+    difficulty: Difficulty.Easy,
+    url: "www.google.com",
+    date: new Date(),
+  };
+
+  const [isOpen, setIsOpen] = useState(true);
+  const [leetcodeQuestion, setLeetcodeQuestion] =
+    useState<LeetcodeQuestion>(lq);
+  const { user: u } = useAuth();
+
+  useEffect(() => {
+    if (u) {
+      setLeetcodeQuestion({ ...leetcodeQuestion, user: u });
+    }
+  }, [u, leetcodeQuestion]);
+
+  if (user) {
+    return (
+      <div>
+        <LeetcodeQuestionModal
+          leetcodeQuestion={leetcodeQuestion}
+          isOpen={isOpen}
+          onClose={() => {
+            setIsOpen(false);
+          }}
+          onUpdateLeetcodeQuestion={() => {}}
+          setLeetcodeQuestion={setLeetcodeQuestion}
+        />
+      </div>
+    );
+  }
+
   return (
     <div>
       <NewLeetcodeQuestionModal

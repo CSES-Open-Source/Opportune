@@ -7,6 +7,16 @@ export enum Difficulty {
   Hard = "HARD",
 }
 
+export interface LeetcodeQuestionJSON {
+  _id: string;
+  company: Company;
+  user: User;
+  title: string;
+  url: string;
+  difficulty: Difficulty;
+  date?: string;
+}
+
 export interface LeetcodeQuestion {
   _id: string;
   company: Company;

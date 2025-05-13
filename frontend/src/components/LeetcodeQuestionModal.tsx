@@ -8,14 +8,20 @@ import Modal from "./Modal";
 import { useAuth } from "../contexts/useAuth";
 import { getDifficultyLabel } from "../utils/valuesToLabels";
 import { Toast } from "primereact/toast";
-import { updateLeetcodeQuestion } from "../api/leetcodeQuestions";
+import {
+  deleteLeetcodeQuestion,
+  updateLeetcodeQuestion,
+} from "../api/leetcodeQuestions";
+import Dialog from "./Dialog";
 
 interface LeetcodeQuestionModalProps {
   leetcodeQuestion: LeetcodeQuestion;
   isOpen: boolean;
   onClose: () => void;
   onUpdateLeetcodeQuestion: () => void;
-  setLeetcodeQuestion: Dispatch<SetStateAction<LeetcodeQuestion>>;
+  setLeetcodeQuestion:
+    | Dispatch<SetStateAction<LeetcodeQuestion>>
+    | Dispatch<SetStateAction<LeetcodeQuestion | undefined>>;
 }
 
 const LeetcodeQuestionModal = ({
@@ -35,6 +41,8 @@ const LeetcodeQuestionModal = ({
   const [newDifficulty, setNewDifficulty] = useState<Difficulty>();
   const [isUrlValid, setIsUrlValid] = useState(true);
   const [isValid, setIsValid] = useState(true);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsValid(
@@ -66,6 +74,42 @@ const LeetcodeQuestionModal = ({
     setIsUrlValid(true);
     setIsValid(true);
     setIsEditing(true);
+  };
+
+  const onDelete = () => {
+    deleteLeetcodeQuestion(leetcodeQuestion._id)
+      .then((response) => {
+        console.log(response);
+        if (response.success) {
+          toast.current?.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Leetcode question was successfully deleted",
+          });
+
+          onUpdateLeetcodeQuestion();
+          resetStates();
+          onClose();
+        } else {
+          toast.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Failed to delete leetcode question: " + response.error,
+          });
+        }
+      })
+      .catch((error: unknown) => {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail:
+            "Failed to update leetcode question: " + (error as Error).message,
+        });
+      });
+  };
+
+  const handleDelete = () => {
+    setIsDialogOpen(true);
   };
 
   const handleCancel = () => {
@@ -122,13 +166,13 @@ const LeetcodeQuestionModal = ({
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
       case "easy":
-        return "bg-green-500";
+        return "bg-green-100 text-green-800";
       case "medium":
-        return "bg-yellow-500";
+        return "bg-yellow-100 text-yellow-800";
       case "hard":
-        return "bg-red-500";
+        return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-500";
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -228,21 +272,13 @@ const LeetcodeQuestionModal = ({
           <div className="flex flex-col">
             <div className="flex justify-between items-start mb-6">
               <h2 className="text-2xl font-bold">{leetcodeQuestion.title}</h2>
-              {user?._id === leetcodeQuestion.user._id && (
-                <button
-                  onClick={handleEdit}
-                  className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
-                >
-                  Edit
-                </button>
-              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
                 <p className="text-gray-500 text-sm mb-1">Difficulty</p>
                 <p
-                  className={`inline-block border rounded-xl px-3 text-white ${getDifficultyColor(
+                  className={`inline-block border rounded px-3 ${getDifficultyColor(
                     leetcodeQuestion.difficulty,
                   )}`}
                 >
@@ -252,7 +288,10 @@ const LeetcodeQuestionModal = ({
 
               <div>
                 <p className="text-gray-500 text-sm mb-1">Date Added</p>
-                <p>{leetcodeQuestion.date?.toLocaleDateString()}</p>
+                <p>
+                  {leetcodeQuestion.date?.toLocaleDateString() ||
+                    "Not Specified"}
+                </p>
               </div>
 
               <div>
@@ -286,9 +325,36 @@ const LeetcodeQuestionModal = ({
                 </div>
               </div>
             </div>
+
+            {user?._id === leetcodeQuestion.user._id && (
+              <div className="flex mt-4 justify-end gap-4">
+                <button
+                  onClick={handleEdit}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
         )}
       </Modal>
+      <Dialog
+        isDialogOpen={isDialogOpen}
+        onConfirm={() => {
+          onDelete();
+          setIsDialogOpen(false);
+        }}
+        onDialogClose={() => setIsDialogOpen(false)}
+        text={"Are you sure you want to delete this leetcode question?"}
+        type="warning"
+      />
       <Toast ref={toast} />
     </div>
   );
