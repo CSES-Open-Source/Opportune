@@ -1,12 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { CompanyPage, IndustryType } from "../types/Company";
+import { Company, IndustryType } from "../types/Company";
 import { getIndustryLabel } from "../utils/valuesToLabels";
 import { INDUSTRY_COLOR_MAP } from "../utils/valuesToLabels";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
-const CompanyTile: React.FC<{ data: CompanyPage }> = ({ data }) => {
+const CompanyTile: React.FC<{ data: Company }> = ({ data }) => {
   const navigate = useNavigate();
   const location =
     data.city && data.state
@@ -47,17 +47,15 @@ const CompanyTile: React.FC<{ data: CompanyPage }> = ({ data }) => {
 
       {/* 2. Logo + text */}
       <div className="flex items-center">
-        <div className="flex-shrink-0 w-14 h-12">
+        <div className="flex-shrink-0 w-12 h-12">
           <img
             src={logoSrc}
             alt={`${data.name} logo`}
-            className="object-contain w-full h-full rounded-full bg-transparent"
+            className="object-contain w-full h-full rounded-md bg-transparent"
           />
         </div>
         <div className="ml-4">
-          <div className="text-lg font-semibold text-gray-800">
-            {data.name}
-          </div>
+          <div className="text-lg font-semibold text-gray-800">{data.name}</div>
           <div className="text-sm text-gray-500">{location}</div>
           <div className="mt-1">
             <span

@@ -203,7 +203,7 @@ export const deleteLeetcodeQuestion = asyncHandler(async (req, res, next) => {
   // Find and delete leetcode question by ID
   await LeetcodeQuestion.findByIdAndDelete(id).lean().exec();
 
-  res.status(200);
+  res.status(200).json({ message: "Success" });
 });
 
 // @desc Get Leetcode question by company ID

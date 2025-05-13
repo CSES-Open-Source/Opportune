@@ -2,12 +2,11 @@ import React, { useCallback, useState, useEffect } from "react";
 import { FaSearch, FaSlidersH, FaTimes } from "react-icons/fa";
 import DataList from "../components/DataList";
 import CompanyRow from "../components/CompanyTile";
-import { CompanyPage } from "../types/Company";
 import { getCompanies as apiGetCompanies } from "../api/companies";
 import { APIResult } from "../api/requests";
 import { PaginatedData } from "../types/PaginatedData";
 import { getEmployeesLabel, getIndustryLabel } from "../utils/valuesToLabels";
-import { NumEmployees, IndustryType } from "../types/Company";
+import { NumEmployees, IndustryType, Company } from "../types/Company";
 
 const Companies: React.FC = () => {
   const [query, setQuery] = useState("");
@@ -50,12 +49,12 @@ const Companies: React.FC = () => {
         query: filters.query,
         employees: filters.employees,
         industry: filters.industry,
-      }).then((res: APIResult<PaginatedData<CompanyPage>>) =>
+      }).then((res: APIResult<PaginatedData<Company>>) =>
         res.success
           ? { page, perPage, total: res.data.total, data: res.data.data }
-          : { page, perPage, total: 0, data: [] }
+          : { page, perPage, total: 0, data: [] },
       ),
-    [filters]
+    [filters],
   );
 
   return (
@@ -167,12 +166,12 @@ const Companies: React.FC = () => {
 
         {/* ==== Results ==== */}
         <div className="overflow-visible">
-        <div className="flex flex-col h-[75vh]">
-            <DataList<CompanyPage>
+          <div className="flex flex-col h-[75vh]">
+            <DataList<Company>
               key={`${filters.query}_${filters.employees}_${filters.industry}`}
               fetchData={fetchCompanies}
               useServerPagination
-              listStyle={{}} 
+              listStyle={{}}
               listClassName="space-y-2"
               TileComponent={CompanyRow}
               paginatorContent={{ setPerPage: true, goToPage: true }}
@@ -182,6 +181,6 @@ const Companies: React.FC = () => {
       </div>
     </div>
   );
-  };
+};
 
 export default Companies;
