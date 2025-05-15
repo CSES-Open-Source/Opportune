@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/useAuth";
 import { Difficulty, LeetcodeQuestion } from "../types/LeetcodeQuestion";
 import LeetcodeQuestionModal from "../components/LeetcodeQuestionModal";
 import { User, UserType } from "../types/User";
+import { State } from "../types/Company";
 
 const Sandbox = () => {
   const user: User = {
@@ -18,10 +19,7 @@ const Sandbox = () => {
     _id: "6744401901ea4031b0848bfe",
     name: "Waymo",
     city: "Mountain View",
-    state: "CA",
-    __v: 0,
-    employees: "ENTERPRISEPLUS",
-    logoKey: "logos/ef56058e-3635-4167-9352-c20b36d131d7.png",
+    state: State.California,
   };
 
   const lq: LeetcodeQuestion = {
