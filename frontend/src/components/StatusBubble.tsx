@@ -1,4 +1,5 @@
 import { statusColors } from "../constants/statusColors";
+import { getApplicationStatusLabel } from "../utils/valuesToLabels";
 
 interface StatusBubbleProps {
   status: string;
@@ -11,9 +12,9 @@ const StatusBubble = ({ status }: StatusBubbleProps) => {
 
   return (
     <span
-      className={`m-[8px] px-2 py-1 rounded-full text-sm font-semibold ${colorClass}`}
+      className={`m-[8px] px-2 py-1 rounded-full text-sm font-semibold bg-opacity-60 ${colorClass}`}
     >
-      {status}
+      {getApplicationStatusLabel(status)}
     </span>
   );
 };

@@ -7,38 +7,30 @@ const tipRouter = express.Router();
 tipRouter.get("/", tipController.getAllTips);
 
 // Create new tip
-tipRouter.post(
-  "/",
-  tipValidator.createTipValidator,
-  tipController.createTip
-);
+tipRouter.post("/", tipValidator.createTipValidator, tipController.createTip);
 
 // Get tip by ID
-tipRouter.get(
-  "/:id",
-  tipValidator.getTipValidator,
-  tipController.getTipById
-);
+tipRouter.get("/:id", tipValidator.getTipValidator, tipController.getTipById);
 
 // Update tip by ID
 tipRouter.patch(
   "/:id",
   tipValidator.updateTipValidator,
-  tipController.updateTipById
+  tipController.updateTipById,
 );
 
 // Delete tip by ID
 tipRouter.delete(
   "/:id",
   tipValidator.deleteTipValidator,
-  tipController.deleteTipById
+  tipController.deleteTipById,
 );
 
 // Get tips by company ID
 tipRouter.get(
   "/company/:id",
   tipValidator.getTipsByCompanyIdValidator,
-  tipController.getTipsByCompanyId
+  tipController.getTipsByCompanyId,
 );
 
 export default tipRouter;

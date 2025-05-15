@@ -1,11 +1,23 @@
 import { PaginatedData } from "../types/PaginatedData";
 import {
   Application,
+  ApplicationJSON,
   CreateApplicationRequest,
   GetApplicationsByUserIDQuery,
   UpdateApplicationRequest,
 } from "../types/Application";
 import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
+
+function parseApplication(application: ApplicationJSON): Application {
+  return {
+    ...application,
+    process: application.process?.map((process) => {
+      return { ...process, date: new Date(process.date) };
+    }),
+    createdAt: new Date(application.createdAt || ""),
+    updatedAt: new Date(application.updatedAt || ""),
+  };
+}
 
 /**
  * Fetch all applications from the backend.
@@ -15,8 +27,11 @@ import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
 export async function getAllApplications(): Promise<APIResult<Application[]>> {
   try {
     const response = await get("/api/applications/applied");
-    const json = (await response.json()) as Application[];
-    return { success: true, data: json };
+    const json = (await response.json()) as ApplicationJSON[];
+    return {
+      success: true,
+      data: json.map((application) => parseApplication(application)),
+    };
   } catch (error) {
     return handleAPIError(error);
   }
@@ -33,8 +48,8 @@ export async function getApplicationbyID(
 ): Promise<APIResult<Application>> {
   try {
     const response = await get(`/api/applications/applied/${id}`);
-    const json = (await response.json()) as Application;
-    return { success: true, data: json };
+    const json = (await response.json()) as ApplicationJSON;
+    return { success: true, data: parseApplication(json) };
   } catch (error) {
     return handleAPIError(error);
   }
@@ -51,8 +66,8 @@ export async function createApplication(
 ): Promise<APIResult<Application>> {
   try {
     const response = await post("/api/applications/applied", application);
-    const json = (await response.json()) as Application;
-    return { success: true, data: json };
+    const json = (await response.json()) as ApplicationJSON;
+    return { success: true, data: parseApplication(json) };
   } catch (error) {
     return handleAPIError(error);
   }
@@ -65,7 +80,7 @@ export async function createApplication(
  * @param application Fields to update
  * @returns updated application
  */
-export async function updateUser(
+export async function updateApplication(
   id: string,
   application: UpdateApplicationRequest,
 ): Promise<APIResult<Application>> {
@@ -74,8 +89,8 @@ export async function updateUser(
       `/api/applications/applied/${id}`,
       application,
     );
-    const json = (await response.json()) as Application;
-    return { success: true, data: json };
+    const json = (await response.json()) as ApplicationJSON;
+    return { success: true, data: parseApplication(json) };
   } catch (error) {
     return handleAPIError(error);
   }
@@ -110,9 +125,12 @@ export async function getApplicationsByUserID(
     const response = await get(`/api/applications/applied/user/${_id}`, {
       ...queries,
     });
-    const json = (await response.json()) as PaginatedData<Application>;
-    const result = { ...json, data: json.data };
-    return { success: true, data: result };
+    const json = (await response.json()) as PaginatedData<ApplicationJSON>;
+    const applications: PaginatedData<Application> = {
+      ...json,
+      data: json.data.map((application) => parseApplication(application)),
+    };
+    return { success: true, data: applications };
   } catch (error) {
     return handleAPIError(error);
   }

@@ -40,11 +40,13 @@ export const navItems: NavItem[] = [
     label: "Interview",
     path: "/interview/behavioral",
     icon: FiFileText,
+    disabled: true,
   },
   {
     label: "Leetcode",
     path: "/interview/leetcode",
     icon: FiTerminal,
+    disabled: true,
   },
   {
     label: "Sandbox",

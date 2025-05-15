@@ -1,11 +1,18 @@
 import { InferSchemaType, Schema, model } from "mongoose";
 
+/* eslint-disable no-unused-vars */
+export enum Difficulty {
+  Easy = "EASY",
+  Medium = "MEDIUM",
+  Hard = "HARD",
+}
+
 const leetcodeQuestionSchema = new Schema({
-  companyId: {
+  company: {
     type: Schema.Types.ObjectId,
     required: true,
   },
-  companyName: {
+  user: {
     type: String,
     required: true,
   },
@@ -13,17 +20,18 @@ const leetcodeQuestionSchema = new Schema({
     type: String,
     required: true,
   },
-  question: {
+  url: {
     type: String,
     required: true,
   },
   difficulty: {
     type: String,
+    enum: Object.values(Difficulty),
     required: true,
   },
   date: {
     type: Date,
-    required: true,
+    required: false,
   },
 });
 

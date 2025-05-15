@@ -5,13 +5,17 @@ const interviewQuestionSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true,
   },
+  user: {
+    type: String,
+    required: true,
+  },
   question: {
     type: String,
     required: true,
   },
   date: {
     type: Date,
-    required: true,
+    required: false,
   },
 });
 

@@ -66,6 +66,7 @@ const applicationSchema = new Schema(
   },
 );
 
+export type ApplicationStatus = InferSchemaType<typeof applicationStatusSchema>;
 type Application = InferSchemaType<typeof applicationSchema>;
 
 export default model<Application>("Application", applicationSchema);

@@ -6,10 +6,11 @@ import companyRouter from "src/routes/companyRoutes";
 import applicationRouter from "src/routes/applicationRoutes";
 import savedApplicationRouter from "src/routes/savedApplicationRoutes";
 import leetcodeQuestionRouter from "src/routes/leetcodeQuestionRoutes";
-import interviewQuestionRouter from "./routes/InterviewQuestionRoutes";
+import interviewQuestionRouter from "src/routes/InterviewQuestionRoutes";
+import articleRouter from "src/routes/articleRoutes";
 import errorHandler from "src/middlewares/errorHandler";
 import { logger } from "src/middlewares/logger";
-import tipRouter from "./routes/tipRoutes";
+import tipRouter from "../src/routes/tipRoutes";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/api/applications/saved", savedApplicationRouter);
 app.use("/api/questions/leetcode", leetcodeQuestionRouter);
 app.use("/api/questions/interview", interviewQuestionRouter);
 app.use("/api/tips", tipRouter);
+app.use("/api/articles", articleRouter);
 
 /**
  * Error handler; all errors thrown by server are handled here.

@@ -21,7 +21,7 @@ const tipSchema = new Schema(
     updatedAt: {
       type: Date,
       required: true,
-    }
+    },
   },
   {
     timestamps: true,

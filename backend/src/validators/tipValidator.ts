@@ -40,17 +40,14 @@ const validatePerPage = query("perPage")
   .toInt()
   .withMessage("per page must be an integer greater than 1");
 
-export const createTipValidator = [
-  validateUserId,
-  validateText
-];
+export const createTipValidator = [validateUserId, validateText];
 
 export const getTipValidator = [validateId];
 
 export const updateTipValidator = [
   validateId,
   validateUserId.optional(),
-  validateText.optional()
+  validateText.optional(),
 ];
 
 export const deleteTipValidator = [validateId];
@@ -58,5 +55,5 @@ export const deleteTipValidator = [validateId];
 export const getTipsByCompanyIdValidator = [
   validateCompanyId,
   validatePage,
-  validatePerPage
+  validatePerPage,
 ];

@@ -34,6 +34,7 @@ export interface Alumni extends BaseUser {
   type: UserType.Alumni;
   company?: Company;
   shareProfile?: boolean;
+  position?: string;
 }
 
 export type User = Student | Alumni;
@@ -50,6 +51,7 @@ export interface UserJSON {
   classLevel?: ClassLevel;
   company?: Company;
   shareProfile?: boolean;
+  position?: string;
 }
 
 export interface CreateUserRequest {
@@ -64,6 +66,7 @@ export interface CreateUserRequest {
   classLevel?: ClassLevel;
   company?: Company;
   shareProfile?: boolean;
+  position?: string;
 }
 
 export interface UpdateUserRequest {
@@ -75,10 +78,12 @@ export interface UpdateUserRequest {
   classLevel?: ClassLevel;
   company?: Company;
   shareProfile?: boolean;
+  position?: string;
 }
 
 export interface GetAlumniQuery {
   page: number;
   perPage: number;
   query?: string;
+  industry?: string[];
 }

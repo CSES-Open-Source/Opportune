@@ -11,7 +11,7 @@ interface TipCreate {
   text: string;
 }
 
-interface TipUpdate extends Partial<TipCreate> { }
+interface TipUpdate extends Partial<TipCreate> {}
 
 // @desc Retrieve all tips
 // @route GET /api/tips
@@ -44,7 +44,7 @@ export const createTip = asyncHandler(async (req, res, next) => {
   // Create a new tip with the validated data
   const newTip = new Tip({
     _id: new mongoose.Types.ObjectId(),
-    ...tipData
+    ...tipData,
   });
 
   await newTip.save();
@@ -105,7 +105,7 @@ export const updateTipById = asyncHandler(async (req, res, next) => {
   if (Object.keys(validatedData).length === 0) {
     // If no fields are provided to update, return a 400 Bad Request
     return next(
-      createHttpError(400, "At least one field is required to update.")
+      createHttpError(400, "At least one field is required to update."),
     );
   }
 
@@ -113,7 +113,7 @@ export const updateTipById = asyncHandler(async (req, res, next) => {
   const updatedTip = await Tip.findByIdAndUpdate(
     id,
     { $set: validatedData },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   ).exec();
 
   if (!updatedTip) {
@@ -185,6 +185,6 @@ export const getTipsByCompanyId = asyncHandler(async (req, res, next) => {
     page,
     perPage,
     total,
-    data: tips || []
+    data: tips || [],
   });
 });

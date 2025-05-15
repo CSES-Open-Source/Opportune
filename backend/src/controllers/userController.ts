@@ -25,6 +25,7 @@ interface AlumniResponse extends BaseUserResponse {
   phoneNumber?: string;
   company?: mongoose.Types.ObjectId;
   shareProfile?: boolean;
+  position?: string;
 }
 
 type UserResponse = StudentResponse | AlumniResponse;
@@ -61,6 +62,7 @@ export const createUser = asyncHandler(async (req, res, next) => {
     classLevel,
     company,
     shareProfile,
+    position,
   } = matchedData(req, { locations: ["body"] });
 
   // check if the user already exists
@@ -87,6 +89,7 @@ export const createUser = asyncHandler(async (req, res, next) => {
     classLevel,
     company,
     shareProfile,
+    position,
   });
 
   await newUser.save();
@@ -141,6 +144,7 @@ export const getUserById = asyncHandler(async (req, res, next) => {
       ...responseData,
       company: foundUser.company,
       shareProfile: foundUser.shareProfile,
+      position: foundUser.position,
     } as AlumniResponse;
 
     if (foundUser.shareProfile) {
@@ -219,16 +223,46 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
     return next(createHttpError(400, validationErrorParser(errors)));
   }
 
-  const { page, perPage, query } = matchedData(req, { locations: ["query"] });
+  const { page, perPage, query, industry } = matchedData(req, {
+    locations: ["query"],
+  });
 
   const dbQuery = User.find({
     type: UserType.Alumni,
     shareProfile: true,
   });
 
-  // add a name search filter if provided
+  // combine company, position, and name filters
   if (query) {
-    dbQuery.where("name").regex(new RegExp(query, "i"));
+    const companyDocs = await Company.find({
+      $or: [
+        { name: { $regex: new RegExp(query, "i") } },
+        { industry: { $regex: new RegExp(query, "i") } },
+      ],
+    }).exec();
+
+    const companyIds = companyDocs.map((company) => company._id);
+
+    dbQuery.or([
+      { name: { $regex: new RegExp(query, "i") } },
+      { position: { $regex: new RegExp(query, "i") } },
+      { company: { $in: companyIds } },
+    ]);
+  }
+
+  // industry filter
+  if (industry) {
+    const industryArray = industry
+      .split(",")
+      .map((item: string) => new RegExp(item.trim(), "i"));
+
+    const industryDocs = await Company.find({
+      industry: { $in: industryArray },
+    }).exec();
+
+    const industryCompanyIds = industryDocs.map((company) => company._id);
+
+    dbQuery.where("company").in(industryCompanyIds);
   }
 
   // ensure count and paginate do not conflict
@@ -248,14 +282,6 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
     page,
     perPage,
     total,
-    data: users.map((user) => ({
-      id: user._id,
-      email: user.email,
-      name: user.name,
-      linkedIn: user.linkedIn,
-      phoneNumber: user.phoneNumber,
-      company: user.company,
-      shareProfile: user.shareProfile,
-    })),
+    data: users,
   });
 });

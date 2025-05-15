@@ -1,22 +1,28 @@
 import { useEffect, useState } from "react";
 import { PaginatedData } from "../types/PaginatedData";
 import Paginator, { UsePagination } from "./Paginator";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 interface ListStyle {
   width?: string;
-  height?: string;
+  height?: string; 
   maxWidth?: string;
   maxHeight?: string;
 }
 
 interface BaseDataListProps<T> {
+  data?: T[];
+  fetchData?: (page: number, perPage: number) => Promise<PaginatedData<T>>;
   TileComponent: React.ComponentType<{ data: T }>; // Custom tile component to display each item
   useServerPagination?: boolean; // Toggle server-side pagination
+  usePagination?: boolean;
   listStyle?: ListStyle; // Style for the DataList container
+  listClassName?: string;
 }
 
 interface DataListNoPaginationProps<T> extends BaseDataListProps<T> {
   data: T[]; // Data to display when not using server pagination
+  fetchData?: undefined;
   usePagination?: false;
   useServerPagination?: false; // Toggle server-side pagination
 }
@@ -25,6 +31,7 @@ interface DataListPaginationProps<T>
   extends BaseDataListProps<T>,
     UsePagination {
   data: T[]; // Data to display when not using server pagination
+  fetchData?: undefined;
   usePagination: true;
   useServerPagination?: false; // Toggle server-side pagination
 }
@@ -32,7 +39,9 @@ interface DataListPaginationProps<T>
 interface DataListServerPaginationProps<T>
   extends BaseDataListProps<T>,
     UsePagination {
+  data?: undefined;
   fetchData: (page: number, perPage: number) => Promise<PaginatedData<T>>; // Function to fetch data for server pagination
+  usePagination?: undefined;
   useServerPagination: true; // Enable server-side pagination
   listStyle?: ListStyle; // Style for the DataList container
 }
@@ -43,7 +52,8 @@ type DataListProps<T> =
   | DataListServerPaginationProps<T>;
 
 const DataList = <T extends object>(props: DataListProps<T>) => {
-  const { TileComponent, useServerPagination, listStyle } = props;
+  const { TileComponent, useServerPagination, listStyle, listClassName } = props;
+
 
   const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState<number>(0);
@@ -66,7 +76,7 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
         setLoading(false);
       }
     }
-  }, [props, page, perPage, useServerPagination]);
+  }, [props.data, props.usePagination, page, perPage, useServerPagination]);
 
   // Handle server-side pagination
   useEffect(() => {
@@ -82,40 +92,40 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
     };
 
     loadData();
-  }, [page, perPage, props, useServerPagination]);
+  }, [page, perPage, props.fetchData, useServerPagination]);
 
-  // TODO: style loading with spinner
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full">
+        <ProgressSpinner className="h-16 w-16" strokeWidth="3" />
+      </div>
+    );
   }
-
+  // height
   return (
     <div
-      style={{ ...listStyle, overflowY: "auto" }}
-      className="flex flex-col h-full overflow-y-auto"
-    >
-      <div className="flex-1 overflow-y-auto">
-        <div className="flex flex-col gap-4">
-          {data.map((item, index) => (
-            <TileComponent key={index} data={item} />
-          ))}
-        </div>
-      </div>
-
-      {/* Pagination Controls */}
-      {(useServerPagination || props.usePagination) && (
-        <div>
-          <Paginator
-            page={page}
-            perPage={perPage}
-            onPageChange={setPage}
-            onPerPageChange={setPerPage}
-            totalItems={totalItems}
-            paginatorContent={props.paginatorContent}
-          />
-        </div>
-      )}
+    style={listStyle}
+    className="flex flex-col h-full"
+  >
+    {/* 1) scrollable list region */}
+    <div className={`flex-1 overflow-y-auto ${listClassName ?? ""}`}>
+      {data.map((item, i) => <TileComponent key={i} data={item} />)}
     </div>
+
+    {/* 2) paginator “below” the scroll region */}
+    {(useServerPagination || props.usePagination) && (
+      <div className="mt-4">
+        <Paginator
+          page={page}
+          perPage={perPage}
+          onPageChange={setPage}
+          onPerPageChange={setPerPage}
+          totalItems={totalItems}
+          paginatorContent={props.paginatorContent}
+        />
+      </div>
+    )}
+  </div>
   );
 };
 

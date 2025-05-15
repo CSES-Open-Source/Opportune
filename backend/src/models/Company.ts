@@ -97,22 +97,4 @@ companySchema.virtual("logo").get(function () {
   return null;
 });
 
-const generateLogoUrl = async (doc: Company) => {
-  if (doc.logoKey) {
-    return new URL(doc.logoKey, AWS_BUCKET_URL).href;
-  }
-};
-
-companySchema.post("find", async function (docs) {
-  for (const doc of docs) {
-    await generateLogoUrl(doc);
-  }
-});
-
-companySchema.post("findOne", async function (doc) {
-  if (doc) {
-    await generateLogoUrl(doc);
-  }
-});
-
 export default model<Company>("Company", companySchema);

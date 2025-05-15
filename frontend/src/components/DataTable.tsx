@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { PaginatedData } from "../types/PaginatedData";
 import Paginator, { UsePagination } from "./Paginator";
 import { ColumnDef } from "../types/ColumnDef";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 interface TableStyle {
   width?: string;
@@ -11,8 +12,11 @@ interface TableStyle {
 }
 
 interface BaseDataTableProps<T extends object> {
+  data?: T[];
+  fetchData?: (page: number, perPage: number) => Promise<PaginatedData<T>>;
   columns: ColumnDef<T>[]; // Definition of columns for react table
   useServerPagination?: boolean; // Set to true to toggle server side pagination
+  usePagination?: boolean;
   onRowClick?: (row: T) => void; // Event emitter for row click
   tableStyle?: TableStyle;
 }
@@ -20,6 +24,7 @@ interface BaseDataTableProps<T extends object> {
 interface DataTableNoPaginationProps<T extends object>
   extends BaseDataTableProps<T> {
   data: T[]; // data to display in table when the table is not paginated
+  fetchData?: undefined;
   usePagination?: false;
   useServerPagination?: false; // Set to true to toggle server side pagination
 }
@@ -28,6 +33,7 @@ interface DataTablePaginationProps<T extends object>
   extends BaseDataTableProps<T>,
     UsePagination {
   data: T[]; // data to display in table when the table is not paginated
+  fetchData?: undefined;
   usePagination: true;
   useServerPagination?: false; // Set to true to toggle server side pagination
 }
@@ -35,7 +41,9 @@ interface DataTablePaginationProps<T extends object>
 interface DataTableServerPaginationProps<T extends object>
   extends BaseDataTableProps<T>,
     UsePagination {
+  data?: undefined;
   fetchData: (page: number, perPage: number) => Promise<PaginatedData<T>>; // function to fetch data when server side pagination is used (for now this table does not support client side pagination)
+  usePagination?: true;
   useServerPagination: true; // Set to true to toggle server side pagination
 }
 
@@ -68,7 +76,7 @@ const DataTable = <T extends object>(props: DataTableProps<T>) => {
         setLoading(false);
       }
     }
-  }, [props, page, perPage, useServerPagination]);
+  }, [props.data, props.usePagination, page, perPage, useServerPagination]);
 
   // Handle page change by fetching data from backend for server side pagination
   useEffect(() => {
@@ -84,7 +92,7 @@ const DataTable = <T extends object>(props: DataTableProps<T>) => {
     };
 
     loadData();
-  }, [page, perPage, props, useServerPagination]);
+  }, [page, perPage, props.fetchData, useServerPagination]);
 
   const handleRowClick = (row: T) => {
     if (onRowClick) {
@@ -121,9 +129,9 @@ const DataTable = <T extends object>(props: DataTableProps<T>) => {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan={columns.length} className="text-center">
-                  Loading...
+              <tr className="w-full">
+                <td colSpan={columns.length} className="h-[500px] text-center">
+                  <ProgressSpinner className="h-16 w-16" strokeWidth="3" />
                 </td>
               </tr>
             ) : data.length === 0 ? (
