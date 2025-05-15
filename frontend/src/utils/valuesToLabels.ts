@@ -1,5 +1,6 @@
 import { Status } from "../types/Application";
-import { IndustryType, NumEmployees } from "../types/Company";
+import { IndustryType, NumEmployees, State } from "../types/Company";
+import { Difficulty } from "../types/LeetcodeQuestion";
 
 const industryLabelMap = {
   AERO_DEF: "Aerospace & Defense",
@@ -25,6 +26,30 @@ const industryLabelMap = {
   OTHER: "Other",
 };
 
+export const INDUSTRY_COLOR_MAP: { [K in IndustryType]: string } = {
+  [IndustryType.AEROSPACEDEFENSE]: "bg-sky-100    text-sky-900",
+  [IndustryType.AUTOMOTIVE]: "bg-red-100    text-red-900",
+  [IndustryType.BANKFINANCIALSERVICES]: "bg-green-100  text-green-900",
+  [IndustryType.BIOTECHPHARMACEUTICALS]: "bg-emerald-100 text-emerald-900",
+  [IndustryType.CONSUMERGOODS]: "bg-orange-100 text-orange-900",
+  [IndustryType.CYBERSECURITY]: "bg-teal-100   text-teal-900",
+  [IndustryType.ECOMMERCE]: "bg-violet-100 text-violet-900",
+  [IndustryType.ENERGYUTILITIES]: "bg-yellow-100 text-yellow-900",
+  [IndustryType.ENTERTAINMENTMEDIA]: "bg-pink-100   text-pink-900",
+  [IndustryType.HEALTHMEDICALDEVICES]: "bg-rose-100   text-rose-900",
+  [IndustryType.ITSERVCONSULTING]: "bg-blue-100   text-blue-900",
+  [IndustryType.MANUFACTURINGINDUSTRIAL]: "bg-slate-100  text-slate-900",
+  [IndustryType.NETWORKINGTELECOMM]: "bg-cyan-100   text-cyan-900",
+  [IndustryType.REALESTTATECONSTUCTION]: "bg-lime-100   text-lime-900",
+  [IndustryType.RETAIL]: "bg-fuchsia-100 text-fuchsia-900",
+  [IndustryType.SOFTWAREDEVELOPMENT]: "bg-indigo-100 text-indigo-900",
+  [IndustryType.TECHHARDWARE]: "bg-stone-100  text-stone-900",
+  [IndustryType.TRANSPORTATIONLOGISTICS]: "bg-amber-100  text-amber-900",
+  [IndustryType.VENTURECAPITALPRIVATEEQUITY]: "bg-amber-200 text-amber-900",
+  [IndustryType.WEBDIGITALSERVICES]: "bg-zinc-200   text-zinc-900",
+  [IndustryType.OTHERS]: "bg-gray-300   text-gray-900",
+};
+
 const employeesLabelMap = {
   SMALL: "1-10 employees",
   MIDSIZE: "11-50 employees",
@@ -45,6 +70,66 @@ const applicationStatusLabelMap = {
   REJECTED: "Rejected",
 };
 
+const difficultyLabelMap = {
+  EASY: "Easy",
+  MEDIUM: "Medium",
+  HARD: "Hard",
+};
+
+export const stateLabelMap = {
+  AL: "Alabama",
+  AK: "Alaska",
+  AZ: "Arizona",
+  AR: "Arkansas",
+  CA: "California",
+  CO: "Colorado",
+  CT: "Connecticut",
+  DE: "Delaware",
+  FL: "Florida",
+  GA: "Georgia",
+  HI: "Hawaii",
+  ID: "Idaho",
+  IL: "Illinois",
+  IN: "Indiana",
+  IA: "Iowa",
+  KS: "Kansas",
+  KY: "Kentucky",
+  LA: "Louisiana",
+  ME: "Maine",
+  MD: "Maryland",
+  MA: "Massachusetts",
+  MI: "Michigan",
+  MN: "Minnesota",
+  MS: "Mississippi",
+  MO: "Missouri",
+  MT: "Montana",
+  NE: "Nebraska",
+  NV: "Nevada",
+  NH: "New Hampshire",
+  NJ: "New Jersey",
+  NM: "New Mexico",
+  NY: "New York",
+  NC: "North Carolina",
+  ND: "North Dakota",
+  OH: "Ohio",
+  OK: "Oklahoma",
+  OR: "Oregon",
+  PA: "Pennsylvania",
+  RI: "Rhode Island",
+  SC: "South Carolina",
+  SD: "South Dakota",
+  TN: "Tennessee",
+  TX: "Texas",
+  UT: "Utah",
+  VT: "Vermont",
+  VA: "Virginia",
+  WA: "Washington",
+  WV: "West Virginia",
+  WI: "Wisconsin",
+  WY: "Wyoming",
+  Other: "Other",
+};
+
 export const getIndustryLabel = (value: string): string => {
   return industryLabelMap[value as IndustryType] || "Other";
 };
@@ -55,4 +140,12 @@ export const getEmployeesLabel = (value: string): string => {
 
 export const getApplicationStatusLabel = (value: string): string => {
   return applicationStatusLabelMap[value as Status] || "None";
+};
+
+export const getDifficultyLabel = (value: string): string => {
+  return difficultyLabelMap[value as Difficulty] || "Easy";
+};
+
+export const getStateLabel = (value: string): string => {
+  return stateLabelMap[value as State] || "Other";
 };

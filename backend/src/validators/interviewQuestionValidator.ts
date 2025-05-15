@@ -31,7 +31,8 @@ const validateQuestion = body("question")
   .withMessage("question is required.");
 
 const validateDate = body("date")
-  .isDate()
+  .optional()
+  .isISO8601({ strict: true })
   .withMessage("must be a valid date.")
   .trim();
 
@@ -77,7 +78,7 @@ export const getInterviewQuestionByIdValidator = [validateIdParam];
 export const updateInterviewQuestionValidator = [
   validateIdParam,
   validateQuestion.optional(),
-  validateDate.optional(),
+  validateDate,
 ];
 
 export const deleteInterviewQuestionValidator = [validateIdParam];

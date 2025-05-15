@@ -9,7 +9,6 @@ import Modal from "./Modal";
 import { Timeline } from "primereact/timeline";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
-import { ConfirmDialog } from "primereact/confirmdialog";
 import { deleteApplication, updateApplication } from "../api/applications";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import { Toast } from "primereact/toast";
@@ -127,15 +126,6 @@ const ApplicationModal = ({
   };
 
   const handleDeleteApplication = () => {
-    // confirmDialog({
-    //   message:
-    //     "Are you sure you want to delete this application? This action cannot be undone.",
-    //   header: "Delete Confirmation",
-    //   icon: "pi pi-exclamation-triangle",
-    //   acceptClassName: "p-button-danger",
-    //   accept: () => onDelete(application._id),
-    // });
-
     setIsDialogOpen(true);
     setDialogText("Are you sure you want to delete this application?");
     setOnDialogConfirm(() => () => onDelete(application._id));
@@ -196,16 +186,6 @@ const ApplicationModal = ({
           process: updatedApplication.process?.splice(index, 1),
         }),
     );
-    // confirmDialog({
-    //   message:
-    //     "Are you sure you want to delete this status? This action cannot be undone.",
-    //   header: "Delete Status",
-    //   accept: () => {
-    //     onSave(application._id, {
-    //       process: updatedApplication.process?.splice(index, 1),
-    //     });
-    //   },
-    // });
   };
 
   const onLinkChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -601,7 +581,6 @@ const ApplicationModal = ({
             </button>
           </div>
         )}
-        <ConfirmDialog />
       </Modal>
       <Dialog
         isDialogOpen={isDialogOpen}
