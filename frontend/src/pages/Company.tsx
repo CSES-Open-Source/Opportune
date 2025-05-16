@@ -23,6 +23,8 @@ import NewTipModal from "../components/NewTipModal";
 import TipModal from "../components/TipModal";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Toast } from "primereact/toast";
+import { getTipsByCompanyId } from "../api/tips";
+import { Editor } from "primereact/editor";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
@@ -44,38 +46,6 @@ const sampleInterview: ExpandedCardData[] = [
     postedDate: "1 week ago",
   },
   { title: "Describe your leadership style", postedDate: "3 weeks ago" },
-];
-const sampleAlumni: Tip[] = [
-  {
-    _id: "",
-    user: {
-      _id: "",
-      name: "Kevin",
-      email: "abc@gmail.com",
-      type: UserType.Alumni,
-      profilePicture: "",
-    },
-    company: {
-      _id: "",
-      name: "",
-    },
-    text: "Bad WLB, very hard interview process. ",
-  },
-  {
-    _id: "",
-    user: {
-      _id: "",
-      name: "Tom",
-      email: "abc@gmail.com",
-      type: UserType.Alumni,
-      profilePicture: "",
-    },
-    company: {
-      _id: "",
-      name: "",
-    },
-    text: "Great benefits and collaboration.",
-  },
 ];
 
 interface CardCarouselProps {
@@ -189,7 +159,8 @@ const CompanyProfile: React.FC = () => {
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to create tip: " + (error as Error).message,
+            detail:
+              "Failed to fetch leetcode questions: " + (error as Error).message,
           });
         });
     }
@@ -205,9 +176,26 @@ const CompanyProfile: React.FC = () => {
 
   const fetchTips = useCallback(() => {
     if (company) {
-      // TODO: Connect to backend
-      setTips(sampleAlumni);
-      setTipsLoading(false);
+      getTipsByCompanyId(company._id)
+        .then((response) => {
+          if (response.success) {
+            setTips(response.data);
+            setTipsLoading(false);
+          } else {
+            toast.current?.show({
+              severity: "error",
+              summary: "Error",
+              detail: "Failed to fetch tips: " + response.error,
+            });
+          }
+        })
+        .catch((error: unknown) => {
+          toast.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail: "Failed to fetch tips: " + (error as Error).message,
+          });
+        });
     }
   }, [company]);
 
@@ -529,10 +517,15 @@ const CompanyProfile: React.FC = () => {
                         />
                         <p className="font-medium">{tip.user.name}</p>
                       </div>
-                      <div
-                        className="text-sm line-clamp-4 mt-2"
-                        dangerouslySetInnerHTML={{ __html: tip.text }}
-                      ></div>
+                      <div className="h-24 overflow-hidden">
+                        <Editor
+                          className="mt-2"
+                          readOnly={true}
+                          showHeader={false}
+                          value={tip.text}
+                          theme="bubble"
+                        />
+                      </div>
                     </div>
                   ))}
                 </CardCarousel>

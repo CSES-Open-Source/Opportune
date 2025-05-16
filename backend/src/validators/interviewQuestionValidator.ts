@@ -77,6 +77,8 @@ export const getInterviewQuestionByIdValidator = [validateIdParam];
 
 export const updateInterviewQuestionValidator = [
   validateIdParam,
+  validateUser.optional(),
+  validateCompany.optional(),
   validateQuestion.optional(),
   validateDate,
 ];
