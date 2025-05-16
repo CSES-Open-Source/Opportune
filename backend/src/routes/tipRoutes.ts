@@ -1,5 +1,6 @@
 import express from "express";
 import * as tipController from "src/controllers/tipController";
+import preprocessCompany from "src/middlewares/preprocessCompany";
 import * as tipValidator from "src/validators/tipValidator";
 const tipRouter = express.Router();
 
@@ -7,7 +8,12 @@ const tipRouter = express.Router();
 tipRouter.get("/", tipController.getAllTips);
 
 // Create new tip
-tipRouter.post("/", tipValidator.createTipValidator, tipController.createTip);
+tipRouter.post(
+  "/",
+  preprocessCompany,
+  tipValidator.createTipValidator,
+  tipController.createTip,
+);
 
 // Get tip by ID
 tipRouter.get("/:id", tipValidator.getTipValidator, tipController.getTipById);
@@ -15,6 +21,7 @@ tipRouter.get("/:id", tipValidator.getTipValidator, tipController.getTipById);
 // Update tip by ID
 tipRouter.patch(
   "/:id",
+  preprocessCompany,
   tipValidator.updateTipValidator,
   tipController.updateTipById,
 );

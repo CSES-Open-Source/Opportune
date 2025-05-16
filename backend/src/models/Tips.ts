@@ -2,24 +2,16 @@ import { InferSchemaType, Schema, model } from "mongoose";
 
 const tipSchema = new Schema(
   {
-    _id: {
-      type: Schema.Types.ObjectId,
+    user: {
+      type: String,
       required: true,
     },
-    userId: {
-      type: String,
+    company: {
+      type: Schema.Types.ObjectId,
       required: true,
     },
     text: {
       type: String,
-      required: true,
-    },
-    createdAt: {
-      type: Date,
-      required: true,
-    },
-    updatedAt: {
-      type: Date,
       required: true,
     },
   },

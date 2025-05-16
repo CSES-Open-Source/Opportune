@@ -3,11 +3,14 @@ import { matchedData, validationResult } from "express-validator";
 import validationErrorParser from "src/util/validationErrorParser";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
-import mongoose from "mongoose";
+import { Schema } from "mongoose";
+import Company from "src/models/Company";
+import User from "src/models/User";
 
 // Interface for creating/updating a tip
 interface TipCreate {
-  userId: string;
+  user: string;
+  company: Schema.Types.ObjectId;
   text: string;
 }
 
@@ -20,7 +23,11 @@ interface TipUpdate extends Partial<TipCreate> {}
 // @returns {Tip[]} 200 - Array of tips
 export const getAllTips = asyncHandler(async (req, res, _) => {
   // Retrieve all tips from the database
-  const tips = await Tip.find().exec();
+  const tips = await Tip.find()
+    .populate({ path: "company", model: Company })
+    .populate({ path: "user", model: User })
+    .lean()
+    .exec();
 
   res.status(200).json(tips);
 });
@@ -42,14 +49,17 @@ export const createTip = asyncHandler(async (req, res, next) => {
   const tipData = matchedData(req) as TipCreate;
 
   // Create a new tip with the validated data
-  const newTip = new Tip({
-    _id: new mongoose.Types.ObjectId(),
-    ...tipData,
-  });
+  const newTip = new Tip(tipData);
 
   await newTip.save();
 
-  res.status(201).json(newTip);
+  const populatedTip = await Tip.findById(newTip._id)
+    .populate({ path: "company", model: Company })
+    .populate({ path: "user", model: User })
+    .lean()
+    .exec();
+
+  res.status(201).json(populatedTip);
 });
 
 // @desc Get tip by ID
@@ -70,7 +80,11 @@ export const getTipById = asyncHandler(async (req, res, next) => {
   const { id } = matchedData(req, { locations: ["params"] }) as { id: string };
 
   // Find the tip by ID
-  const tip = await Tip.findById(id).exec();
+  const tip = await Tip.findById(id)
+    .populate({ path: "company", model: Company })
+    .populate({ path: "user", model: User })
+    .lean()
+    .exec();
 
   if (!tip) {
     return next(createHttpError(404, "Tip not found."));
@@ -114,7 +128,11 @@ export const updateTipById = asyncHandler(async (req, res, next) => {
     id,
     { $set: validatedData },
     { new: true, runValidators: true },
-  ).exec();
+  )
+    .populate({ path: "company", model: Company })
+    .populate({ path: "user", model: User })
+    .lean()
+    .exec();
 
   if (!updatedTip) {
     return next(createHttpError(404, "Tip not found."));
@@ -147,7 +165,7 @@ export const deleteTipById = asyncHandler(async (req, res, next) => {
     return next(createHttpError(404, "Tip not found."));
   }
 
-  res.status(200).json(tip);
+  res.status(200).json("Successfully deleted tip.");
 });
 
 // @desc Get tips by company ID
@@ -167,24 +185,13 @@ export const getTipsByCompanyId = asyncHandler(async (req, res, next) => {
 
   // Extract params and query parameters
   const { id } = matchedData(req, { locations: ["params"] }) as { id: string };
-  const { page = 0, perPage = 10 } = matchedData(req, {
-    locations: ["query"],
-  }) as { page?: number; perPage?: number };
 
   // Find tips for the specified company with pagination
-  const tips = await Tip.find({ companyId: id })
-    .skip(page * perPage)
-    .limit(perPage)
-    .sort({ createdAt: -1 })
+  const tips = await Tip.find({ company: id })
+    .populate({ path: "company", model: Company })
+    .populate({ path: "user", model: User })
+    .lean()
     .exec();
 
-  // Get total count for pagination
-  const total = await Tip.countDocuments({ companyId: id }).exec();
-
-  res.status(200).json({
-    page,
-    perPage,
-    total,
-    data: tips || [],
-  });
+  res.status(200).json(tips);
 });

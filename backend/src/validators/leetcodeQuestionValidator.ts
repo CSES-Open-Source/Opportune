@@ -116,6 +116,8 @@ export const getLeetcodeQuestionByIdValidator = [validateIdParam];
 
 export const updateLeetcodeQuestionValidator = [
   validateIdParam,
+  validateUser.optional(),
+  validateCompany.optional(),
   validateTitle.optional(),
   validateURL.optional(),
   validateDifficulty.optional(),

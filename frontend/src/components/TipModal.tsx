@@ -105,7 +105,6 @@ const TipModal = ({
           onUpdateTip();
           setTip(response.data);
           resetStates();
-          onClose();
 
           toast.current?.show({
             severity: "success",
@@ -209,9 +208,12 @@ const TipModal = ({
             </div>
 
             <div className="mb-6 border rounded-md p-4 bg-gray-50">
-              <div
-                className="prose max-w-none"
-                dangerouslySetInnerHTML={{ __html: tip.text }}
+              <Editor
+                readOnly={true}
+                showHeader={false}
+                value={tip.text}
+                style={{ height: "200px" }}
+                theme="bubble"
               />
             </div>
 

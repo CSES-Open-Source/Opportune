@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import Applications from "./pages/Applications";
 import SavedApplications from "./pages/SavedApplications";
 import Companies from "./pages/Companies";
-import CompanyProfile from "./pages/Company"; 
+import CompanyProfile from "./pages/Company";
 import Connect from "./pages/Connect";
 import Sandbox from "./pages/Sandbox";
 import Profile from "./pages/Profile";

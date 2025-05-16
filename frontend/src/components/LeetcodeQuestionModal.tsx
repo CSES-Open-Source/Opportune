@@ -79,7 +79,6 @@ const LeetcodeQuestionModal = ({
   const onDelete = () => {
     deleteLeetcodeQuestion(leetcodeQuestion._id)
       .then((response) => {
-        console.log(response);
         if (response.success) {
           toast.current?.show({
             severity: "success",
@@ -128,7 +127,6 @@ const LeetcodeQuestionModal = ({
           onUpdateLeetcodeQuestion();
           setLeetcodeQuestion(response.data);
           resetStates();
-          onClose();
 
           toast.current?.show({
             severity: "success",
