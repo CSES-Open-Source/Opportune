@@ -91,7 +91,7 @@ export async function deleteTip(id: string): Promise<APIResult<null>> {
  *
  * @param _id company ID of tips to retrieve
  * @param queries
- * @returns PaginatedData object containing tips with matching
+ * @returns Tips associated with given company
  * company ID
  */
 export async function getTipsByCompanyId(

@@ -38,6 +38,7 @@ export interface CreateLeetcodeQuestionRequest {
 
 export interface UpdateLeetcodeQuestionRequest {
   company?: Company;
+  user?: User;
   title?: string;
   url?: string;
   difficulty?: Difficulty;

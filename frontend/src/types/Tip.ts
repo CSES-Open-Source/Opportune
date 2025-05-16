@@ -18,5 +18,6 @@ export interface CreateTipRequest {
 
 export interface UpdateTipRequest {
   company?: Company;
+  user?: User;
   text?: string;
 }

@@ -122,8 +122,7 @@ export async function deleteLeetcodeQuestion(
  *
  * @param _id company ID of leetcode questions to retrieve
  * @param queries
- * @returns PaginatedData object containing leetcode questions with matching
- * company ID
+ * @returns Leetcode questions associtated with given company
  */
 export async function getLeetcodeQuestionsByCompanyId(
   _id: string,

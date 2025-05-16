@@ -10,6 +10,7 @@ import interviewQuestionRouter from "src/routes/InterviewQuestionRoutes";
 import articleRouter from "src/routes/articleRoutes";
 import errorHandler from "src/middlewares/errorHandler";
 import { logger } from "src/middlewares/logger";
+import tipRouter from "../src/routes/tipRoutes";
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use("/api/companies", companyRouter);
 app.use("/api/applications/saved", savedApplicationRouter);
 app.use("/api/questions/leetcode", leetcodeQuestionRouter);
 app.use("/api/questions/interview", interviewQuestionRouter);
+app.use("/api/tips", tipRouter);
 app.use("/api/articles", articleRouter);
 
 /**
