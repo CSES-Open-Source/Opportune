@@ -18,6 +18,7 @@ export interface CreateInterviewQuestionRequest {
 
 export interface UpdateInterviewQuestionRequest {
   company?: Company;
+  user?: User;
   question?: string;
   date?: Date;
 }

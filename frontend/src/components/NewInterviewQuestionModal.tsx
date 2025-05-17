@@ -99,7 +99,7 @@ const NewInterviewQuestionModal = ({
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Question
           </label>
-          <input
+          <textarea
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
             placeholder="Add question"

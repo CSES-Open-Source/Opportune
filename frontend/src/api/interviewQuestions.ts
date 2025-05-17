@@ -108,8 +108,7 @@ export async function deleteInterviewQuestion(
  * Get interview questions by company ID.
  * 
  * @param _id company ID of interview questions to retrieve
- * @returns PaginatedData object containing interview questions with matching
- * company ID
+ * @returns interview questions with matching company ID
  */
 export async function getInterviewQuestionsByCompanyId(
   _id: string,
