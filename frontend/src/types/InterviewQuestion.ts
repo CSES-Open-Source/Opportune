@@ -1,12 +1,20 @@
 import { Company } from "./Company";
 import { User } from "./User";
 
+export interface InterviewQuestionJSON {
+  _id: string;
+  company: Company;
+  user: User;
+  question: string;
+  date?: string;
+}
+
 export interface InterviewQuestion {
   _id: string;
   company: Company;
   user: User;
   question: string;
-  date: Date;
+  date?: Date;
 }
 
 export interface CreateInterviewQuestionRequest {
