@@ -12,6 +12,7 @@ const Companies: React.FC = () => {
   const [query, setQuery] = useState("");
   const [employeesInput, setEmployeesInput] = useState("");
   const [industryInput, setIndustryInput] = useState("");
+  const [initialized, setInitialized] = useState(false);
 
   // “applied” filters & search
   const [filters, setFilters] = useState({
@@ -21,10 +22,15 @@ const Companies: React.FC = () => {
   });
   // debounce search‐as‐you‐type (500ms)
   useEffect(() => {
-    const handle = setTimeout(() => {
-      setFilters((f) => ({ ...f, query }));
-    }, 500);
-    return () => clearTimeout(handle);
+    // TODO: Temporary solution to prevent refetching when the page is loaded.
+    if (initialized) {
+      const handle = setTimeout(() => {
+        setFilters((f) => ({ ...f, query }));
+      }, 500);
+      return () => clearTimeout(handle);
+    } else {
+      setInitialized(true);
+    }
   }, [query]);
 
   // filter modal toggle
