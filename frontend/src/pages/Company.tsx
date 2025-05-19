@@ -7,7 +7,7 @@ import {
 } from "react-icons/fa";
 import { getCompanyById } from "../api/companies";
 import { APIResult } from "../api/requests";
-import { Company, ExpandedCardData } from "../types/Company";
+import { Company } from "../types/Company";
 import {
   getDifficultyLabel,
   getEmployeesLabel,
@@ -25,6 +25,9 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { Toast } from "primereact/toast";
 import { getTipsByCompanyId } from "../api/tips";
 import { Editor } from "primereact/editor";
+import { getInterviewQuestionsByCompanyId } from "../api/interviewQuestions";
+import { InterviewQuestion } from "../types/InterviewQuestion";
+import NewInterviewQuestionModal from "../components/NewInterviewQuestionModal";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
@@ -35,18 +38,6 @@ type ModalType =
   | "NEW_INTERVIEW"
   | "TIP"
   | "NEW_TIP";
-
-const sampleInterview: ExpandedCardData[] = [
-  {
-    title: "Tell me about a time you overcame a challenge",
-    postedDate: "2 weeks ago",
-  },
-  {
-    title: "Explain how you handle conflict on a team",
-    postedDate: "1 week ago",
-  },
-  { title: "Describe your leadership style", postedDate: "3 weeks ago" },
-];
 
 interface CardCarouselProps {
   children: React.ReactNode[];
@@ -100,7 +91,7 @@ const CompanyProfile: React.FC = () => {
     LeetcodeQuestion[]
   >([]);
   const [interviewQuestions, setInterviewQuestions] = useState<
-    ExpandedCardData[]
+    InterviewQuestion[]
   >([]);
   const [tips, setTips] = useState<Tip[]>([]);
 
@@ -168,14 +159,35 @@ const CompanyProfile: React.FC = () => {
 
   const fetchInterviewQuestions = useCallback(() => {
     if (company) {
-      // TODO: Connect to backend
-      setInterviewQuestions(sampleInterview);
-      setInterviewQuestionsLoading(false);
+      setInterviewQuestionsLoading(true);
+      getInterviewQuestionsByCompanyId(company._id)
+        .then((response) => {
+          if (response.success) {
+            setInterviewQuestions(response.data);
+            setInterviewQuestionsLoading(false);
+          } else {
+            toast.current?.show({
+              severity: "error",
+              summary: "Error",
+              detail: "Failed to fetch interview questions: " + response.error,
+            });
+          }
+        })
+        .catch((error: unknown) => {
+          toast.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail:
+              "Failed to fetch interview questions: " +
+              (error as Error).message,
+          });
+        });
     }
   }, [company]);
 
   const fetchTips = useCallback(() => {
     if (company) {
+      setTipsLoading(true);
       getTipsByCompanyId(company._id)
         .then((response) => {
           if (response.success) {
@@ -442,10 +454,10 @@ const CompanyProfile: React.FC = () => {
                       }}
                     >
                       <h3 className="font-semibold line-clamp-2">
-                        {item.title}
+                        {item.question}
                       </h3>
                       <p className="text-sm text-gray-600 line-clamp-1">
-                        {item.postedDate}
+                        {item.date?.toLocaleDateString()}
                       </p>
                     </div>
                   ))}
@@ -556,6 +568,13 @@ const CompanyProfile: React.FC = () => {
         onClose={onModalClose}
         company={company}
         onNewLeetcodeQuestion={() => fetchLeetcodeQuestions()}
+      />
+
+      <NewInterviewQuestionModal
+        isOpen={modalType === "NEW_INTERVIEW"}
+        onClose={onModalClose}
+        company={company}
+        onNewInterviewQuestion={() => fetchInterviewQuestions()}
       />
 
       <TipModal

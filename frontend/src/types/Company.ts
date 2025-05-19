@@ -141,12 +141,3 @@ export interface UpdateCompanyRequest {
   url?: string;
   logo?: File;
 }
-
-export interface ExpandedCardData {
-  title?: string;
-  postedDate?: string;
-  difficulty?: string;
-  name?: string;
-  role?: string;
-  text?: string;
-}
