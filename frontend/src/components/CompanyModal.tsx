@@ -1,12 +1,11 @@
 import { useRef, useState, useEffect } from "react";
 import Modal from "./Modal";
-import { NumEmployees, IndustryType, Company } from "../types/Company";
+import { NumEmployees, IndustryType, Company, State } from "../types/Company";
 import { FaLink, FaCloudUploadAlt } from "react-icons/fa";
 import { createCompany, updateCompany } from "../api/companies";
 import { useAuth } from "../contexts/useAuth";
 import { Toast } from "primereact/toast";
 import { getEmployeesLabel, getIndustryLabel } from "../utils/valuesToLabels";
-import { US_STATES } from "../constants/usStates";
 
 interface NewCompanyModalProps {
   isOpen: boolean;
@@ -27,12 +26,12 @@ const NewCompanyModal = ({
 
   const [companyName, setCompanyName] = useState("");
   const [city, setCity] = useState("");
-  const [state, setState] = useState("");
+  const [state, setState] = useState<State | undefined>();
   const [numberOfEmployees, setNumberOfEmployees] = useState<NumEmployees | undefined>();
   const [industry, setIndustry] = useState<IndustryType | undefined>();
   const [url, setUrl] = useState("");
   const [isValidUrl, setIsValidUrl] = useState(true);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoFile, setLogoFile] = useState<File | undefined>();
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   // Initialize form when modal opens or company changes
@@ -40,7 +39,7 @@ const NewCompanyModal = ({
     if (company) {
       setCompanyName(company.name);
       setCity(company.city || "");
-      setState(company.state || "");
+      setState(company.state);
       setNumberOfEmployees(company.employees as NumEmployees | undefined);
       setIndustry(company.industry as IndustryType | undefined);
       setUrl(company.url || "");
@@ -99,12 +98,12 @@ const NewCompanyModal = ({
   const resetInputs = () => {
     setCompanyName("");
     setCity("");
-    setState("");
+    setState(undefined);
     setIndustry(undefined);
     setNumberOfEmployees(undefined);
     setUrl("");
     setIsValidUrl(true);
-    setLogoFile(null);
+    setLogoFile(undefined);
     setLogoPreview(null);
   };
 
@@ -132,7 +131,7 @@ const NewCompanyModal = ({
       const companyData = {
         name: companyName,
         city: city || undefined,
-        state: state || undefined,
+        state: state,
         employees: numberOfEmployees,
         industry: industry,
         url: url || undefined,
@@ -258,13 +257,13 @@ const NewCompanyModal = ({
             </label>
             <select
               value={state}
-              onChange={(e) => setState(e.target.value)}
+              onChange={(e) => setState(e.target.value as State | undefined)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
             >
               <option value="">Select state</option>
-              {US_STATES.map((st) => (
-                <option key={st} value={st}>
-                  {st}
+              {Object.entries(State).map(([key, value]) => (
+                <option key={value} value={value}>
+                  {key}
                 </option>
               ))}
             </select>
