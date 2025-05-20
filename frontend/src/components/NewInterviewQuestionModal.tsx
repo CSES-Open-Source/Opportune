@@ -3,9 +3,7 @@ import Modal from "./Modal";
 import { useAuth } from "../contexts/useAuth";
 import { useEffect, useRef, useState } from "react";
 import { Company } from "../types/Company";
-import {
-  CreateInterviewQuestionRequest,
-} from "../types/InterviewQuestion";
+import { CreateInterviewQuestionRequest } from "../types/InterviewQuestion";
 import { createInterviewQuestion } from "../api/interviewQuestions";
 
 interface NewInterviewQuestionModalProps {
@@ -67,7 +65,8 @@ const NewInterviewQuestionModal = ({
             severity: "error",
             summary: "Error",
             detail:
-              "Failed to create interview question: " + (error as Error).message,
+              "Failed to create interview question: " +
+              (error as Error).message,
           });
         });
     }
@@ -82,7 +81,7 @@ const NewInterviewQuestionModal = ({
     setQuestion("");
     setDate(undefined);
     setIsValid(false);
-  }
+  };
 
   return (
     <div>
@@ -152,6 +151,7 @@ const NewInterviewQuestionModal = ({
           </button>
         </div>
       </Modal>
+      <Toast ref={toast} />
     </div>
   );
 };
