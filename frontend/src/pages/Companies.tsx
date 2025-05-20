@@ -82,23 +82,26 @@ const Companies: React.FC = () => {
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Search companies..."
-              className="w-3/4 border border-gray-300 rounded-full py-2 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              className="w-full border border-gray-300 rounded-full py-2 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             />
           </div>
 
           <button
             onClick={() => setCompanyModalOpen(true)}
-            className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
+            className="inline-flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
           >
-            Add New
+            <span className="hidden sm:inline mr-1">Add</span>
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
           </button>
 
           <button
             onClick={() => setShowFilters(true)}
-            className="inline-flex items-center px-2 sm:px-4 space-x-1 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition"
+            className="inline-flex items-center justify-center px-3 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition"
           >
-            <span className="hidden sm:inline ml-2">Sort by</span>
-            <FaChevronDown className="w-2 h-2 sm:w-3 sm:h-3" />
+            <span className="hidden sm:inline mr-1">Sort by</span>
+            <FaChevronDown className="w-3 h-3" />
           </button>
         </div>
 
