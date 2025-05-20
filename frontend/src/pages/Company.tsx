@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   FaExternalLinkAlt,
   FaChevronLeft,
   FaChevronRight,
   FaEdit,
+  FaArrowLeft,
 } from "react-icons/fa";
 import { getCompanyById} from "../api/companies";
 import { APIResult } from "../api/requests";
@@ -81,6 +82,7 @@ const getDifficultyBadgeClasses = (difficulty?: string) => {
 
 const CompanyProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const toast = useRef<Toast>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -292,12 +294,21 @@ const CompanyProfile: React.FC = () => {
 
   return (
     <div>
-      <div className="flex justify-end px-4 pt-4">
+      <div className="flex items-center justify-between px-4 pt-4">
+        <button
+          onClick={() => navigate('/companies')}
+          className="inline-flex items-center text-blue-700 hover:bg-blue-50 px-2 py-1 rounded transition"
+          aria-label="Back to Companies"
+          title="Back to Companies"
+        >
+          <FaArrowLeft className="mr-1" />
+          <span className="hidden sm:inline">Back to Companies</span>
+        </button>
         <button
           onClick={() => setIsEditModalOpen(true)}
-          className="group relative inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium transition-all duration-200 ease-in-out rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-md hover:shadow-lg"
+          className="group inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-md"
         >
-          <FaEdit className="mr-2 transition-transform group-hover:scale-110" />
+          <FaEdit className="mr-2" />
           <span>Edit Company</span>
         </button>
       </div>
