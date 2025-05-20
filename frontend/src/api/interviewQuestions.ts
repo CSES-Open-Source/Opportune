@@ -90,7 +90,7 @@ export async function updateInterviewQuestion(
 ): Promise<APIResult<InterviewQuestion>> {
   try {
     const response = await patch(
-      `/api/questions/interview${id}`,
+      `/api/questions/interview/${id}`,
       interviewQuestion,
     );
     const json = (await response.json()) as InterviewQuestionJSON;

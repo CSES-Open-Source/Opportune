@@ -19,7 +19,7 @@ interface InterviewQuestionModalProps {
   onUpdateInterviewQuestion: () => void;
   setInterviewQuestion:
     | Dispatch<SetStateAction<InterviewQuestion>>
-    | Dispatch<SetStateAction<InterviewQuestion | undefined>>
+    | Dispatch<SetStateAction<InterviewQuestion | undefined>>;
 }
 
 const InterviewQuestionModal = ({
@@ -97,7 +97,7 @@ const InterviewQuestionModal = ({
 
   const handleCancel = () => {
     resetStates();
-  }
+  };
 
   const handleSave = () => {
     const updatedInterviewQuestion: UpdateInterviewQuestionRequest = {
@@ -180,62 +180,64 @@ const InterviewQuestionModal = ({
               >
                 Save Changes
               </button>
-          </div>
-        </div>
-      ) : (
-        // View mode
-        <div className="flex flex-col">
-          <div className = "flex justify-between items-start mb-6">
-            <h2 className="text-2xl font-bold">{interviewQuestion.question}</h2>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
-              <p className="text-gray-500 text-sm mb-1">Date Added</p>
-              <p>
-                {interviewQuestion.date?.toLocaleDateString() ||
-                  "Not Specified"}
-              </p>
             </div>
           </div>
-          
-          <div className="mt-4 pt-4 border-t">
-            <p className="text-gray-500 text-sm mb-2">Added by:</p>
-            <div className="flex items-center space-x-3">
+        ) : (
+          // View mode
+          <div className="flex flex-col">
+            <div className="flex justify-between items-start mb-6">
+              <h2 className="text-2xl font-bold">
+                {interviewQuestion.question}
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
-                <img
-                  src={interviewQuestion.user.profilePicture}
-                  alt="User profile"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div>
-                <p className="font-medium">{interviewQuestion.user.name}</p>
-                <p className="text-gray-500 text-sm">
-                  {interviewQuestion.user.email}
+                <p className="text-gray-500 text-sm mb-1">Date Added</p>
+                <p>
+                  {interviewQuestion.date?.toLocaleDateString() ||
+                    "Not Specified"}
                 </p>
               </div>
             </div>
-          </div>
 
-          {user?._id === interviewQuestion.user._id && (
-            <div className="flex mt-4 justify-end gap-4">
-              <button
-                onClick={handleEdit}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Edit
-              </button>
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-              >
-                Delete
-              </button>
+            <div className="mt-4 pt-4 border-t">
+              <p className="text-gray-500 text-sm mb-2">Added by:</p>
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-full overflow-hidden">
+                  <img
+                    src={interviewQuestion.user.profilePicture}
+                    alt="User profile"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <p className="font-medium">{interviewQuestion.user.name}</p>
+                  <p className="text-gray-500 text-sm">
+                    {interviewQuestion.user.email}
+                  </p>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
-      )}
+
+            {user?._id === interviewQuestion.user._id && (
+              <div className="flex mt-4 justify-end gap-4">
+                <button
+                  onClick={handleEdit}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </Modal>
       <Dialog
         isDialogOpen={isDialogOpen}

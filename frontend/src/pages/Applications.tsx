@@ -148,7 +148,6 @@ const Applications = () => {
   );
 
   const onApplicationClicked = (application: Application) => {
-    // TODO: Toggle modal for view application details
     setSelectedApplication(application);
     setApplicationModalOpen(true);
   };
