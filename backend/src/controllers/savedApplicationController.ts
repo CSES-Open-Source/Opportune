@@ -252,6 +252,7 @@ export const getSavedApplicationsByUserID = asyncHandler(
       perPage,
       total,
       data: applications.map((app) => ({
+        _id: app._id,
         userId: app.userId,
         company: app.company,
         position: app.position,
@@ -259,6 +260,8 @@ export const getSavedApplicationsByUserID = asyncHandler(
         link: app.link,
         materialsNeeded: app.materialsNeeded,
         deadline: app.deadline,
+        createdAt: app.createdAt,
+        updatedAt: app.updatedAt,
       })),
     });
   },

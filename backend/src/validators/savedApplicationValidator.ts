@@ -51,8 +51,8 @@ const validateMaterialsNeeded = body("materialsNeeded")
 
 const validateDeadline = body("deadline")
   .optional()
-  .isDate()
-  .withMessage("deadline must be a valid Date.");
+  .isISO8601()
+  .withMessage("deadline must be a valid ISO 8601 date.");
 
 const validateQuery = query("query")
   .optional()

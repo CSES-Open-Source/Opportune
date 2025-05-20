@@ -100,10 +100,13 @@ const SearchBar = <T extends Record<string, unknown>>({
   const [selectionValues, setSelectionValues] = useState<
     Record<string, string[]>
   >(
-    selections.reduce((acc, selection) => {
-      acc[selection.label] = [];
-      return acc;
-    }, {} as Record<string, string[]>),
+    selections.reduce(
+      (acc, selection) => {
+        acc[selection.label] = [];
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    ),
   );
 
   // Current expanded selection option

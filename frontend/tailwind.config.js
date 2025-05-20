@@ -11,7 +11,7 @@ const tailwindConfig = {
           blue: "#00C6D7",
         },
         ring: "#a6d5fa",
-      }
+      },
     },
   },
   plugins: [],

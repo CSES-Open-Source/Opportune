@@ -45,8 +45,8 @@ async function fetchRequest(
     body instanceof FormData
       ? body
       : hasBody
-      ? JSON.stringify(body)
-      : undefined;
+        ? JSON.stringify(body)
+        : undefined;
 
   const response = await fetch(url, {
     method,
@@ -100,12 +100,15 @@ export async function get(
 ): Promise<Response> {
   // Construct the query string
   const queryString = new URLSearchParams(
-    Object.entries(queries).reduce((acc, [key, value]) => {
-      if (value !== undefined && value !== null) {
-        acc[key] = String(value);
-      }
-      return acc;
-    }, {} as Record<string, string>),
+    Object.entries(queries).reduce(
+      (acc, [key, value]) => {
+        if (value !== undefined && value !== null) {
+          acc[key] = String(value);
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    ),
   ).toString();
 
   // Append the query string to the URL if it's not empty
