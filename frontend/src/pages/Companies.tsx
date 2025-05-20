@@ -1,7 +1,8 @@
 import React, { useCallback, useState, useEffect } from "react";
-import { FaSearch, FaSlidersH, FaTimes } from "react-icons/fa";
+import { FaSearch, FaChevronDown, FaTimes } from "react-icons/fa";
 import DataList from "../components/DataList";
-import CompanyRow from "../components/CompanyTile";
+import NewCompanyModal from "../components/CompanyModal";
+import CompanyTile from "../components/CompanyTile";
 import { getCompanies as apiGetCompanies } from "../api/companies";
 import { APIResult } from "../api/requests";
 import { PaginatedData } from "../types/PaginatedData";
@@ -13,24 +14,22 @@ const Companies: React.FC = () => {
   const [employeesInput, setEmployeesInput] = useState("");
   const [industryInput, setIndustryInput] = useState("");
 
-  // “applied” filters & search
   const [filters, setFilters] = useState({
     query: "",
     employees: "",
     industry: "",
   });
-  // debounce search‐as‐you‐type (500ms)
+
+  // Debounce the text search
   useEffect(() => {
     const handle = setTimeout(() => {
-      setFilters((f) => ({ ...f, query }));
+      setFilters(f => ({ ...f, query }));
     }, 500);
     return () => clearTimeout(handle);
   }, [query]);
 
-  // filter modal toggle
+  // filter modal state
   const [showFilters, setShowFilters] = useState(false);
-
-  // apply filters from modal
   const applyFilters = () => {
     setFilters({
       query,
@@ -40,21 +39,34 @@ const Companies: React.FC = () => {
     setShowFilters(false);
   };
 
-  // fetcher (no spinner logic - looked cleaner in my opinion)
+
+  // Add Company Modal
+  const [companyModalOpen, setCompanyModalOpen] = useState(false);
+
+  const refreshFilters = () => {
+    setFilters(f => ({ ...f }));
+  };
+
+  const onSaveCompany = () => {
+    setCompanyModalOpen(false);
+    refreshFilters();
+  };
+
+
   const fetchCompanies = useCallback(
     (page: number, perPage: number) =>
       apiGetCompanies({
         page,
         perPage,
         query: filters.query,
-        employees: filters.employees,
-        industry: filters.industry,
+        employees: filters.employees as NumEmployees,
+        industry: filters.industry as IndustryType,
       }).then((res: APIResult<PaginatedData<Company>>) =>
         res.success
           ? { page, perPage, total: res.data.total, data: res.data.data }
           : { page, perPage, total: 0, data: [] },
       ),
-    [filters],
+    [filters]
   );
 
   return (
@@ -62,48 +74,35 @@ const Companies: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Companies Directory</h1>
 
-        {/*  search + filter bar  */}
         <div className="bg-white rounded-2xl shadow p-6 mb-8 flex items-center space-x-4">
-          <div className="relative flex-1 min-w-0">
-            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+          <div className="relative flex-1">
+            <FaSearch className="absolute left-4 top-1/2 -mt-2 text-gray-400 w-5 h-5 pointer-events-none" />
             <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
               type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
               placeholder="Search companies..."
-              className="
-                w-3/4 border border-gray-300 rounded-full
-                py-2 pl-12 pr-4 text-sm
-                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                transition
-              "
+              className="w-3/4 border border-gray-300 rounded-full py-2 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             />
           </div>
+
           <button
-            onClick={() => setShowFilters(true)}
-            className="
-                      inline-flex items-center
-                      px-4 py-2
-                      bg-blue-500 text-white
-                      rounded-full
-                      hover:bg-blue-600
-                      focus:outline-none focus:ring-2 focus:ring-blue-300
-                      transition
-                      "
+            onClick={() => setCompanyModalOpen(true)}
+            className="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
           >
-            <span className="hidden sm:inline">Add New</span>
+            Add New
           </button>
 
-          {/* collapse to icon only on small, and shrink icon slightly */}
           <button
             onClick={() => setShowFilters(true)}
-            className="inline-flex items-center px-2 sm:px-4 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition"
+            className="inline-flex items-center px-2 sm:px-4 space-x-1 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition"
           >
-            <FaSlidersH className="w-4 h-4 sm:w-5 sm:h-5 mr-0 sm:mr-2" />
-            <span className="hidden sm:inline">Filters</span>
+            <span className="hidden sm:inline ml-2">Sort by</span>
+            <FaChevronDown className="w-2 h-2 sm:w-3 sm:h-3" />
           </button>
         </div>
-        {/*  filter modal */}
+
+        {/* filter modal */}
         {showFilters && (
           <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-20">
             <div className="bg-white rounded-2xl w-96 p-6 relative shadow-lg">
@@ -113,6 +112,7 @@ const Companies: React.FC = () => {
               >
                 <FaTimes className="w-5 h-5" />
               </button>
+
               <h3 className="text-xl font-semibold mb-4">Filter Companies</h3>
               <div className="space-y-4">
                 <div>
@@ -121,16 +121,11 @@ const Companies: React.FC = () => {
                   </label>
                   <select
                     value={employeesInput}
-                    onChange={(e) => setEmployeesInput(e.target.value)}
-                    className="
-                      block w-full bg-gray-50 border border-gray-200
-                      rounded-lg py-2 px-3 text-sm
-                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                      transition
-                    "
+                    onChange={e => setEmployeesInput(e.target.value)}
+                    className="block w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   >
                     <option value="">Any</option>
-                    {Object.values(NumEmployees).map((ind) => (
+                    {Object.values(NumEmployees).map(ind => (
                       <option key={ind} value={ind}>
                         {getEmployeesLabel(ind)}
                       </option>
@@ -143,16 +138,11 @@ const Companies: React.FC = () => {
                   </label>
                   <select
                     value={industryInput}
-                    onChange={(e) => setIndustryInput(e.target.value)}
-                    className="
-                      block w-full bg-gray-50 border border-gray-200
-                      rounded-lg py-2 px-3 text-sm
-                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                      transition
-                    "
+                    onChange={e => setIndustryInput(e.target.value)}
+                    className="block w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   >
                     <option value="">Any</option>
-                    {Object.values(IndustryType).map((ind) => (
+                    {Object.values(IndustryType).map(ind => (
                       <option key={ind} value={ind}>
                         {getIndustryLabel(ind)}
                       </option>
@@ -178,21 +168,29 @@ const Companies: React.FC = () => {
           </div>
         )}
 
-        {/* ==== Results ==== */}
+        {/* company List */}
         <div className="overflow-visible">
           <div className="flex flex-col h-[75vh]">
-            <DataList<Company>
+            <DataList
               key={`${filters.query}_${filters.employees}_${filters.industry}`}
               fetchData={fetchCompanies}
               useServerPagination
               listStyle={{}}
               listClassName="space-y-2"
-              TileComponent={CompanyRow}
               paginatorContent={{ setPerPage: true, goToPage: true }}
+              TileComponent={CompanyTile}
             />
           </div>
         </div>
       </div>
+
+      {/* company modal */}
+      <NewCompanyModal
+        isOpen={companyModalOpen}
+        onClose={() => setCompanyModalOpen(false)}
+        onNewApplication={onSaveCompany}
+        company={null}
+      />
     </div>
   );
 };
