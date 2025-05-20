@@ -5,7 +5,7 @@ import { ProgressSpinner } from "primereact/progressspinner";
 
 interface ListStyle {
   width?: string;
-  height?: string; 
+  height?: string;
   maxWidth?: string;
   maxHeight?: string;
 }
@@ -52,8 +52,8 @@ type DataListProps<T> =
   | DataListServerPaginationProps<T>;
 
 const DataList = <T extends object>(props: DataListProps<T>) => {
-  const { TileComponent, useServerPagination, listStyle, listClassName } = props;
-
+  const { TileComponent, useServerPagination, listStyle, listClassName } =
+    props;
 
   const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState<number>(0);
@@ -101,31 +101,30 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
       </div>
     );
   }
-  // height
-  return (
-    <div
-    style={listStyle}
-    className="flex flex-col h-full"
-  >
-    {/* 1) scrollable list region */}
-    <div className={`flex-1 overflow-y-auto ${listClassName ?? ""}`}>
-      {data.map((item, i) => <TileComponent key={i} data={item} />)}
-    </div>
 
-    {/* 2) paginator “below” the scroll region */}
-    {(useServerPagination || props.usePagination) && (
-      <div className="mt-4">
-        <Paginator
-          page={page}
-          perPage={perPage}
-          onPageChange={setPage}
-          onPerPageChange={setPerPage}
-          totalItems={totalItems}
-          paginatorContent={props.paginatorContent}
-        />
+  return (
+    <div style={listStyle} className="flex flex-col h-full">
+      {/* 1) scrollable list region */}
+      <div className={`flex-1 overflow-y-auto ${listClassName ?? ""}`}>
+        {data.map((item, i) => (
+          <TileComponent key={i} data={item} />
+        ))}
       </div>
-    )}
-  </div>
+
+      {/* 2) paginator “below” the scroll region */}
+      {(useServerPagination || props.usePagination) && (
+        <div className="mt-4">
+          <Paginator
+            page={page}
+            perPage={perPage}
+            onPageChange={setPage}
+            onPerPageChange={setPerPage}
+            totalItems={totalItems}
+            paginatorContent={props.paginatorContent}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { PaginatedData } from "../types/PaginatedData";
 import Paginator, { UsePagination } from "./Paginator";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 interface GridStyle {
   width?: string;
@@ -119,7 +120,9 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-4">Loading...</div>
+      <div className="flex flex-col items-center justify-center w-full h-full">
+        <ProgressSpinner className="h-16 w-16" strokeWidth="3" />
+      </div>
     );
   }
 
