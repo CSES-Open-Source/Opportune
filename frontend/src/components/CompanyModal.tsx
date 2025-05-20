@@ -23,6 +23,7 @@ const NewCompanyModal = ({
 }: NewCompanyModalProps) => {
   const { user } = useAuth();
   const toast = useRef<Toast>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [companyName, setCompanyName] = useState("");
   const [city, setCity] = useState("");
@@ -31,6 +32,8 @@ const NewCompanyModal = ({
   const [industry, setIndustry] = useState<IndustryType | undefined>();
   const [url, setUrl] = useState("");
   const [isValidUrl, setIsValidUrl] = useState(true);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   // Initialize form when modal opens or company changes
   useEffect(() => {
@@ -41,6 +44,7 @@ const NewCompanyModal = ({
       setNumberOfEmployees(company.employees as NumEmployees | undefined);
       setIndustry(company.industry as IndustryType | undefined);
       setUrl(company.url || "");
+      setLogoPreview(company.logo || null);
     } else {
       resetInputs();
     }
@@ -62,6 +66,36 @@ const NewCompanyModal = ({
     }
   };
 
+  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.match(/^image\/(jpeg|jpg|png)$/)) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Please upload a valid image file (JPG or PNG)",
+        });
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "File size must be less than 5mb",
+        });
+        return;
+      }
+
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const resetInputs = () => {
     setCompanyName("");
     setCity("");
@@ -70,6 +104,8 @@ const NewCompanyModal = ({
     setNumberOfEmployees(undefined);
     setUrl("");
     setIsValidUrl(true);
+    setLogoFile(null);
+    setLogoPreview(null);
   };
 
   const onSave = async () => {
@@ -93,16 +129,19 @@ const NewCompanyModal = ({
     }
 
     try {
+      const companyData = {
+        name: companyName,
+        city: city || undefined,
+        state: state || undefined,
+        employees: numberOfEmployees,
+        industry: industry,
+        url: url || undefined,
+        logo: logoFile,
+      };
+
       if (company) {
         // Update existing company
-        const res = await updateCompany(company._id, {
-          name: companyName,
-          city: city || undefined,
-          state: state || undefined,
-          employees: numberOfEmployees,
-          industry: industry,
-          url: url || undefined,
-        });
+        const res = await updateCompany(company._id, companyData);
 
         if (res.success) {
           toast.current?.show({
@@ -118,14 +157,7 @@ const NewCompanyModal = ({
         }
       } else {
         // Create new company
-        const res = await createCompany({
-          name: companyName,
-          city: city || undefined,
-          state: state || undefined,
-          employees: numberOfEmployees,
-          industry: industry,
-          url: url || undefined,
-        });
+        const res = await createCompany(companyData);
 
         if (res.success) {
           toast.current?.show({
@@ -161,9 +193,29 @@ const NewCompanyModal = ({
 
         {/* logo upload */}
         <div className="flex flex-col items-center mb-6">
-          <div className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center">
-            <FaCloudUploadAlt size={32} className="text-gray-300" />
-            <span className="text-sm text-gray-500 mt-2">Upload Logo</span>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleLogoChange}
+            accept="image/jpeg,image/jpg,image/png"
+            className="hidden"
+          />
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 transition-colors"
+          >
+            {logoPreview ? (
+              <img
+                src={logoPreview}
+                alt="Company logo preview"
+                className="w-full h-full object-contain rounded-lg"
+              />
+            ) : (
+              <>
+                <FaCloudUploadAlt size={32} className="text-gray-300" />
+                <span className="text-sm text-gray-500 mt-2">Upload Logo</span>
+              </>
+            )}
           </div>
           <span className="text-xs text-gray-400 mt-1">
             Recommended size: 400×400px. PNG or JPG.
