@@ -5,19 +5,23 @@ import { FaLink, FaCloudUploadAlt } from "react-icons/fa";
 import { createCompany, updateCompany } from "../api/companies";
 import { useAuth } from "../contexts/useAuth";
 import { Toast } from "primereact/toast";
-import { getEmployeesLabel, getIndustryLabel } from "../utils/valuesToLabels";
+import {
+  getEmployeesLabel,
+  getIndustryLabel,
+  getStateLabel,
+} from "../utils/valuesToLabels";
 
 interface NewCompanyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onNewApplication: () => void;
-  company: Company | null;
+  onCompanyChanged: () => void;
+  company?: Company | null;
 }
 
 const NewCompanyModal = ({
   isOpen,
   onClose,
-  onNewApplication,
+  onCompanyChanged,
   company,
 }: NewCompanyModalProps) => {
   const { user } = useAuth();
@@ -27,7 +31,9 @@ const NewCompanyModal = ({
   const [companyName, setCompanyName] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState<State | undefined>();
-  const [numberOfEmployees, setNumberOfEmployees] = useState<NumEmployees | undefined>();
+  const [numberOfEmployees, setNumberOfEmployees] = useState<
+    NumEmployees | undefined
+  >();
   const [industry, setIndustry] = useState<IndustryType | undefined>();
   const [url, setUrl] = useState("");
   const [isValidUrl, setIsValidUrl] = useState(true);
@@ -149,7 +155,7 @@ const NewCompanyModal = ({
             detail: "Company updated successfully",
           });
           resetInputs();
-          onNewApplication();
+          onCompanyChanged();
           onClose();
         } else {
           throw new Error(res.error);
@@ -165,7 +171,7 @@ const NewCompanyModal = ({
             detail: "Company created successfully",
           });
           resetInputs();
-          onNewApplication();
+          onCompanyChanged();
           onClose();
         } else {
           throw new Error(res.error);
@@ -175,7 +181,9 @@ const NewCompanyModal = ({
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: `Failed to ${company ? 'update' : 'create'} company: ${(error as Error).message}`,
+        detail: `Failed to ${company ? "update" : "create"} company: ${
+          (error as Error).message
+        }`,
       });
     }
   };
@@ -188,7 +196,9 @@ const NewCompanyModal = ({
         className="max-w-lg w-full rounded-xl bg-white p-6"
         useOverlay
       >
-        <h2 className="text-2xl font-bold mb-4">{company ? 'Edit Company' : 'Create New Company'}</h2>
+        <h2 className="text-2xl font-bold mb-4">
+          {company ? "Edit Company" : "Create New Company"}
+        </h2>
 
         {/* logo upload */}
         <div className="flex flex-col items-center mb-6">
@@ -199,7 +209,7 @@ const NewCompanyModal = ({
             accept="image/jpeg,image/jpg,image/png"
             className="hidden"
           />
-          <div 
+          <div
             onClick={() => fileInputRef.current?.click()}
             className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 transition-colors"
           >
@@ -231,7 +241,7 @@ const NewCompanyModal = ({
               type="text"
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="e.g., Google"
+              placeholder="e.g. Google"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
             />
           </div>
@@ -245,7 +255,7 @@ const NewCompanyModal = ({
               type="text"
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              placeholder="e.g., Mountain View"
+              placeholder="e.g. Mountain View"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
             />
           </div>
@@ -261,9 +271,9 @@ const NewCompanyModal = ({
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
             >
               <option value="">Select state</option>
-              {Object.entries(State).map(([key, value]) => (
+              {Object.values(State).map((value) => (
                 <option key={value} value={value}>
-                  {key}
+                  {getStateLabel(value)}
                 </option>
               ))}
             </select>
@@ -276,7 +286,9 @@ const NewCompanyModal = ({
             </label>
             <select
               value={numberOfEmployees}
-              onChange={(e) => setNumberOfEmployees(e.target.value as NumEmployees | undefined)}
+              onChange={(e) =>
+                setNumberOfEmployees(e.target.value as NumEmployees | undefined)
+              }
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
             >
               <option value={undefined}>Select range</option>
@@ -325,7 +337,7 @@ const NewCompanyModal = ({
                 type="url"
                 value={url}
                 onChange={(e) => onUrlChange(e.target.value)}
-                placeholder="e.g., https://www.google.com"
+                placeholder="e.g. https://www.google.com"
                 className={`w-full border rounded-lg pl-10 pr-3 py-2 focus:outline-none ${
                   isValidUrl
                     ? "border-gray-300 focus:border-blue-500"
@@ -353,7 +365,7 @@ const NewCompanyModal = ({
             onClick={onSave}
             className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700"
           >
-            {company ? 'Save Changes' : 'Create Company'}
+            {company ? "Save Changes" : "Create Company"}
           </button>
         </div>
       </Modal>
@@ -361,6 +373,6 @@ const NewCompanyModal = ({
       <Toast ref={toast} />
     </>
   );
-}
+};
 
 export default NewCompanyModal;
