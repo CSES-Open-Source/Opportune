@@ -1,13 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   FaExternalLinkAlt,
   FaChevronLeft,
   FaChevronRight,
+  FaEdit,
+  FaArrowLeft,
 } from "react-icons/fa";
-import { getCompanyById } from "../api/companies";
+import { getCompanyById} from "../api/companies";
 import { APIResult } from "../api/requests";
-import { Company } from "../types/Company";
+import { Company} from "../types/Company";
 import {
   getDifficultyLabel,
   getEmployeesLabel,
@@ -23,6 +25,7 @@ import NewTipModal from "../components/NewTipModal";
 import TipModal from "../components/TipModal";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Toast } from "primereact/toast";
+import NewCompanyModal from "../components/CompanyModal";
 import { getTipsByCompanyId } from "../api/tips";
 import { Editor } from "primereact/editor";
 import { getInterviewQuestionsByCompanyId } from "../api/interviewQuestions";
@@ -80,13 +83,12 @@ const getDifficultyBadgeClasses = (difficulty?: string) => {
 
 const CompanyProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-
+  const navigate = useNavigate();
   const toast = useRef<Toast>(null);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [company, setCompany] = useState<Company | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const [leetcodeQuestions, setLeetcodeQuestions] = useState<
     LeetcodeQuestion[]
@@ -225,8 +227,7 @@ const CompanyProfile: React.FC = () => {
     }
   }, []);
 
-  // fetch company
-  useEffect(() => {
+  const handleCompanyUpdate = useCallback(() => {
     if (!id) return;
     setLoading(true);
     getCompanyById(id)
@@ -246,6 +247,11 @@ const CompanyProfile: React.FC = () => {
       .catch((e) => setError(e instanceof Error ? e.message : "Unknown error"))
       .finally(() => setLoading(false));
   }, [id, fetchLeetcodeQuestions, fetchInterviewQuestions, fetchTips]);
+
+  // Initial company fetch
+  useEffect(() => {
+    handleCompanyUpdate();
+  }, [handleCompanyUpdate]);
 
   if (loading)
     return (
@@ -298,7 +304,25 @@ const CompanyProfile: React.FC = () => {
 
   return (
     <div>
-      <div className="bg-white h-screen overflow-auto text-gray-800 relative">
+      <div className="flex items-center justify-between px-4 pt-4">
+        <button
+          onClick={() => navigate('/companies')}
+          className="inline-flex items-center text-blue-700 hover:bg-blue-50 px-2 py-1 rounded transition"
+          aria-label="Back to Companies"
+          title="Back to Companies"
+        >
+          <FaArrowLeft className="mr-1" />
+          <span className="hidden sm:inline">Back to Companies</span>
+        </button>
+        <button
+          onClick={() => setIsEditModalOpen(true)}
+          className="group inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-md"
+        >
+          <FaEdit className="mr-2" />
+          <span>Edit Company</span>
+        </button>
+      </div>
+      <div className="bg-transparent h-screen overflow-auto text-gray-800 relative">
         <div className="max-w-5xl mx-auto px-4 py-8">
           {/* Company Info */}
           <div className="bg-white border rounded-lg p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
@@ -335,7 +359,6 @@ const CompanyProfile: React.FC = () => {
               </a>
             )}
           </div>
-
           {/* LeetCode Questions */}
           <div className="mb-8 group/leetcode">
             <div className="flex items-center justify-between mb-4">
@@ -603,6 +626,13 @@ const CompanyProfile: React.FC = () => {
         onClose={onModalClose}
         company={company}
         onNewTip={() => fetchTips(company)}
+      />
+
+      <NewCompanyModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onNewApplication={handleCompanyUpdate}
+        company={company}
       />
 
       <Toast ref={toast} />

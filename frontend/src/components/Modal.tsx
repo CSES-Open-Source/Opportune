@@ -87,16 +87,16 @@ const Modal = (props: ModalProps): React.JSX.Element => {
   return (
     // backdrop
     <div
-      className={`absolute left-0 top-0 w-[100vw] h-[100vh] flex justify-center items-center ${
+      className={`fixed inset-0 w-full h-full flex justify-center items-center ${
         !disableClose && "hover:cursor-pointer"
       } transition z-50`}
-      style={{ backgroundColor: useOverlay ? "#000000" + backdropOpacity : "" }}
+      style={{ backgroundColor: useOverlay ? `rgba(0, 0, 0, ${backdropOpacity / 100})` : "" }}
       ref={backdropRef}
     >
       {/* modal container */}
       <div
         {...props}
-        className={`relative bg-white mx-auto w-[50%] hover:cursor-default ${className}`}
+        className={`relative bg-white mx-auto w-[90%] max-w-2xl hover:cursor-default ${className}`}
       >
         {!disableClose && (
           <FaXmark
