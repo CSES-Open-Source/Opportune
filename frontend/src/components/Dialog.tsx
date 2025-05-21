@@ -23,7 +23,7 @@ const Dialog = ({
       useOverlay={true}
       isOpen={isDialogOpen}
       onClose={onDialogClose}
-      className="rounded-xl w-[50vh] h-[37vh] flex flex-col"
+      className="rounded-xl w-[50vh] py-10 flex flex-col"
     >
       <div className="h-full flex flex-col justify-center items-center gap-7">
         {type === "confirmation" && <RxQuestionMarkCircled size={120} />}

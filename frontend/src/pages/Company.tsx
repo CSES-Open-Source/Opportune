@@ -31,6 +31,7 @@ import { Editor } from "primereact/editor";
 import { getInterviewQuestionsByCompanyId } from "../api/interviewQuestions";
 import { InterviewQuestion } from "../types/InterviewQuestion";
 import NewInterviewQuestionModal from "../components/NewInterviewQuestionModal";
+import InterviewQuestionModal from "../components/InterviewQuestionModal";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
@@ -113,6 +114,19 @@ const CompanyProfile: React.FC = () => {
       difficulty: Difficulty.Easy,
       url: "",
     });
+  const [selectedInterviewQuestion, setSelectedInterviewQuestion] =
+    useState<InterviewQuestion>({
+      _id: "",
+      company: { _id: "", name: "" },
+      user: {
+        _id: "",
+        name: "",
+        email: "",
+        type: UserType.Alumni,
+        profilePicture: "",
+      },
+      question: "",
+    });
   const [selectedTip, setSelectedTip] = useState<Tip>({
     _id: "",
     company: { _id: "", name: "" },
@@ -132,7 +146,7 @@ const CompanyProfile: React.FC = () => {
     useState(true);
   const [tipsLoading, setTipsLoading] = useState(true);
 
-  const fetchLeetcodeQuestions = useCallback(() => {
+  const fetchLeetcodeQuestions = useCallback(async (company: Company) => {
     if (company) {
       setLeetcodeQuestionsLoading(true);
       getLeetcodeQuestionsByCompanyId(company._id)
@@ -157,9 +171,9 @@ const CompanyProfile: React.FC = () => {
           });
         });
     }
-  }, [company]);
+  }, []);
 
-  const fetchInterviewQuestions = useCallback(() => {
+  const fetchInterviewQuestions = useCallback(async (company: Company) => {
     if (company) {
       setInterviewQuestionsLoading(true);
       getInterviewQuestionsByCompanyId(company._id)
@@ -185,9 +199,9 @@ const CompanyProfile: React.FC = () => {
           });
         });
     }
-  }, [company]);
+  }, []);
 
-  const fetchTips = useCallback(() => {
+  const fetchTips = useCallback(async (company: Company) => {
     if (company) {
       setTipsLoading(true);
       getTipsByCompanyId(company._id)
@@ -211,7 +225,7 @@ const CompanyProfile: React.FC = () => {
           });
         });
     }
-  }, [company]);
+  }, []);
 
   const handleCompanyUpdate = useCallback(() => {
     if (!id) return;
@@ -221,27 +235,23 @@ const CompanyProfile: React.FC = () => {
         if (result.success) {
           setCompany(result.data);
           setError(null);
+
+          // Fetch in parallel
+          fetchLeetcodeQuestions(result.data);
+          fetchInterviewQuestions(result.data);
+          fetchTips(result.data);
         } else {
           setError(result.error);
         }
       })
       .catch((e) => setError(e instanceof Error ? e.message : "Unknown error"))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, fetchLeetcodeQuestions, fetchInterviewQuestions, fetchTips]);
 
   // Initial company fetch
   useEffect(() => {
     handleCompanyUpdate();
   }, [handleCompanyUpdate]);
-
-  // Fetch related data when company changes
-  useEffect(() => {
-    if (company) {
-      fetchLeetcodeQuestions();
-      fetchInterviewQuestions();
-      fetchTips();
-    }
-  }, [company, fetchLeetcodeQuestions, fetchInterviewQuestions, fetchTips]);
 
   if (loading)
     return (
@@ -467,6 +477,7 @@ const CompanyProfile: React.FC = () => {
                       key={i}
                       className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
                       onClick={() => {
+                        setSelectedInterviewQuestion(item);
                         setModalType("INTERVIEW");
                       }}
                     >
@@ -577,21 +588,29 @@ const CompanyProfile: React.FC = () => {
         isOpen={modalType === "LEETCODE"}
         onClose={onModalClose}
         setLeetcodeQuestion={setSelectedLeetcodeQuestion}
-        onUpdateLeetcodeQuestion={() => fetchLeetcodeQuestions()}
+        onUpdateLeetcodeQuestion={() => fetchLeetcodeQuestions(company)}
       />
 
       <NewLeetcodeQuestionModal
         isOpen={modalType === "NEW_LEETCODE"}
         onClose={onModalClose}
         company={company}
-        onNewLeetcodeQuestion={() => fetchLeetcodeQuestions()}
+        onNewLeetcodeQuestion={() => fetchLeetcodeQuestions(company)}
+      />
+
+      <InterviewQuestionModal
+        interviewQuestion={selectedInterviewQuestion}
+        isOpen={modalType === "INTERVIEW"}
+        onClose={onModalClose}
+        setInterviewQuestion={setSelectedInterviewQuestion}
+        onUpdateInterviewQuestion={() => fetchInterviewQuestions(company)}
       />
 
       <NewInterviewQuestionModal
         isOpen={modalType === "NEW_INTERVIEW"}
         onClose={onModalClose}
         company={company}
-        onNewInterviewQuestion={() => fetchInterviewQuestions()}
+        onNewInterviewQuestion={() => fetchInterviewQuestions(company)}
       />
 
       <TipModal
@@ -599,14 +618,14 @@ const CompanyProfile: React.FC = () => {
         isOpen={modalType === "TIP"}
         onClose={onModalClose}
         setTip={setSelectedTip}
-        onUpdateTip={() => fetchTips()}
+        onUpdateTip={() => fetchTips(company)}
       />
 
       <NewTipModal
         isOpen={modalType === "NEW_TIP"}
         onClose={onModalClose}
         company={company}
-        onNewTip={() => fetchTips()}
+        onNewTip={() => fetchTips(company)}
       />
 
       <NewCompanyModal

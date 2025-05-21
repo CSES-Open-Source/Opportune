@@ -13,6 +13,7 @@ const Companies: React.FC = () => {
   const [query, setQuery] = useState("");
   const [employeesInput, setEmployeesInput] = useState("");
   const [industryInput, setIndustryInput] = useState("");
+  const [initialized, setInitialized] = useState(false);
 
   const [filters, setFilters] = useState({
     query: "",
@@ -22,10 +23,19 @@ const Companies: React.FC = () => {
 
   // Debounce the text search
   useEffect(() => {
+    // TODO: Temporary solution to prevent refetching when the page is loaded.
+    if (!initialized) {
+      setInitialized(true);
+      return;
+    }
+
     const handle = setTimeout(() => {
       setFilters(f => ({ ...f, query }));
     }, 500);
     return () => clearTimeout(handle);
+
+    // Temporary fix
+    // eslint-disable-next-line
   }, [query]);
 
   // filter modal state
