@@ -55,7 +55,16 @@ const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
         <div className="mb-3 flex items-center">
           <LuBuilding2 className="w-5 h-5 text-gray-500 mr-2 flex-shrink-0" />
           <div className="text-sm">
-            {data.company ? data.company.name : "Not specified"}
+            {data.company ? (
+              <a
+                href={`/companies/${data.company._id}`}
+                className="text-blue-500 underline hover:text-blue-600"
+              >
+                {data.company.name}
+              </a>
+            ) : (
+              "Not specified"
+            )}
           </div>
         </div>
 

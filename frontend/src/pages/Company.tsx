@@ -7,9 +7,9 @@ import {
   FaEdit,
   FaArrowLeft,
 } from "react-icons/fa";
-import { getCompanyById} from "../api/companies";
+import { getCompanyById } from "../api/companies";
 import { APIResult } from "../api/requests";
-import { Company} from "../types/Company";
+import { Company } from "../types/Company";
 import {
   getDifficultyLabel,
   getEmployeesLabel,
@@ -32,6 +32,7 @@ import { getInterviewQuestionsByCompanyId } from "../api/interviewQuestions";
 import { InterviewQuestion } from "../types/InterviewQuestion";
 import NewInterviewQuestionModal from "../components/NewInterviewQuestionModal";
 import InterviewQuestionModal from "../components/InterviewQuestionModal";
+import { useAuth } from "../contexts/useAuth";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
@@ -84,7 +85,11 @@ const getDifficultyBadgeClasses = (difficulty?: string) => {
 const CompanyProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
   const toast = useRef<Toast>(null);
+
+  const { isAuthenticated } = useAuth();
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
@@ -253,12 +258,6 @@ const CompanyProfile: React.FC = () => {
     handleCompanyUpdate();
   }, [handleCompanyUpdate]);
 
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <ProgressSpinner className="h-16 w-16" strokeWidth="3" />
-      </div>
-    );
   if (error)
     return (
       <div className="min-h-screen flex items-center justify-center text-red-600">
@@ -304,284 +303,292 @@ const CompanyProfile: React.FC = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between px-4 pt-4">
-        <button
-          onClick={() => navigate('/companies')}
-          className="inline-flex items-center text-blue-700 hover:bg-blue-50 px-2 py-1 rounded transition"
-          aria-label="Back to Companies"
-          title="Back to Companies"
-        >
-          <FaArrowLeft className="mr-1" />
-          <span className="hidden sm:inline">Back to Companies</span>
-        </button>
-        <button
-          onClick={() => setIsEditModalOpen(true)}
-          className="group inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-md"
-        >
-          <FaEdit className="mr-2" />
-          <span>Edit Company</span>
-        </button>
-      </div>
-      <div className="bg-transparent h-screen overflow-auto text-gray-800 relative">
-        <div className="max-w-5xl mx-auto px-4 py-8">
-          {/* Company Info */}
-          <div className="bg-white border rounded-lg p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
-            <div className="flex items-center space-x-4">
-              <div className="w-14 h-14">
-                <img
-                  src={company.logo?.trim() ? company.logo : defaultLogo}
-                  alt={`${company.name} logo`}
-                  className="object-contain w-full h-full rounded-md"
-                />
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold">
-                  {company.name}
-                </h1>
-                <p className="text-sm text-gray-500">
-                  {getIndustryLabel(company.industry || "")} • {company.city},{" "}
-                  {company.state}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {getEmployeesLabel(company.employees ?? "")}
-                </p>
-              </div>
-            </div>
-            {company.url && (
-              <a
-                href={company.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-500 flex items-center space-x-1 mt-4 sm:mt-0"
-              >
-                <span>Company website</span>
-                <FaExternalLinkAlt className="w-4 h-4" />
-              </a>
-            )}
+      {loading && (
+        <div className="min-h-screen flex items-center justify-center">
+          <ProgressSpinner className="h-16 w-16" strokeWidth="3" />
+        </div>
+      )}
+      {!loading && (
+        <div className="bg-transparent h-screen overflow-auto text-gray-800 relative">
+          <div className="flex items-center justify-between px-4 pt-4">
+            <button
+              onClick={() => navigate("/companies")}
+              className="inline-flex items-center text-blue-700 hover:bg-blue-50 px-2 py-1 rounded-lg transition"
+              aria-label="Back to Companies"
+              title="Back to Companies"
+            >
+              <FaArrowLeft className="mr-1" />
+              <span className="hidden sm:inline">Back to Companies</span>
+            </button>
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              className="group inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-md transition"
+            >
+              <FaEdit className="mr-2" />
+              <span>Edit Company</span>
+            </button>
           </div>
-          {/* LeetCode Questions */}
-          <div className="mb-8 group/leetcode">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">LeetCode Questions</h2>
-              <div className="flex items-center space-x-2">
-                {!leetcodeQuestionsLoading && (
-                  <button
-                    onClick={() => setModalType("NEW_LEETCODE")}
-                    className="py-1.5 px-3 mr-4 opacity-0 group-hover/leetcode:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
-                  >
-                    Add
-                  </button>
-                )}
-                <button
-                  onClick={() =>
-                    document
-                      .getElementById("leetcode-carousel")
-                      ?.scrollBy({ left: -300, behavior: "smooth" })
-                  }
-                  className="p-2 bg-transparent rounded-full hover:bg-gray-100 shadow-none"
-                >
-                  <FaChevronLeft />
-                </button>
-                <button
-                  onClick={() =>
-                    document
-                      .getElementById("leetcode-carousel")
-                      ?.scrollBy({ left: 300, behavior: "smooth" })
-                  }
-                  className="p-2 bg-transparent rounded-full hover:bg-gray-100 shadow-none"
-                >
-                  <FaChevronRight />
-                </button>
+          <div className="max-w-5xl mx-auto px-4 py-8">
+            {/* Company Info */}
+            <div className="bg-white border rounded-lg p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
+              <div className="flex items-center space-x-4">
+                <div className="w-14 h-14">
+                  <img
+                    src={company.logo?.trim() ? company.logo : defaultLogo}
+                    alt={`${company.name} logo`}
+                    className="object-contain w-full h-full rounded-md"
+                  />
+                </div>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold">
+                    {company.name}
+                  </h1>
+                  <p className="text-sm text-gray-500">
+                    {getIndustryLabel(company.industry || "")}{" "}
+                    {company.city || company.state ? "•" : ""} {company.city}
+                    {company.city && company.state ? "," : ""} {company.state}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {getEmployeesLabel(company.employees ?? "")}
+                  </p>
+                </div>
               </div>
+              {company.url && (
+                <a
+                  href={company.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-500 flex items-center space-x-1 mt-4 sm:mt-0"
+                >
+                  <span>Company website</span>
+                  <FaExternalLinkAlt className="w-4 h-4" />
+                </a>
+              )}
             </div>
-            {!leetcodeQuestionsLoading ? (
-              leetcodeQuestions.length > 0 ? (
-                <CardCarousel id="leetcode-carousel">
-                  {leetcodeQuestions.map((item, i) => (
-                    <div
-                      key={i}
-                      className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
-                      onClick={() => {
-                        setSelectedLeetcodeQuestion(item);
-                        setModalType("LEETCODE");
-                      }}
+            {/* LeetCode Questions */}
+            <div className="mb-8 group/leetcode">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">LeetCode Questions</h2>
+                <div className="flex items-center space-x-2">
+                  {!leetcodeQuestionsLoading && isAuthenticated && (
+                    <button
+                      onClick={() => setModalType("NEW_LEETCODE")}
+                      className="py-1.5 px-3 mr-4 opacity-0 group-hover/leetcode:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
                     >
-                      <h3 className="font-semibold line-clamp-2">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 line-clamp-1">
-                        {item.date?.toLocaleDateString()}
-                      </p>
-                      <span
-                        className={`text-xs font-medium px-2 py-0.5 rounded inline-block mt-1 ${getDifficultyBadgeClasses(
-                          item.difficulty,
-                        )}`}
+                      Add
+                    </button>
+                  )}
+                  <button
+                    onClick={() =>
+                      document
+                        .getElementById("leetcode-carousel")
+                        ?.scrollBy({ left: -300, behavior: "smooth" })
+                    }
+                    className="p-2 bg-transparent rounded-full hover:bg-gray-100 shadow-none"
+                  >
+                    <FaChevronLeft />
+                  </button>
+                  <button
+                    onClick={() =>
+                      document
+                        .getElementById("leetcode-carousel")
+                        ?.scrollBy({ left: 300, behavior: "smooth" })
+                    }
+                    className="p-2 bg-transparent rounded-full hover:bg-gray-100 shadow-none"
+                  >
+                    <FaChevronRight />
+                  </button>
+                </div>
+              </div>
+              {!leetcodeQuestionsLoading ? (
+                leetcodeQuestions.length > 0 ? (
+                  <CardCarousel id="leetcode-carousel">
+                    {leetcodeQuestions.map((item, i) => (
+                      <div
+                        key={i}
+                        className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
+                        onClick={() => {
+                          setSelectedLeetcodeQuestion(item);
+                          setModalType("LEETCODE");
+                        }}
                       >
-                        {getDifficultyLabel(item.difficulty)}
-                      </span>
-                    </div>
-                  ))}
-                </CardCarousel>
-              ) : (
-                <div className="text-gray-500 italic py-8 text-center">
-                  No LeetCode questions found.
-                </div>
-              )
-            ) : (
-              <div className="py-8 flex justify-center items-center">
-                <ProgressSpinner className="h-10 w-10" strokeWidth="3" />
-              </div>
-            )}
-          </div>
-
-          {/* Interview Questions */}
-          <div className="mb-8 group/interview">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Interview Questions</h2>
-              <div className="flex items-center space-x-2">
-                {!interviewQuestionsLoading && (
-                  <button
-                    onClick={() => setModalType("NEW_INTERVIEW")}
-                    className="py-1.5 px-3 mr-4 opacity-0 group-hover/interview:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
-                  >
-                    Add
-                  </button>
-                )}
-                <button
-                  onClick={() =>
-                    document
-                      .getElementById("interview-carousel")
-                      ?.scrollBy({ left: -300, behavior: "smooth" })
-                  }
-                  className="p-2 bg-transparent rounded-full hover:bg-gray-100 shadow-none"
-                >
-                  <FaChevronLeft />
-                </button>
-                <button
-                  onClick={() =>
-                    document
-                      .getElementById("interview-carousel")
-                      ?.scrollBy({ left: 300, behavior: "smooth" })
-                  }
-                  className="p-2 bg-transparent rounded-full hover:bg-gray-100 shadow-none"
-                >
-                  <FaChevronRight />
-                </button>
-              </div>
-            </div>
-            {!interviewQuestionsLoading ? (
-              interviewQuestions.length > 0 ? (
-                <CardCarousel id="interview-carousel">
-                  {interviewQuestions.map((item, i) => (
-                    <div
-                      key={i}
-                      className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
-                      onClick={() => {
-                        setSelectedInterviewQuestion(item);
-                        setModalType("INTERVIEW");
-                      }}
-                    >
-                      <h3 className="font-semibold line-clamp-2">
-                        {item.question}
-                      </h3>
-                      <p className="text-sm text-gray-600 line-clamp-1">
-                        {item.date?.toLocaleDateString()}
-                      </p>
-                    </div>
-                  ))}
-                </CardCarousel>
-              ) : (
-                <div className="text-gray-500 italic py-8 text-center">
-                  No interview questions found.
-                </div>
-              )
-            ) : (
-              <div className="py-8 flex justify-center items-center">
-                <ProgressSpinner className="h-10 w-10" strokeWidth="3" />
-              </div>
-            )}
-          </div>
-
-          {/* Alumni Insights */}
-          <div className="mb-8 group/tip">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">Alumni Insights</h2>
-              <div className="flex items-center space-x-2">
-                {!tipsLoading && (
-                  <button
-                    onClick={() => setModalType("NEW_TIP")}
-                    className="py-1.5 px-3 mr-4 opacity-0 group-hover/tip:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
-                  >
-                    Add
-                  </button>
-                )}
-                <button
-                  onClick={() =>
-                    document
-                      .getElementById("alumni-carousel")
-                      ?.scrollBy({ left: -300, behavior: "smooth" })
-                  }
-                  className="p-2 bg-transparent rounded-full hover:bg-gray-100 shadow-none"
-                >
-                  <FaChevronLeft />
-                </button>
-                <button
-                  onClick={() =>
-                    document
-                      .getElementById("alumni-carousel")
-                      ?.scrollBy({ left: 300, behavior: "smooth" })
-                  }
-                  className="p-2 bg-transparent rounded-full hover:bg-gray-100 shadow-none"
-                >
-                  <FaChevronRight />
-                </button>
-              </div>
-            </div>
-            {!tipsLoading ? (
-              tips.length > 0 ? (
-                <CardCarousel id="alumni-carousel">
-                  {tips.map((tip, i) => (
-                    <div
-                      key={i}
-                      className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
-                      onClick={() => {
-                        setModalType("TIP");
-                        setSelectedTip(tip);
-                      }}
-                    >
-                      <div className="flex flex-row gap-2">
-                        <img
-                          src={tip.user.profilePicture}
-                          alt={tip.user.name}
-                          className="w-7 h-7 rounded-full"
-                        />
-                        <p className="font-medium">{tip.user.name}</p>
+                        <h3 className="font-semibold line-clamp-2">
+                          {item.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 line-clamp-1">
+                          {item.date?.toLocaleDateString()}
+                        </p>
+                        <span
+                          className={`text-xs font-medium px-2 py-0.5 rounded inline-block mt-1 ${getDifficultyBadgeClasses(
+                            item.difficulty,
+                          )}`}
+                        >
+                          {getDifficultyLabel(item.difficulty)}
+                        </span>
                       </div>
-                      <div className="h-24 overflow-hidden">
-                        <Editor
-                          className="mt-2"
-                          readOnly={true}
-                          showHeader={false}
-                          value={tip.text}
-                          theme="bubble"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </CardCarousel>
+                    ))}
+                  </CardCarousel>
+                ) : (
+                  <div className="text-gray-500 italic py-8 text-center">
+                    No LeetCode questions found.
+                  </div>
+                )
               ) : (
-                <div className="text-gray-500 italic py-8 text-center">
-                  No alumni tips found.
+                <div className="py-8 flex justify-center items-center">
+                  <ProgressSpinner className="h-10 w-10" strokeWidth="3" />
                 </div>
-              )
-            ) : (
-              <div className="py-8 flex justify-center items-center">
-                <ProgressSpinner className="h-10 w-10" strokeWidth="3" />
+              )}
+            </div>
+
+            {/* Interview Questions */}
+            <div className="mb-8 group/interview">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Interview Questions</h2>
+                <div className="flex items-center space-x-2">
+                  {!interviewQuestionsLoading && isAuthenticated && (
+                    <button
+                      onClick={() => setModalType("NEW_INTERVIEW")}
+                      className="py-1.5 px-3 mr-4 opacity-0 group-hover/interview:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
+                    >
+                      Add
+                    </button>
+                  )}
+                  <button
+                    onClick={() =>
+                      document
+                        .getElementById("interview-carousel")
+                        ?.scrollBy({ left: -300, behavior: "smooth" })
+                    }
+                    className="p-2 bg-transparent rounded-full hover:bg-gray-100 shadow-none"
+                  >
+                    <FaChevronLeft />
+                  </button>
+                  <button
+                    onClick={() =>
+                      document
+                        .getElementById("interview-carousel")
+                        ?.scrollBy({ left: 300, behavior: "smooth" })
+                    }
+                    className="p-2 bg-transparent rounded-full hover:bg-gray-100 shadow-none"
+                  >
+                    <FaChevronRight />
+                  </button>
+                </div>
               </div>
-            )}
+              {!interviewQuestionsLoading ? (
+                interviewQuestions.length > 0 ? (
+                  <CardCarousel id="interview-carousel">
+                    {interviewQuestions.map((item, i) => (
+                      <div
+                        key={i}
+                        className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
+                        onClick={() => {
+                          setSelectedInterviewQuestion(item);
+                          setModalType("INTERVIEW");
+                        }}
+                      >
+                        <h3 className="font-semibold line-clamp-2">
+                          {item.question}
+                        </h3>
+                        <p className="text-sm text-gray-600 line-clamp-1">
+                          {item.date?.toLocaleDateString()}
+                        </p>
+                      </div>
+                    ))}
+                  </CardCarousel>
+                ) : (
+                  <div className="text-gray-500 italic py-8 text-center">
+                    No interview questions found.
+                  </div>
+                )
+              ) : (
+                <div className="py-8 flex justify-center items-center">
+                  <ProgressSpinner className="h-10 w-10" strokeWidth="3" />
+                </div>
+              )}
+            </div>
+
+            {/* Alumni Insights */}
+            <div className="mb-8 group/tip">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Alumni Insights</h2>
+                <div className="flex items-center space-x-2">
+                  {!tipsLoading && isAuthenticated && (
+                    <button
+                      onClick={() => setModalType("NEW_TIP")}
+                      className="py-1.5 px-3 mr-4 opacity-0 group-hover/tip:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
+                    >
+                      Add
+                    </button>
+                  )}
+                  <button
+                    onClick={() =>
+                      document
+                        .getElementById("alumni-carousel")
+                        ?.scrollBy({ left: -300, behavior: "smooth" })
+                    }
+                    className="p-2 bg-transparent rounded-full hover:bg-gray-100 shadow-none"
+                  >
+                    <FaChevronLeft />
+                  </button>
+                  <button
+                    onClick={() =>
+                      document
+                        .getElementById("alumni-carousel")
+                        ?.scrollBy({ left: 300, behavior: "smooth" })
+                    }
+                    className="p-2 bg-transparent rounded-full hover:bg-gray-100 shadow-none"
+                  >
+                    <FaChevronRight />
+                  </button>
+                </div>
+              </div>
+              {!tipsLoading ? (
+                tips.length > 0 ? (
+                  <CardCarousel id="alumni-carousel">
+                    {tips.map((tip, i) => (
+                      <div
+                        key={i}
+                        className="w-60 h-40 bg-white border border-gray-200 rounded-md p-4 shadow hover:shadow-lg cursor-pointer"
+                        onClick={() => {
+                          setModalType("TIP");
+                          setSelectedTip(tip);
+                        }}
+                      >
+                        <div className="flex flex-row gap-2">
+                          <img
+                            src={tip.user.profilePicture}
+                            alt={tip.user.name}
+                            className="w-7 h-7 rounded-full"
+                          />
+                          <p className="font-medium">{tip.user.name}</p>
+                        </div>
+                        <div className="h-24 overflow-hidden">
+                          <Editor
+                            className="mt-2"
+                            readOnly={true}
+                            showHeader={false}
+                            value={tip.text}
+                            theme="bubble"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </CardCarousel>
+                ) : (
+                  <div className="text-gray-500 italic py-8 text-center">
+                    No alumni tips found.
+                  </div>
+                )
+              ) : (
+                <div className="py-8 flex justify-center items-center">
+                  <ProgressSpinner className="h-10 w-10" strokeWidth="3" />
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <LeetcodeQuestionModal
         leetcodeQuestion={selectedLeetcodeQuestion}
@@ -631,7 +638,7 @@ const CompanyProfile: React.FC = () => {
       <NewCompanyModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        onNewApplication={handleCompanyUpdate}
+        onCompanyChanged={handleCompanyUpdate}
         company={company}
       />
 

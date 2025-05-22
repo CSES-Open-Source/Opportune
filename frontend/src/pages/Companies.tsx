@@ -30,7 +30,7 @@ const Companies: React.FC = () => {
     }
 
     const handle = setTimeout(() => {
-      setFilters(f => ({ ...f, query }));
+      setFilters((f) => ({ ...f, query }));
     }, 500);
     return () => clearTimeout(handle);
 
@@ -49,19 +49,17 @@ const Companies: React.FC = () => {
     setShowFilters(false);
   };
 
-
   // Add Company Modal
   const [companyModalOpen, setCompanyModalOpen] = useState(false);
 
   const refreshFilters = () => {
-    setFilters(f => ({ ...f }));
+    setFilters((f) => ({ ...f }));
   };
 
   const onSaveCompany = () => {
     setCompanyModalOpen(false);
     refreshFilters();
   };
-
 
   const fetchCompanies = useCallback(
     (page: number, perPage: number) =>
@@ -76,7 +74,7 @@ const Companies: React.FC = () => {
           ? { page, perPage, total: res.data.total, data: res.data.data }
           : { page, perPage, total: 0, data: [] },
       ),
-    [filters]
+    [filters],
   );
 
   return (
@@ -90,7 +88,7 @@ const Companies: React.FC = () => {
             <input
               type="text"
               value={query}
-              onChange={e => setQuery(e.target.value)}
+              onChange={(e) => setQuery(e.target.value)}
               placeholder="Search companies..."
               className="w-full border border-gray-300 rounded-full py-2 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
             />
@@ -101,8 +99,18 @@ const Companies: React.FC = () => {
             className="inline-flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
           >
             <span className="hidden sm:inline mr-1">Add</span>
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            <svg
+              className="w-3 h-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
             </svg>
           </button>
 
@@ -134,11 +142,11 @@ const Companies: React.FC = () => {
                   </label>
                   <select
                     value={employeesInput}
-                    onChange={e => setEmployeesInput(e.target.value)}
+                    onChange={(e) => setEmployeesInput(e.target.value)}
                     className="block w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   >
                     <option value="">Any</option>
-                    {Object.values(NumEmployees).map(ind => (
+                    {Object.values(NumEmployees).map((ind) => (
                       <option key={ind} value={ind}>
                         {getEmployeesLabel(ind)}
                       </option>
@@ -151,11 +159,11 @@ const Companies: React.FC = () => {
                   </label>
                   <select
                     value={industryInput}
-                    onChange={e => setIndustryInput(e.target.value)}
+                    onChange={(e) => setIndustryInput(e.target.value)}
                     className="block w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   >
                     <option value="">Any</option>
-                    {Object.values(IndustryType).map(ind => (
+                    {Object.values(IndustryType).map((ind) => (
                       <option key={ind} value={ind}>
                         {getIndustryLabel(ind)}
                       </option>
@@ -201,7 +209,7 @@ const Companies: React.FC = () => {
       <NewCompanyModal
         isOpen={companyModalOpen}
         onClose={() => setCompanyModalOpen(false)}
-        onNewApplication={onSaveCompany}
+        onCompanyChanged={onSaveCompany}
         company={null}
       />
     </div>

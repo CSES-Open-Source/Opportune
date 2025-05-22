@@ -104,7 +104,7 @@ const NewApplicationModal = ({
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        className="w-[75vh] rounded-xl flex flex-col px-8 py-6"
+        className="w-[60vh] rounded-xl flex flex-col px-8 py-6"
         useOverlay
       >
         <div className="w-full h-full flex flex-col items-center gap-5">
@@ -120,6 +120,7 @@ const NewApplicationModal = ({
                 dropdownClassName={`w-full py-0.5 border-2 border-gray-200 rounded-lg ${
                   company ? "border-blue-500" : ""
                 }`}
+                buttonClassName="w-10"
               />
             </div>
             <div className="flex flex-col">

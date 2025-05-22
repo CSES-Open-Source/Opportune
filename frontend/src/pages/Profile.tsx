@@ -464,7 +464,8 @@ const Profile = () => {
                           })
                         }
                         className="w-full px-1"
-                        dropdownClassName="w-full border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                        dropdownClassName="border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                        buttonClassName="w-10"
                       />
                     </div>
 

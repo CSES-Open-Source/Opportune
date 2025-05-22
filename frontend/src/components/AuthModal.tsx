@@ -354,6 +354,7 @@ const AuthModal = () => {
                         }
                         className="w-full"
                         dropdownClassName="w-full border-2 p-[2px] border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        buttonClassName="w-12"
                       />
                       <p className="text-xs text-gray-500 mt-2">
                         {

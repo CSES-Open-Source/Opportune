@@ -11,6 +11,8 @@ import {
 } from "react-icons/lu";
 import { BsLinkedin } from "react-icons/bs";
 import { getEmployeesLabel, getIndustryLabel } from "../utils/valuesToLabels";
+import { FaExternalLinkAlt } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 interface AlumniProfileModalProps {
   isOpen: boolean;
@@ -23,8 +25,6 @@ const AlumniProfileModal = ({
   onClose,
   alumni,
 }: AlumniProfileModalProps) => {
-  if (!alumni) return null;
-
   // Function to format LinkedIn URL for display
   const formatLinkedInUrl = (url: string) => {
     try {
@@ -35,6 +35,10 @@ const AlumniProfileModal = ({
       return url;
     }
   };
+
+  if (!alumni) {
+    return <div>Error: Alumni not found</div>;
+  }
 
   return (
     <Modal
@@ -151,9 +155,17 @@ const AlumniProfileModal = ({
 
           {/* Company Information */}
           <section className="space-y-3">
-            <h2 className="font-semibold text-gray-700 border-b pb-1">
-              Company Details
-            </h2>
+            <div className="border-b pb-1 flex flex-row items-end">
+              <h2 className="font-semibold text-gray-700">Company Details</h2>
+              {alumni.company && (
+                <Link
+                  to={`/companies/${alumni.company._id}`}
+                  className="ml-2 p-1"
+                >
+                  <FaExternalLinkAlt className="text-blue-500 hover:text-blue-600 w-4 h-4" />
+                </Link>
+              )}
+            </div>
 
             <div className="flex items-start gap-3">
               <LuBuilding2 className="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0" />
