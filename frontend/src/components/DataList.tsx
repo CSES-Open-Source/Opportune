@@ -6,7 +6,6 @@ import { ProgressSpinner } from "primereact/progressspinner";
 interface ListStyle {
   width?: string;
   height?: string;
-  height?: string;
   maxWidth?: string;
   maxHeight?: string;
 }
@@ -53,8 +52,6 @@ type DataListProps<T> =
   | DataListServerPaginationProps<T>;
 
 const DataList = <T extends object>(props: DataListProps<T>) => {
-  const { TileComponent, useServerPagination, listStyle, listClassName } =
-    props;
   const { TileComponent, useServerPagination, listStyle, listClassName } =
     props;
 

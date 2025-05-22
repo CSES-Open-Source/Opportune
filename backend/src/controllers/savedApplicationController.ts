@@ -251,17 +251,7 @@ export const getSavedApplicationsByUserID = asyncHandler(
       page,
       perPage,
       total,
-      data: applications.map((app) => ({
-        _id: app._id,
-        userId: app.userId,
-        company: app.company,
-        position: app.position,
-        location: app.location,
-        link: app.link,
-        materialsNeeded: app.materialsNeeded,
-        deadline: app.deadline,
-        createdAt: app.createdAt,
-      })),
+      data: applications,
     });
   },
 );
