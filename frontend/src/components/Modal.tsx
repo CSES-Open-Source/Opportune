@@ -90,13 +90,17 @@ const Modal = (props: ModalProps): React.JSX.Element => {
       className={`fixed inset-0 w-full h-full flex justify-center items-center ${
         !disableClose && "hover:cursor-pointer"
       } transition z-50`}
-      style={{ backgroundColor: useOverlay ? `rgba(0, 0, 0, ${backdropOpacity / 100})` : "" }}
+      style={{
+        backgroundColor: useOverlay
+          ? `rgba(0, 0, 0, ${backdropOpacity / 100})`
+          : "",
+      }}
       ref={backdropRef}
     >
       {/* modal container */}
       <div
         {...props}
-        className={`relative bg-white mx-auto w-[90%] max-w-2xl hover:cursor-default ${className}`}
+        className={`relative bg-white mx-auto max-w-2xl hover:cursor-default ${className}`}
       >
         {!disableClose && (
           <FaXmark

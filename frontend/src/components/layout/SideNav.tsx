@@ -6,7 +6,6 @@ import { useState } from "react";
 import Dialog from "../Dialog";
 import { useAuth } from "../../contexts/useAuth";
 import { FcGoogle } from "react-icons/fc";
-import AuthModal from "../AuthModal";
 import { requireLogin, roleGuard } from "../../constants/pathAccess";
 import { MdLockOutline } from "react-icons/md";
 // import { Tooltip } from "primereact/tooltip";
@@ -146,7 +145,6 @@ const SideNav = () => {
         onDialogClose={onLogOutDialogClose}
         text="Are you sure you would like to logout?"
       />
-      <AuthModal />
     </div>
   );
 };

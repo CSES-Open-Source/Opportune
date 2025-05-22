@@ -32,6 +32,7 @@ import { getInterviewQuestionsByCompanyId } from "../api/interviewQuestions";
 import { InterviewQuestion } from "../types/InterviewQuestion";
 import NewInterviewQuestionModal from "../components/NewInterviewQuestionModal";
 import InterviewQuestionModal from "../components/InterviewQuestionModal";
+import { useAuth } from "../contexts/useAuth";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
@@ -84,7 +85,11 @@ const getDifficultyBadgeClasses = (difficulty?: string) => {
 const CompanyProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
   const toast = useRef<Toast>(null);
+
+  const { isAuthenticated } = useAuth();
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
@@ -365,7 +370,7 @@ const CompanyProfile: React.FC = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">LeetCode Questions</h2>
                 <div className="flex items-center space-x-2">
-                  {!leetcodeQuestionsLoading && (
+                  {!leetcodeQuestionsLoading && isAuthenticated && (
                     <button
                       onClick={() => setModalType("NEW_LEETCODE")}
                       className="py-1.5 px-3 mr-4 opacity-0 group-hover/leetcode:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
@@ -440,7 +445,7 @@ const CompanyProfile: React.FC = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Interview Questions</h2>
                 <div className="flex items-center space-x-2">
-                  {!interviewQuestionsLoading && (
+                  {!interviewQuestionsLoading && isAuthenticated && (
                     <button
                       onClick={() => setModalType("NEW_INTERVIEW")}
                       className="py-1.5 px-3 mr-4 opacity-0 group-hover/interview:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"
@@ -508,7 +513,7 @@ const CompanyProfile: React.FC = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">Alumni Insights</h2>
                 <div className="flex items-center space-x-2">
-                  {!tipsLoading && (
+                  {!tipsLoading && isAuthenticated && (
                     <button
                       onClick={() => setModalType("NEW_TIP")}
                       className="py-1.5 px-3 mr-4 opacity-0 group-hover/tip:opacity-100 transition-all text-white bg-green-600 hover:bg-green-700 rounded-lg"

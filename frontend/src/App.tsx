@@ -1,6 +1,5 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import { BrowserRouter } from "react-router-dom";
@@ -11,13 +10,14 @@ import CompanyProfile from "./pages/Company";
 import Connect from "./pages/Connect";
 import Sandbox from "./pages/Sandbox";
 import Profile from "./pages/Profile";
+import AuthLayer from "./components/layout/AuthLayer";
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout />}>
+          <Route path="/" element={<AuthLayer />}>
             <Route index element={<Home />} />
             <Route path="companies" element={<Companies />} />
             <Route path="/companies/:id" element={<CompanyProfile />} />

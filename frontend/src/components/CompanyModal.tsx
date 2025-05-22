@@ -357,13 +357,13 @@ const NewCompanyModal = ({
         <div className="mt-6 flex justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-white border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50"
+            className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
           >
             Cancel
           </button>
           <button
             onClick={onSave}
-            className="px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             {company ? "Save Changes" : "Create Company"}
           </button>
