@@ -233,8 +233,8 @@ const LeetcodeQuestionModal = ({
                         ? level === Difficulty.Easy
                           ? "bg-green-500 text-white"
                           : level === Difficulty.Medium
-                          ? "bg-yellow-500 text-white"
-                          : "bg-red-500 text-white"
+                            ? "bg-yellow-500 text-white"
+                            : "bg-red-500 text-white"
                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                     onClick={() => setNewDifficulty(level)}
