@@ -261,7 +261,6 @@ export const getSavedApplicationsByUserID = asyncHandler(
         materialsNeeded: app.materialsNeeded,
         deadline: app.deadline,
         createdAt: app.createdAt,
-        updatedAt: app.updatedAt,
       })),
     });
   },

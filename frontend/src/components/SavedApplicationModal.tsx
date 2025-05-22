@@ -179,7 +179,7 @@ const SavedApplicationModal = ({
           resetStates();
           onClose();
         }}
-        className="w-full max-w-2xl h-[80%] rounded-xl flex flex-col p-6"
+        className="w-full max-w-2xl h-auto max-h-[90vh] rounded-xl flex flex-col p-6"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Saved Application Details</h2>
