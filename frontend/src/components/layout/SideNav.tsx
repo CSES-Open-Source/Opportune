@@ -8,7 +8,8 @@ import { useAuth } from "../../contexts/useAuth";
 import { FcGoogle } from "react-icons/fc";
 import { requireLogin, roleGuard } from "../../constants/pathAccess";
 import { MdLockOutline } from "react-icons/md";
-import OpportuneLogo from "../public/OpportuneLogo";
+
+const OpportuneLogo = "/assets/OpportuneLogo.png";
 
 const SideNav = () => {
   const { user, isAuthenticated, login, logout } = useAuth();
@@ -33,8 +34,9 @@ const SideNav = () => {
   return (
     <div>
       <aside className="h-screen w-[300px] bg-white flex flex-col border-2 border-solid rounded-r-lg shadow-lg items-center">
-        <div className="text-3xl font-bold h-20 w-full flex items-center p-4">
-          <OpportuneLogo size="lg" variant="primary" />
+        <div className="text-3xl font-bold h-20 w-full flex items-center p-4 gap-2">
+          <img className="h-12 w-12" src={OpportuneLogo} />
+          <h1 className="text-gray-700">Opportune</h1>
         </div>
         <div className="w-full flex justify-center">
           <hr className="w-[80%]" />
