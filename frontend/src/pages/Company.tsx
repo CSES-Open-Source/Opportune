@@ -17,21 +17,21 @@ import {
 } from "../utils/valuesToLabels";
 import { getLeetcodeQuestionsByCompanyId } from "../api/leetcodeQuestions";
 import { Difficulty, LeetcodeQuestion } from "../types/LeetcodeQuestion";
-import LeetcodeQuestionModal from "../components/LeetcodeQuestionModal";
-import NewLeetcodeQuestionModal from "../components/NewLeetcodeQuestionModal";
+import LeetcodeQuestionModal from "../components/company/LeetcodeQuestionModal";
+import NewLeetcodeQuestionModal from "../components/company/NewLeetcodeQuestionModal";
 import { UserType } from "../types/User";
 import { Tip } from "../types/Tip";
-import NewTipModal from "../components/NewTipModal";
-import TipModal from "../components/TipModal";
+import NewTipModal from "../components/company/NewTipModal";
+import TipModal from "../components/company/TipModal";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Toast } from "primereact/toast";
-import NewCompanyModal from "../components/CompanyModal";
+import NewCompanyModal from "../components/company/CompanyModal";
 import { getTipsByCompanyId } from "../api/tips";
 import { Editor } from "primereact/editor";
 import { getInterviewQuestionsByCompanyId } from "../api/interviewQuestions";
 import { InterviewQuestion } from "../types/InterviewQuestion";
-import NewInterviewQuestionModal from "../components/NewInterviewQuestionModal";
-import InterviewQuestionModal from "../components/InterviewQuestionModal";
+import NewInterviewQuestionModal from "../components/company/NewInterviewQuestionModal";
+import InterviewQuestionModal from "../components/company/InterviewQuestionModal";
 import { useAuth } from "../contexts/useAuth";
 
 const defaultLogo = "/assets/defaultLogo.png";
@@ -349,7 +349,9 @@ const CompanyProfile: React.FC = () => {
                     {company.city && company.state ? "," : ""} {company.state}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {getEmployeesLabel(company.employees ?? "")}
+                    {company.employees
+                      ? getEmployeesLabel(company.employees)
+                      : ""}
                   </p>
                 </div>
               </div>

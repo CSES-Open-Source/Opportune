@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { getAllCompanies } from "../api/companies";
+import { getAllCompanies } from "../../api/companies";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
-import { Company } from "../types/Company";
-import { FaPlus } from "react-icons/fa6";
+import { Company } from "../../types/Company";
 import NewCompanyModal from "./CompanyModal";
 
 const defaultLogo = "/assets/defaultLogo.png";
@@ -58,7 +57,7 @@ const CompanyDropdown = (props: CompanyDropdownProps) => {
   }, [fetchCompanies]);
 
   return (
-    <div className={`${className} flex flex-row gap-1`}>
+    <div className={`${className} flex flex-row items-center gap-2`}>
       <Dropdown
         id="company"
         value={value}
@@ -71,9 +70,9 @@ const CompanyDropdown = (props: CompanyDropdownProps) => {
       />
       <button
         onClick={() => setIsOpen(true)}
-        className={`${buttonClassName} p-1 bg-green-600 hover:bg-green-700 rounded-md flex justify-center items-center transition`}
+        className={`${buttonClassName} px-3 py-2 text-sm bg-green-600 hover:bg-green-700 rounded-lg flex justify-center items-center transition text-white`}
       >
-        <FaPlus size={20} className="text-white" />
+        New
       </button>
       <NewCompanyModal
         isOpen={isOpen}

@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { useAuth } from "../contexts/useAuth";
-import Modal from "./Modal";
-import { ClassLevel, CreateUserRequest, UserType } from "../types/User";
+import { useAuth } from "../../contexts/useAuth";
+import Modal from "../public/Modal";
+import { ClassLevel, CreateUserRequest, UserType } from "../../types/User";
 import { ProgressBar } from "primereact/progressbar";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { FaLinkedin } from "react-icons/fa";
 import { FiPhone } from "react-icons/fi";
 import { FaCheck, FaXmark } from "react-icons/fa6";
-import "../styles/Dropdown.css";
+import "../../styles/Dropdown.css";
 import ProfileCompletion from "./ProfileCompletion";
-import CompanyDropdown from "./CompanyDropdown";
+import CompanyDropdown from "../company/CompanyDropdown";
 
 const AuthModal = () => {
   const {

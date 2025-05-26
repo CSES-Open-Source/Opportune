@@ -1,13 +1,13 @@
 import { useCallback, useState, Dispatch, SetStateAction } from "react";
 import { getSavedApplicationsByUserID } from "../api/savedApplications";
-import DataTable from "../components/DataTable";
-import SearchBar from "../components/SearchBar";
+import DataTable from "../components/public/DataTable";
+import SearchBar from "../components/public/SearchBar";
 import { SavedApplication } from "../types/SavedApplication";
 import { ColumnDef } from "../types/ColumnDef";
 import { PaginatedData } from "../types/PaginatedData";
 import { useAuth } from "../contexts/useAuth";
-import NewSavedApplicationModal from "../components/NewSavedApplicationModal";
-import SavedApplicationModal from "../components/SavedApplicationModal";
+import NewSavedApplicationModal from "../components/savedApplication/NewSavedApplicationModal";
+import SavedApplicationModal from "../components/savedApplication/SavedApplicationModal";
 
 const defaultLogo = "/assets/defaultLogo.png";
 

@@ -52,6 +52,6 @@ export const navItems: NavItem[] = [
     label: "Sandbox",
     path: "/sandbox",
     icon: FiCode,
-    disabled: false,
+    disabled: true,
   },
 ];

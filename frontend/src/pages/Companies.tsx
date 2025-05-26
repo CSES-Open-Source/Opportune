@@ -1,8 +1,8 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { FaSearch, FaChevronDown, FaTimes } from "react-icons/fa";
-import DataList from "../components/DataList";
-import NewCompanyModal from "../components/CompanyModal";
-import CompanyTile from "../components/CompanyTile";
+import DataList from "../components/public/DataList";
+import NewCompanyModal from "../components/company/CompanyModal";
+import CompanyTile from "../components/company/CompanyTile";
 import { getCompanies as apiGetCompanies } from "../api/companies";
 import { APIResult } from "../api/requests";
 import { PaginatedData } from "../types/PaginatedData";

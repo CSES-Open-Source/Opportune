@@ -1,12 +1,12 @@
 import React, { useRef, useState } from "react";
-import Modal from "./Modal";
-import CompanyDropdown from "./CompanyDropdown";
-import { Company } from "../types/Company";
+import Modal from "../public/Modal";
+import CompanyDropdown from "../company/CompanyDropdown";
+import { Company } from "../../types/Company";
 import { FaLink, FaUser, FaCalendarAlt } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { LuListChecks } from "react-icons/lu";
-import { createSavedApplication } from "../api/savedApplications";
-import { useAuth } from "../contexts/useAuth";
+import { createSavedApplication } from "../../api/savedApplications";
+import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
 import { Calendar } from "primereact/calendar";
 
@@ -156,6 +156,7 @@ const NewSavedApplicationModal = ({
                 dropdownClassName={`w-full py-0.5 border-2 border-gray-200 rounded-lg ${
                   company ? "border-blue-500" : ""
                 }`}
+                buttonClassName=""
               />
             </div>
             <div className="flex flex-col">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import "../styles/ProfileCompletion.css";
-import { useAuth } from "../contexts/useAuth";
+import "../../styles/ProfileCompletion.css";
+import { useAuth } from "../../contexts/useAuth";
 import { ProgressSpinner } from "primereact/progressspinner";
 
 const ProfileCompletion = ({

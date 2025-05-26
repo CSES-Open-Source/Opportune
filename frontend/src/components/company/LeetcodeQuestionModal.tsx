@@ -3,16 +3,16 @@ import {
   Difficulty,
   LeetcodeQuestion,
   UpdateLeetcodeQuestionRequest,
-} from "../types/LeetcodeQuestion";
-import Modal from "./Modal";
-import { useAuth } from "../contexts/useAuth";
-import { getDifficultyLabel } from "../utils/valuesToLabels";
+} from "../../types/LeetcodeQuestion";
+import Modal from "../public/Modal";
+import { useAuth } from "../../contexts/useAuth";
+import { getDifficultyLabel } from "../../utils/valuesToLabels";
 import { Toast } from "primereact/toast";
 import {
   deleteLeetcodeQuestion,
   updateLeetcodeQuestion,
-} from "../api/leetcodeQuestions";
-import Dialog from "./Dialog";
+} from "../../api/leetcodeQuestions";
+import Dialog from "../public/Dialog";
 
 interface LeetcodeQuestionModalProps {
   leetcodeQuestion: LeetcodeQuestion;
@@ -233,8 +233,8 @@ const LeetcodeQuestionModal = ({
                         ? level === Difficulty.Easy
                           ? "bg-green-500 text-white"
                           : level === Difficulty.Medium
-                            ? "bg-yellow-500 text-white"
-                            : "bg-red-500 text-white"
+                          ? "bg-yellow-500 text-white"
+                          : "bg-red-500 text-white"
                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                     onClick={() => setNewDifficulty(level)}

@@ -18,7 +18,7 @@ import {
   UserType,
 } from "../types/User";
 import { Dropdown } from "primereact/dropdown";
-import CompanyDropdown from "../components/CompanyDropdown";
+import CompanyDropdown from "../components/company/CompanyDropdown";
 
 const Profile = () => {
   const classLevelOptions = Object.keys(ClassLevel).map((key) => ({
@@ -465,7 +465,6 @@ const Profile = () => {
                         }
                         className="w-full px-1"
                         dropdownClassName="border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                        buttonClassName="w-10"
                       />
                     </div>
 

@@ -1,11 +1,11 @@
 import { useRef, useState } from "react";
-import Modal from "./Modal";
-import CompanyDropdown from "./CompanyDropdown";
-import { Company } from "../types/Company";
+import Modal from "../public/Modal";
+import CompanyDropdown from "../company/CompanyDropdown";
+import { Company } from "../../types/Company";
 import { FaLink, FaUser } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
-import { createApplication } from "../api/applications";
-import { useAuth } from "../contexts/useAuth";
+import { createApplication } from "../../api/applications";
+import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
 
 interface NewApplicationModalProps {
@@ -120,7 +120,7 @@ const NewApplicationModal = ({
                 dropdownClassName={`w-full py-0.5 border-2 border-gray-200 rounded-lg ${
                   company ? "border-blue-500" : ""
                 }`}
-                buttonClassName="w-10"
+                buttonClassName=""
               />
             </div>
             <div className="flex flex-col">

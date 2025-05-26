@@ -1,11 +1,11 @@
 import { Toast } from "primereact/toast";
 import { Editor } from "primereact/editor";
-import Modal from "./Modal";
-import { useAuth } from "../contexts/useAuth";
+import Modal from "../public/Modal";
+import { useAuth } from "../../contexts/useAuth";
 import { useEffect, useRef, useState } from "react";
-import { Company } from "../types/Company";
-import { createTip } from "../api/tips";
-import { CreateTipRequest } from "../types/Tip";
+import { Company } from "../../types/Company";
+import { createTip } from "../../api/tips";
+import { CreateTipRequest } from "../../types/Tip";
 
 interface NewTipModalProps {
   company: Company;

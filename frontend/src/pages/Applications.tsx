@@ -1,15 +1,15 @@
 import { useCallback, useState } from "react";
 import { getApplicationsByUserID } from "../api/applications";
-import DataTable from "../components/DataTable";
-import SearchBar from "../components/SearchBar";
-import StatusBubble from "../components/StatusBubble";
+import DataTable from "../components/public/DataTable";
+import SearchBar from "../components/public/SearchBar";
+import StatusBubble from "../components/public/StatusBubble";
 import { statusColors } from "../constants/statusColors";
 import { Application } from "../types/Application";
 import { ColumnDef } from "../types/ColumnDef";
 import { PaginatedData } from "../types/PaginatedData";
 import { useAuth } from "../contexts/useAuth";
-import NewApplicationModal from "../components/NewApplicationModal";
-import ApplicationModal from "../components/ApplicationModal";
+import NewApplicationModal from "../components/application/NewApplicationModal";
+import ApplicationModal from "../components/application/ApplicationModal";
 
 const applicationColumns: ColumnDef<Application>[] = [
   {

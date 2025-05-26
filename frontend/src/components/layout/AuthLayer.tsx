@@ -1,5 +1,5 @@
 import Layout from "./Layout";
-import AuthModal from "../AuthModal";
+import AuthModal from "../auth/AuthModal";
 
 const AuthLayer = () => {
   return (
