@@ -1,15 +1,20 @@
 import { useRef, useState, useEffect } from "react";
-import Modal from "./Modal";
-import { NumEmployees, IndustryType, Company, State } from "../types/Company";
+import Modal from "../public/Modal";
+import {
+  NumEmployees,
+  IndustryType,
+  Company,
+  State,
+} from "../../types/Company";
 import { FaLink, FaCloudUploadAlt } from "react-icons/fa";
-import { createCompany, updateCompany } from "../api/companies";
-import { useAuth } from "../contexts/useAuth";
+import { createCompany, updateCompany } from "../../api/companies";
+import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
 import {
   getEmployeesLabel,
   getIndustryLabel,
   getStateLabel,
-} from "../utils/valuesToLabels";
+} from "../../utils/valuesToLabels";
 
 interface NewCompanyModalProps {
   isOpen: boolean;

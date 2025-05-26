@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaAngleDown, FaSistrix } from "react-icons/fa6";
-import camelize from "../utils/camelize";
+import camelize from "../../utils/camelize";
 
 interface SelectionOption {
   label: string;
@@ -100,13 +100,10 @@ const SearchBar = <T extends Record<string, unknown>>({
   const [selectionValues, setSelectionValues] = useState<
     Record<string, string[]>
   >(
-    selections.reduce(
-      (acc, selection) => {
-        acc[selection.label] = [];
-        return acc;
-      },
-      {} as Record<string, string[]>,
-    ),
+    selections.reduce((acc, selection) => {
+      acc[selection.label] = [];
+      return acc;
+    }, {} as Record<string, string[]>),
   );
 
   // Current expanded selection option

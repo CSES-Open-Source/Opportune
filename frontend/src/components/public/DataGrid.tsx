@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PaginatedData } from "../types/PaginatedData";
+import { PaginatedData } from "../../types/PaginatedData";
 import Paginator, { UsePagination } from "./Paginator";
 import { ProgressSpinner } from "primereact/progressspinner";
 

@@ -2,16 +2,19 @@ import { ChangeEvent, Dispatch, SetStateAction, useRef, useState } from "react";
 import {
   SavedApplication,
   UpdateSavedApplicationRequest,
-} from "../types/SavedApplication";
-import Modal from "./Modal";
+} from "../../types/SavedApplication";
+import Modal from "../public/Modal";
 import { Calendar } from "primereact/calendar";
 import {
   deleteSavedApplication,
   updateSavedApplication,
-} from "../api/savedApplications";
+} from "../../api/savedApplications";
 import { Toast } from "primereact/toast";
-import Dialog from "./Dialog";
-import { getEmployeesLabel, getIndustryLabel } from "../utils/valuesToLabels";
+import Dialog from "../public/Dialog";
+import {
+  getEmployeesLabel,
+  getIndustryLabel,
+} from "../../utils/valuesToLabels";
 import { LuLayers, LuUsers } from "react-icons/lu";
 
 const defaultLogo = "/assets/defaultLogo.png";

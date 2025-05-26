@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
-import SearchBar from "../components/SearchBar";
-import DataGrid from "../components/DataGrid";
-import AlumniTile from "../components/AlumniTile";
+import SearchBar from "../components/public/SearchBar";
+import DataGrid from "../components/public/DataGrid";
+import AlumniTile from "../components/connect/AlumniTile";
 import { getAlumni } from "../api/users";
 import { Alumni } from "../types/User";
 import { PaginatedData } from "../types/PaginatedData";

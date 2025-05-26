@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { PaginatedData } from "../types/PaginatedData";
+import { PaginatedData } from "../../types/PaginatedData";
 import Paginator, { UsePagination } from "./Paginator";
-import { ColumnDef } from "../types/ColumnDef";
+import { ColumnDef } from "../../types/ColumnDef";
 import { ProgressSpinner } from "primereact/progressspinner";
 
 interface TableStyle {

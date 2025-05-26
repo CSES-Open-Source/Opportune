@@ -1,46 +1,50 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { Tip } from "../types/Tip";
-import Modal from "./Modal";
-import { useAuth } from "../contexts/useAuth";
+import {
+  InterviewQuestion,
+  UpdateInterviewQuestionRequest,
+} from "../../types/InterviewQuestion";
+import Modal from "../public/Modal";
+import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
-import { Editor } from "primereact/editor";
-import { deleteTip, updateTip } from "../api/tips";
-import Dialog from "./Dialog";
+import {
+  deleteInterviewQuestion,
+  updateInterviewQuestion,
+} from "../../api/interviewQuestions";
+import Dialog from "../public/Dialog";
 
-interface TipModalProps {
-  tip: Tip;
+interface InterviewQuestionModalProps {
+  interviewQuestion: InterviewQuestion;
   isOpen: boolean;
   onClose: () => void;
-  onUpdateTip: () => void;
-  setTip:
-    | Dispatch<SetStateAction<Tip>>
-    | Dispatch<SetStateAction<Tip | undefined>>;
+  onUpdateInterviewQuestion: () => void;
+  setInterviewQuestion:
+    | Dispatch<SetStateAction<InterviewQuestion>>
+    | Dispatch<SetStateAction<InterviewQuestion | undefined>>;
 }
 
-const TipModal = ({
-  tip,
+const InterviewQuestionModal = ({
+  interviewQuestion,
   isOpen,
   onClose,
-  onUpdateTip,
-  setTip,
-}: TipModalProps) => {
+  onUpdateInterviewQuestion,
+  setInterviewQuestion,
+}: InterviewQuestionModalProps) => {
   const { user } = useAuth();
 
   const toast = useRef<Toast>(null);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [newText, setNewText] = useState<string>("");
+  const [newQuestion, setNewQuestion] = useState<string>();
   const [isValid, setIsValid] = useState(true);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
-    // Check if text has meaningful content (not just HTML tags or whitespace)
-    const textContent = newText.replace(/<[^>]*>/g, "").trim();
-    setIsValid(textContent.length > 0);
-  }, [newText]);
+    setIsValid(newQuestion !== "");
+  }, [newQuestion]);
 
   const resetStates = () => {
-    setNewText("");
+    setNewQuestion("");
     setIsValid(true);
     setIsEditing(false);
   };
@@ -51,29 +55,29 @@ const TipModal = ({
   };
 
   const handleEdit = () => {
-    setNewText(tip.text);
+    setNewQuestion(interviewQuestion.question);
     setIsValid(true);
     setIsEditing(true);
   };
 
   const onDelete = () => {
-    deleteTip(tip._id)
+    deleteInterviewQuestion(interviewQuestion._id)
       .then((response) => {
         if (response.success) {
           toast.current?.show({
             severity: "success",
             summary: "Success",
-            detail: "Tip was successfully deleted",
+            detail: "Interview question was successfully deleteed",
           });
 
-          onUpdateTip();
+          onUpdateInterviewQuestion();
           resetStates();
           onClose();
         } else {
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to delete tip: " + response.error,
+            detail: "Failed to delete interview question: " + response.error,
           });
         }
       })
@@ -81,7 +85,8 @@ const TipModal = ({
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail: "Failed to delete tip: " + (error as Error).message,
+          detail:
+            "Failed to update interview question: " + (error as Error).message,
         });
       });
   };
@@ -95,27 +100,26 @@ const TipModal = ({
   };
 
   const handleSave = () => {
-    const updatedTip = {
-      text: newText,
+    const updatedInterviewQuestion: UpdateInterviewQuestionRequest = {
+      question: newQuestion,
     };
-
-    updateTip(tip._id, updatedTip)
+    updateInterviewQuestion(interviewQuestion._id, updatedInterviewQuestion)
       .then((response) => {
         if (response.success) {
-          onUpdateTip();
-          setTip(response.data);
+          onUpdateInterviewQuestion();
+          setInterviewQuestion(response.data);
           resetStates();
 
           toast.current?.show({
             severity: "success",
             summary: "Success",
-            detail: "Tip was updated successfully",
+            detail: "Interview question was updated successfully",
           });
         } else {
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to update tip: " + response.error,
+            detail: "Failed to update interview question: " + response.error,
           });
         }
       })
@@ -123,61 +127,39 @@ const TipModal = ({
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail: "Failed to update tip: " + (error as Error).message,
+          detail:
+            "Failed to update interview question: " + (error as Error).message,
         });
       });
   };
-
-  // Editor header configuration
-  const editorHeader = (
-    <span className="ql-formats">
-      <button className="ql-bold" aria-label="Bold"></button>
-      <button className="ql-italic" aria-label="Italic"></button>
-      <button className="ql-underline" aria-label="Underline"></button>
-      <button
-        className="ql-list"
-        value="ordered"
-        aria-label="Ordered List"
-      ></button>
-      <button
-        className="ql-list"
-        value="bullet"
-        aria-label="Bullet List"
-      ></button>
-      <button className="ql-link" aria-label="Insert Link"></button>
-      <button className="ql-code-block" aria-label="Code Block"></button>
-    </span>
-  );
 
   return (
     <div>
       <Modal
         isOpen={isOpen}
         onClose={handleCloseModal}
-        className="w-[70vh] rounded-xl flex flex-col px-10 py-8"
+        className="w-[60vh] rounded-xl flex flex-col px-10 py-8"
         useOverlay
       >
         {isEditing ? (
           // Edit mode
           <div className="flex flex-col">
-            <h2 className="text-2xl font-bold mb-4">Edit Tip</h2>
+            <h2 className="text-2xl font-bold mb-4">Edit Interview Question</h2>
 
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tip Content
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Question
               </label>
-              <div
-                className={`border-2 rounded-md ${
-                  !isValid ? "border-red-600" : "border-gray-300"
+              <textarea
+                value={newQuestion}
+                onChange={(event) => setNewQuestion(event.target.value)}
+                placeholder="Add question"
+                className={`w-full p-2 border-2 rounded-md ${
+                  newQuestion !== ""
+                    ? "focus:outline-blue-600"
+                    : "outline-red-600 border-red-600"
                 }`}
-              >
-                <Editor
-                  value={newText}
-                  onTextChange={(e) => setNewText(e.htmlValue || "")}
-                  style={{ height: "250px" }}
-                  headerTemplate={editorHeader}
-                />
-              </div>
+              />
             </div>
 
             <div className="flex justify-end space-x-3">
@@ -204,17 +186,19 @@ const TipModal = ({
           // View mode
           <div className="flex flex-col">
             <div className="flex justify-between items-start mb-6">
-              <h2 className="text-2xl font-bold">Company Tip</h2>
+              <h2 className="text-2xl font-bold">
+                {interviewQuestion.question}
+              </h2>
             </div>
 
-            <div className="mb-6 border rounded-md p-4 bg-gray-50">
-              <Editor
-                readOnly={true}
-                showHeader={false}
-                value={tip.text}
-                style={{ height: "200px" }}
-                theme="bubble"
-              />
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div>
+                <p className="text-gray-500 text-sm mb-1">Date Added</p>
+                <p>
+                  {interviewQuestion.date?.toLocaleDateString() ||
+                    "Not Specified"}
+                </p>
+              </div>
             </div>
 
             <div className="mt-4 pt-4 border-t">
@@ -222,19 +206,21 @@ const TipModal = ({
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-full overflow-hidden">
                   <img
-                    src={tip.user.profilePicture}
+                    src={interviewQuestion.user.profilePicture}
                     alt="User profile"
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div>
-                  <p className="font-medium">{tip.user.name}</p>
-                  <p className="text-gray-500 text-sm">{tip.user.email}</p>
+                  <p className="font-medium">{interviewQuestion.user.name}</p>
+                  <p className="text-gray-500 text-sm">
+                    {interviewQuestion.user.email}
+                  </p>
                 </div>
               </div>
             </div>
 
-            {user?._id === tip.user._id && (
+            {user?._id === interviewQuestion.user._id && (
               <div className="flex mt-4 justify-end gap-4">
                 <button
                   onClick={handleEdit}
@@ -260,7 +246,7 @@ const TipModal = ({
           setIsDialogOpen(false);
         }}
         onDialogClose={() => setIsDialogOpen(false)}
-        text={"Are you sure you want to delete this tip?"}
+        text={"Are you sure you want to delete this interview question?"}
         type="warning"
       />
       <Toast ref={toast} />
@@ -268,4 +254,4 @@ const TipModal = ({
   );
 };
 
-export default TipModal;
+export default InterviewQuestionModal;

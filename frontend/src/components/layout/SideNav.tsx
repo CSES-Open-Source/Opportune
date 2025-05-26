@@ -3,12 +3,12 @@ import { navItems } from "../../constants/navItems";
 import { NavItem } from "../../types/NavItem";
 import { FiLogOut } from "react-icons/fi";
 import { useState } from "react";
-import Dialog from "../Dialog";
+import Dialog from "../public/Dialog";
 import { useAuth } from "../../contexts/useAuth";
 import { FcGoogle } from "react-icons/fc";
 import { requireLogin, roleGuard } from "../../constants/pathAccess";
 import { MdLockOutline } from "react-icons/md";
-// import { Tooltip } from "primereact/tooltip";
+import OpportuneLogo from "../public/OpportuneLogo";
 
 const SideNav = () => {
   const { user, isAuthenticated, login, logout } = useAuth();
@@ -34,7 +34,7 @@ const SideNav = () => {
     <div>
       <aside className="h-screen w-[300px] bg-white flex flex-col border-2 border-solid rounded-r-lg shadow-lg items-center">
         <div className="text-3xl font-bold h-20 w-full flex items-center p-4">
-          Opportune
+          <OpportuneLogo size="lg" variant="primary" />
         </div>
         <div className="w-full flex justify-center">
           <hr className="w-[80%]" />

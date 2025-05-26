@@ -4,17 +4,20 @@ import {
   ApplicationProcess,
   Status,
   UpdateApplicationRequest,
-} from "../types/Application";
-import Modal from "./Modal";
+} from "../../types/Application";
+import Modal from "../public/Modal";
 import { Timeline } from "primereact/timeline";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
-import { deleteApplication, updateApplication } from "../api/applications";
+import { deleteApplication, updateApplication } from "../../api/applications";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import { Toast } from "primereact/toast";
-import { statusColors } from "../constants/statusColors";
-import Dialog from "./Dialog";
-import { getEmployeesLabel, getIndustryLabel } from "../utils/valuesToLabels";
+import { statusColors } from "../../constants/statusColors";
+import Dialog from "../public/Dialog";
+import {
+  getEmployeesLabel,
+  getIndustryLabel,
+} from "../../utils/valuesToLabels";
 import { LuLayers, LuUsers } from "react-icons/lu";
 
 const defaultLogo = "/assets/defaultLogo.png";

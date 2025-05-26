@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alumni } from "../types/User";
+import { Alumni } from "../../types/User";
 import { LuMail, LuBuilding2, LuBriefcase } from "react-icons/lu";
 import AlumniProfileModal from "./AlumniProfileModal";
 

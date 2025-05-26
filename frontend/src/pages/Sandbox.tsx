@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import NewLeetcodeQuestionModal from "../components/NewLeetcodeQuestionModal";
+import NewLeetcodeQuestionModal from "../components/company/NewLeetcodeQuestionModal";
 import { useAuth } from "../contexts/useAuth";
 import { Difficulty, LeetcodeQuestion } from "../types/LeetcodeQuestion";
-import LeetcodeQuestionModal from "../components/LeetcodeQuestionModal";
+import LeetcodeQuestionModal from "../components/company/LeetcodeQuestionModal";
 import { User, UserType } from "../types/User";
 import { State } from "../types/Company";
 

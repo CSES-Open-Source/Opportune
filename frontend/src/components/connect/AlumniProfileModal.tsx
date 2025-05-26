@@ -1,6 +1,6 @@
 import React from "react";
-import Modal from "./Modal";
-import { Alumni } from "../types/User";
+import Modal from "../public/Modal";
+import { Alumni } from "../../types/User";
 import {
   LuMail,
   LuBriefcase,
@@ -10,7 +10,10 @@ import {
   LuLayers,
 } from "react-icons/lu";
 import { BsLinkedin } from "react-icons/bs";
-import { getEmployeesLabel, getIndustryLabel } from "../utils/valuesToLabels";
+import {
+  getEmployeesLabel,
+  getIndustryLabel,
+} from "../../utils/valuesToLabels";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
