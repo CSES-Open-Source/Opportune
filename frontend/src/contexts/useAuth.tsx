@@ -138,7 +138,19 @@ export const AuthProvider: React.FC<{ children?: React.ReactNode }> = ({
     setIsLoading(true);
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+
+      provider.setCustomParameters({
+        hd: "ucsd.edu",
+      });
+
+      await signInWithPopup(auth, provider).then((result) => {
+        const email = result.user.email;
+        if (!email?.endsWith("@ucsd.edu")) {
+          setError("Must sign in with UCSD account.");
+          auth.signOut();
+        }
+      });
+
       // The auth state listener will handle the rest
     } catch (err: unknown) {
       if (err instanceof FirebaseError) {
