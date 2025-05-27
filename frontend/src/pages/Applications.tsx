@@ -11,6 +11,8 @@ import { useAuth } from "../contexts/useAuth";
 import NewApplicationModal from "../components/application/NewApplicationModal";
 import ApplicationModal from "../components/application/ApplicationModal";
 
+const defaultLogo = "/assets/defaultLogo.png";
+
 const applicationColumns: ColumnDef<Application>[] = [
   {
     header: "Company",
@@ -26,7 +28,12 @@ const applicationColumns: ColumnDef<Application>[] = [
               ]
             }`}
           />
-          {row.company.name}
+          <img
+            src={row.company.logo || defaultLogo}
+            alt="Company Logo"
+            className="w-8 h-8 mr-2 p-1 rounded-md flex-shrink-0 object-contain"
+          />
+          <span className="min-w-0 flex-1 pr-2">{row.company.name}</span>
         </div>
       );
     },

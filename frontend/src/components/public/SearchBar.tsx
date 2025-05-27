@@ -179,7 +179,7 @@ const SearchBar = <T extends Record<string, unknown>>({
         </div>
         <button
           type="submit"
-          className="px-4 py-2 text-black bg-accent-blue rounded-md hover:opacity-90 font-medium"
+          className="px-4 py-2 text-white bg-primary rounded-md hover:opacity-90 font-medium"
         >
           Search
         </button>

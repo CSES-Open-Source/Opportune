@@ -238,6 +238,12 @@ export const getSavedApplicationsByUserID = asyncHandler(
       { $limit: perPage },
     ]).exec();
 
+    for (const application of applications) {
+      // TODO: Temporary solution, using aggregate queries bypass mongoose and therefore doesnt have virtuals
+      const company = await Company.findById(application.company._id);
+      application.company = company?.toJSON();
+    }
+
     // Count total results
     const countResults = await SavedApplication.aggregate([
       ...pipeline,

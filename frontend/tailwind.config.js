@@ -4,7 +4,7 @@ const tailwindConfig = {
   theme: {
     extend: {
       colors: {
-        primary: "#00629B",
+        primary: "#2563EB",
         background: "#FBFBFB",
         accent: {
           pink: "#D462AD",
