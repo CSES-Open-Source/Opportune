@@ -170,9 +170,7 @@ const NewSavedApplicationModal = ({
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <FaUser
                     size={22}
-                    className={`${
-                      position ? "text-[#0077B5]" : "text-gray-300"
-                    }`}
+                    className={`${position ? "text-primary" : "text-gray-300"}`}
                   />
                 </div>
                 <input
@@ -196,9 +194,7 @@ const NewSavedApplicationModal = ({
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <FaLocationDot
                     size={22}
-                    className={`${
-                      location ? "text-[#0077B5]" : "text-gray-300"
-                    }`}
+                    className={`${location ? "text-primary" : "text-gray-300"}`}
                   />
                 </div>
                 <input
@@ -222,7 +218,7 @@ const NewSavedApplicationModal = ({
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <FaLink
                     size={22}
-                    className={`${link ? "text-[#0077B5]" : "text-gray-300"}`}
+                    className={`${link ? "text-primary" : "text-gray-300"}`}
                   />
                 </div>
                 <input
@@ -252,7 +248,7 @@ const NewSavedApplicationModal = ({
                     size={22}
                     className={`${
                       materialsNeeded.length > 0
-                        ? "text-[#0077B5]"
+                        ? "text-primary"
                         : "text-gray-300"
                     }`}
                   />
@@ -308,9 +304,7 @@ const NewSavedApplicationModal = ({
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none z-10">
                   <FaCalendarAlt
                     size={22}
-                    className={`${
-                      deadline ? "text-[#0077B5]" : "text-gray-300"
-                    }`}
+                    className={`${deadline ? "text-primary" : "text-gray-300"}`}
                   />
                 </div>
                 <Calendar
