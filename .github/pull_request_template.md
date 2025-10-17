@@ -1,17 +1,30 @@
-## Changes
+## Summary
 
-What changes did you make? Include screenshots if applicable, or explain how to view the changes.
+Describe the purpose of this pull request. What does it do, and why is it needed?
 
-- TODO
+Closes #(issue number) if applicable.
+
+---
+
+## Changes Made
+- [ ] Added a new feature
+- [ ] Updated existing functionality
+- [ ] Improved documentation
+- [ ] Refactored internal code
+- [ ] Fixed a bug
+
+Briefly summarize the major changes:
+
+-  
+-  
+-
+
+---
 
 ## Testing
 
-How did you confirm your changes work? (Automated tests, manual verification, etc.)
+How was this change tested?
 
-- TODO
-
-## Tracking
-
-Add your issue number below.
-
-Resolves #
+- [ ] Manual end-to-end testing
+- [ ] Unit Tests
+- [ ] CI checks passed
