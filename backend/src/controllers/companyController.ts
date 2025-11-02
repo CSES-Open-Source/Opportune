@@ -1,9 +1,9 @@
-import s3Upload from "src/aws/s3Upload";
-import Company from "src/models/Company";
+import s3Upload from "../aws/s3Upload";
+import Company from "../models/Company";
 import { matchedData, validationResult } from "express-validator";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
-import validationErrorParser from "src/util/validationErrorParser";
+import validationErrorParser from "../util/validationErrorParser";
 
 // @desc Get companies matching the query
 // @route GET /api/companies

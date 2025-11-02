@@ -1,11 +1,11 @@
-import InterviewQuestion from "src/models/InterviewQuestion";
+import InterviewQuestion from "../models/InterviewQuestion";
 import { matchedData, validationResult } from "express-validator";
-import validationErrorParser from "src/util/validationErrorParser";
+import validationErrorParser from "../util/validationErrorParser";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
-import Company from "src/models/Company";
+import Company from "../models/Company";
 import mongoose from "mongoose";
-import User from "src/models/User";
+import User from "../models/User";
 
 // Interface for creating/updating an interview question
 interface InterviewQuestionCreate {

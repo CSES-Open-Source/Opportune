@@ -1,12 +1,12 @@
-import LeetcodeQuestion from "src/models/LeetcodeQuestion";
-import { Difficulty } from "src/models/LeetcodeQuestion";
+import LeetcodeQuestion from "../models/LeetcodeQuestion";
+import { Difficulty } from "../models/LeetcodeQuestion";
 import asyncHandler from "express-async-handler";
 import { matchedData, validationResult } from "express-validator";
-import validationErrorParser from "src/util/validationErrorParser";
+import validationErrorParser from "../util/validationErrorParser";
 import createHttpError from "http-errors";
-import Company from "src/models/Company";
+import Company from "../models/Company";
 import mongoose from "mongoose";
-import User from "src/models/User";
+import User from "../models/User";
 
 // interface for creating/updating leetcodeQuestions
 interface leetcodeQuestionCreate {

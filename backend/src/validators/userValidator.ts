@@ -1,5 +1,5 @@
 import { body, param, query } from "express-validator";
-import { UserType } from "src/models/User";
+import { UserType } from "../models/User";
 
 // Default values for page and perPage
 const DEFAULT_PAGE = 0;

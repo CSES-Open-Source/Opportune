@@ -1,9 +1,9 @@
-import SavedApplication from "src/models/SavedApplication";
+import SavedApplication from "../models/SavedApplication";
 import { matchedData, validationResult } from "express-validator";
-import validationErrorParser from "src/util/validationErrorParser";
+import validationErrorParser from "../util/validationErrorParser";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
-import Company from "src/models/Company";
+import Company from "../models/Company";
 import mongoose, { PipelineStage } from "mongoose";
 
 // Interface for creating/updating a saved application

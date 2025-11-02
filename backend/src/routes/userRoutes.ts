@@ -1,7 +1,7 @@
 import express from "express";
-import * as userController from "src/controllers/userController";
-import preprocessCompany from "src/middlewares/preprocessCompany";
-import * as userValidator from "src/validators/userValidator";
+import * as userController from "../controllers/userController";
+import preprocessCompany from "../middlewares/preprocessCompany";
+import * as userValidator from "../validators/userValidator";
 
 const userRouter = express.Router();
 

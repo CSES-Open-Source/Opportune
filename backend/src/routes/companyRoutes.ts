@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
-import * as companyController from "src/controllers/companyController";
-import * as companyValidator from "src/validators/companyValidator";
+import * as companyController from "../controllers/companyController";
+import * as companyValidator from "../validators/companyValidator";
 
 const companyRouter = express.Router();
 const storage = multer.memoryStorage();

@@ -1,5 +1,5 @@
 import { S3Client } from "@aws-sdk/client-s3";
-import env from "src/util/validateEnv";
+import env from "../util/validateEnv";
 
 // Create an S3 client instance with configuration
 const s3 = new S3Client({

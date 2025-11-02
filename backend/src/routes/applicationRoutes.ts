@@ -1,7 +1,7 @@
 import express from "express";
-import * as applicationController from "src/controllers/applicationController";
-import preprocessCompany from "src/middlewares/preprocessCompany";
-import * as applicationValidator from "src/validators/applicationValidator";
+import * as applicationController from "../controllers/applicationController";
+import preprocessCompany from "../middlewares/preprocessCompany";
+import * as applicationValidator from "../validators/applicationValidator";
 const applicationRouter = express.Router();
 
 applicationRouter.get("/", applicationController.getAllApplications);

@@ -1,7 +1,7 @@
 import express from "express";
-import * as interviewQuestionController from "src/controllers/InterviewQuestionController";
-import * as interviewQuestionValidator from "src/validators/interviewQuestionValidator";
-import preprocessCompany from "src/middlewares/preprocessCompany";
+import * as interviewQuestionController from "../controllers/InterviewQuestionController";
+import * as interviewQuestionValidator from "../validators/interviewQuestionValidator";
+import preprocessCompany from "../middlewares/preprocessCompany";
 
 const interviewQuestionRouter = express.Router();
 

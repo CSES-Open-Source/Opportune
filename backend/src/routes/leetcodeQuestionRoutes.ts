@@ -1,7 +1,7 @@
 import express from "express";
-import * as leetcodeQuestionController from "src/controllers/leetcodeQuestionController";
-import * as leetcodeQuestionValidator from "src/validators/leetcodeQuestionValidator";
-import preprocessCompany from "src/middlewares/preprocessCompany";
+import * as leetcodeQuestionController from "../controllers/leetcodeQuestionController";
+import * as leetcodeQuestionValidator from "../validators/leetcodeQuestionValidator";
+import preprocessCompany from "../middlewares/preprocessCompany";
 
 const leetcodeQuestionRouter = express.Router();
 

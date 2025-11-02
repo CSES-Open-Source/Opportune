@@ -1,5 +1,5 @@
 import { body, param, query } from "express-validator";
-import { NumEmployees } from "src/models/Company";
+import { NumEmployees } from "../models/Company";
 
 // Default values for page and perPage
 const DEFAULT_PAGE = 0;

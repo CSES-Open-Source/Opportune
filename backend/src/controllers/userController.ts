@@ -1,9 +1,9 @@
-import User, { UserType } from "src/models/User";
+import User, { UserType } from "../models/User";
 import { matchedData, validationResult } from "express-validator";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
-import validationErrorParser from "src/util/validationErrorParser";
-import Company from "src/models/Company";
+import validationErrorParser from "../util/validationErrorParser";
+import Company from "../models/Company";
 import mongoose from "mongoose";
 
 interface BaseUserResponse {

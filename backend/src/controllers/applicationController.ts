@@ -1,13 +1,13 @@
 import Application, {
   ApplicationStatus,
   SortingOptions,
-} from "src/models/Application";
-import { Status } from "src/models/Application";
+} from "../models/Application";
+import { Status } from "../models/Application";
 import { matchedData, validationResult } from "express-validator";
-import validationErrorParser from "src/util/validationErrorParser";
+import validationErrorParser from "../util/validationErrorParser";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
-import Company from "src/models/Company";
+import Company from "../models/Company";
 import mongoose, { PipelineStage } from "mongoose";
 
 // Interface for creating/updating an application

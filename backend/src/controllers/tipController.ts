@@ -1,11 +1,11 @@
-import Tip from "src/models/Tips";
+import Tip from "../models/Tips";
 import { matchedData, validationResult } from "express-validator";
-import validationErrorParser from "src/util/validationErrorParser";
+import validationErrorParser from "../util/validationErrorParser";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import { Schema } from "mongoose";
-import Company from "src/models/Company";
-import User from "src/models/User";
+import Company from "../models/Company";
+import User from "../models/User";
 
 // Interface for creating/updating a tip
 interface TipCreate {

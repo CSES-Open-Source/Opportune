@@ -1,6 +1,6 @@
 import express from "express";
-import * as articleController from "src/controllers/articleController";
-import * as articleValidator from "src/validators/articleValidator";
+import * as articleController from "../controllers/articleController";
+import * as articleValidator from "../validators/articleValidator";
 
 const articleRouter = express.Router();
 

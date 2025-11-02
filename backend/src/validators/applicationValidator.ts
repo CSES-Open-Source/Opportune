@@ -1,5 +1,5 @@
 import { body, param, query } from "express-validator";
-import { SortingOptions, Status } from "src/models/Application";
+import { SortingOptions, Status } from "../models/Application";
 
 // Default values for page and perPage
 const DEFAULT_PAGE = 0;

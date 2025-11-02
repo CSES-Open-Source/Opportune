@@ -1,5 +1,5 @@
 import { body, param, query } from "express-validator";
-import { Difficulty } from "src/models/LeetcodeQuestion";
+import { Difficulty } from "../models/LeetcodeQuestion";
 
 // Default values for page and perPage
 const DEFAULT_PAGE = 0;

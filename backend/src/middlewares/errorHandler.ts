@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { isHttpError } from "http-errors";
-import { logEvents } from "src/middlewares/logger";
+import { logEvents } from "../middlewares/logger";
 
 const errorHandler = (
   error: unknown,

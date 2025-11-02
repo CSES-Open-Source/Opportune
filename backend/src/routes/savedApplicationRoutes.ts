@@ -1,7 +1,7 @@
 import express from "express";
-import * as savedApplicationController from "src/controllers/savedApplicationController";
-import preprocessCompany from "src/middlewares/preprocessCompany";
-import * as savedApplicationValidator from "src/validators/savedApplicationValidator";
+import * as savedApplicationController from "../controllers/savedApplicationController";
+import preprocessCompany from "../middlewares/preprocessCompany";
+import * as savedApplicationValidator from "../validators/savedApplicationValidator";
 const savedApplicationRouter = express.Router();
 
 savedApplicationRouter.get(

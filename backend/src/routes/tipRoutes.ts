@@ -1,7 +1,7 @@
 import express from "express";
-import * as tipController from "src/controllers/tipController";
-import preprocessCompany from "src/middlewares/preprocessCompany";
-import * as tipValidator from "src/validators/tipValidator";
+import * as tipController from "../controllers/tipController";
+import preprocessCompany from "../middlewares/preprocessCompany";
+import * as tipValidator from "../validators/tipValidator";
 const tipRouter = express.Router();
 
 // Get all tips (mainly for testing)
