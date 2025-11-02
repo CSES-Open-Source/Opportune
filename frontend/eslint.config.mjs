@@ -4,6 +4,16 @@ import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
 
 export default [
+  {
+    ignores: [
+      "**/node_modules/**",
+      "**/build/**",
+      "**/dist/**",
+      "**/.next/**",
+      "**/out/**",
+      "**/coverage/**",
+    ],
+  },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
