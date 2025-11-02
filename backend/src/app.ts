@@ -1,16 +1,17 @@
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
-import userRouter from "src/routes/userRoutes";
-import companyRouter from "src/routes/companyRoutes";
-import applicationRouter from "src/routes/applicationRoutes";
-import savedApplicationRouter from "src/routes/savedApplicationRoutes";
-import leetcodeQuestionRouter from "src/routes/leetcodeQuestionRoutes";
-import interviewQuestionRouter from "src/routes/InterviewQuestionRoutes";
-import articleRouter from "src/routes/articleRoutes";
-import errorHandler from "src/middlewares/errorHandler";
-import { logger } from "src/middlewares/logger";
-import tipRouter from "../src/routes/tipRoutes";
+// Use relative paths so Vercel can statically analyze and compile these files
+import userRouter from "./routes/userRoutes";
+import companyRouter from "./routes/companyRoutes";
+import applicationRouter from "./routes/applicationRoutes";
+import savedApplicationRouter from "./routes/savedApplicationRoutes";
+import leetcodeQuestionRouter from "./routes/leetcodeQuestionRoutes";
+import interviewQuestionRouter from "./routes/InterviewQuestionRoutes";
+import articleRouter from "./routes/articleRoutes";
+import errorHandler from "./middlewares/errorHandler";
+import { logger } from "./middlewares/logger";
+import tipRouter from "./routes/tipRoutes";
 
 const app = express();
 
