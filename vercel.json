@@ -8,7 +8,13 @@
     "api/index.ts": {
       "includeFiles": "backend/**"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    }
+  ]
 }
 
 

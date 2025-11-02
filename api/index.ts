@@ -1,4 +1,4 @@
-// Vercel serverless function entry point
-// This file proxies to the backend Express app
+// @ts-nocheck
+// Vercel serverless function - handles ALL /api/* requests
 export { default } from "../backend/api/index";
 
