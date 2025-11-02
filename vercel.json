@@ -4,6 +4,11 @@
   "outputDirectory": "frontend/build",
   "installCommand": "cd backend && npm install",
   "framework": null,
+  "functions": {
+    "backend/api/index.ts": {
+      "includeFiles": "backend/src/**"
+    }
+  },
   "routes": [
     {
       "src": "/api/(.*)",
