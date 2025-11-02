@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import SearchBar from "../components/public/SearchBar";
-import DataGrid from "../components/public/DataGrid";
+import DataList from "../components/public/DataList";
 import AlumniTile from "../components/connect/AlumniTile";
 import { getAlumni } from "../api/users";
 import { Alumni } from "../types/User";
@@ -47,13 +47,14 @@ const Connect = () => {
   );
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-5xl h-screen mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-6">Alumni Directory</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Alumni Directory</h1>
+          <p className="text-gray-600">Connect with UCSD alumni working at your dream companies</p>
         </div>
-        <div className="bg-white border border-gray-300 shadow-sm rounded-lg px-8 py-5 mb-6">
-          <h1 className="text-2xl font-bold mb-6">Find Alumni</h1>
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
           <SearchBar<SearchBarData>
             selections={[
               {
@@ -65,17 +66,19 @@ const Connect = () => {
             onSubmitForm={setSearch}
           />
         </div>
-        {/* Alumni Grid */}
-        {/* Temporary Solution until we make the sidebar sticky */}
-        <div className="overflow-y-auto h-[70%]">
-          <DataGrid<Alumni>
-            TileComponent={AlumniTile}
-            cols={3}
-            maxRows={5}
-            useServerPagination
-            fetchData={getPaginatedOpenAlumni}
-            className="p-2"
-          />
+        {/* Alumni List */}
+        <div className="overflow-visible">
+          <div className="flex flex-col h-[75vh]">
+            <DataList<Alumni>
+              key={`${search.query}_${search.industry.join(',')}`}
+              fetchData={getPaginatedOpenAlumni}
+              useServerPagination
+              listStyle={{}}
+              listClassName="grid grid-cols-3 gap-4"
+              paginatorContent={{ setPerPage: true, goToPage: true }}
+              TileComponent={AlumniTile}
+            />
+          </div>
         </div>
       </div>
     </div>

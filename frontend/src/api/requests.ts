@@ -14,7 +14,8 @@ type Method = "GET" | "POST" | "PATCH" | "DELETE";
  * instead of "http://localhost:3001/api/foo".
  */
 const API_BASE_URL =
-  process.env.REACT_APP_BACKEND_URL || "http://localhost:3500";
+  process.env.REACT_APP_BACKEND_URL || 
+  (process.env.NODE_ENV === "production" ? "/api" : "http://localhost:3500");
 
 /**
  * A wrapper around the built-in `fetch()` function that abstracts away some of

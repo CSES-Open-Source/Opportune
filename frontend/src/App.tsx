@@ -10,6 +10,7 @@ import CompanyProfile from "./pages/Company";
 import Connect from "./pages/Connect";
 import Sandbox from "./pages/Sandbox";
 import Profile from "./pages/Profile";
+import Analytics from "./pages/Analytics";
 import AuthLayer from "./components/layout/AuthLayer";
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
               <Route path="saved" element={<SavedApplications />} />
             </Route>
             <Route path="profile" element={<Profile />} />
+            <Route path="analytics" element={<Analytics />} />
             <Route path="sandbox" element={<Sandbox />} />
           </Route>
           <Route path="*" element={<NotFound />} />

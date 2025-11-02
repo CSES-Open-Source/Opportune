@@ -2,6 +2,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.798.0",
     "@aws-sdk/s3-request-presigner": "^3.798.0",
+    "@vercel/node": "^5.3.26",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "envalid": "^7.3.1",

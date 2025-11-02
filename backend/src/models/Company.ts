@@ -97,4 +97,10 @@ companySchema.virtual("logo").get(function () {
   return null;
 });
 
+// Add indexes for better performance
+companySchema.index({ name: "text" }); // Company name search
+companySchema.index({ industry: 1 }); // Industry filtering
+companySchema.index({ state: 1 }); // State filtering
+companySchema.index({ employees: 1 }); // Employee count filtering
+
 export default model<Company>("Company", companySchema);

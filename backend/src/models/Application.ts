@@ -69,4 +69,10 @@ const applicationSchema = new Schema(
 export type ApplicationStatus = InferSchemaType<typeof applicationStatusSchema>;
 type Application = InferSchemaType<typeof applicationSchema>;
 
+// Add indexes for better performance
+applicationSchema.index({ userId: 1 }); // User's applications
+applicationSchema.index({ userId: 1, createdAt: -1 }); // User's recent applications
+applicationSchema.index({ company: 1 }); // Company filtering
+applicationSchema.index({ position: "text" }); // Position search
+
 export default model<Application>("Application", applicationSchema);

@@ -173,13 +173,13 @@ const SearchBar = <T extends Record<string, unknown>>({
             placeholder={placeholder}
             value={query}
             onChange={handleInputChange}
-            className="flex-1 p-2 text-base border-none outline-none"
+            className="flex-1 p-3 text-base border-none outline-none"
             name="query"
           />
         </div>
         <button
           type="submit"
-          className="px-4 py-2 text-white bg-primary rounded-md hover:opacity-90 font-medium"
+          className="px-4 py-3 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-base font-medium"
         >
           Search
         </button>
