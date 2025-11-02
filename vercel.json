@@ -5,20 +5,10 @@
   "installCommand": "cd backend && npm install",
   "framework": null,
   "functions": {
-    "backend/api/index.ts": {
-      "includeFiles": "backend/src/**"
+    "api/index.ts": {
+      "includeFiles": "backend/**"
     }
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/backend/api/index.ts"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
-    }
-  ]
+  }
 }
 
 
