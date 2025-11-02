@@ -37,6 +37,12 @@ const leetcodeQuestionSchema = new Schema({
 
 type LeetcodeQuestion = InferSchemaType<typeof leetcodeQuestionSchema>;
 
+// Add indexes for better performance
+leetcodeQuestionSchema.index({ difficulty: 1 }); // Difficulty filtering
+leetcodeQuestionSchema.index({ company: 1 }); // Company filtering
+leetcodeQuestionSchema.index({ user: 1 }); // User's questions
+leetcodeQuestionSchema.index({ title: "text" }); // Title search
+
 export default model<LeetcodeQuestion>(
   "LeetcodeQuestion",
   leetcodeQuestionSchema,

@@ -75,6 +75,12 @@ const userSchema = new Schema({
   },
 });
 
+// Add indexes for better performance
+userSchema.index({ type: 1, shareProfile: 1 }); // Alumni search
+userSchema.index({ company: 1 }); // Company filtering
+userSchema.index({ name: "text" }); // Name search
+userSchema.index({ position: "text" }); // Position search
+
 type User = InferSchemaType<typeof userSchema>;
 
 export default model<User>("User", userSchema);

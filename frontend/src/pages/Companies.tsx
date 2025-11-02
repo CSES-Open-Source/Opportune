@@ -78,49 +78,55 @@ const Companies: React.FC = () => {
   );
 
   return (
-    <div className="h-screen overflow-hidden bg-gray-50">
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Companies Directory</h1>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Companies Directory</h1>
+          <p className="text-gray-600">Browse top tech companies and get insider insights</p>
+        </div>
 
-        <div className="bg-white rounded-2xl shadow p-6 mb-8 flex items-center space-x-4">
-          <div className="relative flex-1">
-            <FaSearch className="absolute left-4 top-1/2 -mt-2 text-gray-400 w-5 h-5 pointer-events-none" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search companies..."
-              className="w-full border border-gray-300 rounded-full py-2 pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-            />
-          </div>
-
-          <button
-            onClick={() => setCompanyModalOpen(true)}
-            className="inline-flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
-          >
-            <span className="hidden sm:inline mr-1">Add</span>
-            <svg
-              className="w-3 h-3"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center border border-gray-300 rounded-md flex-1">
+              <FaSearch className="ml-3 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search companies..."
+                className="flex-1 p-3 text-base border-none outline-none"
               />
-            </svg>
-          </button>
+            </div>
 
-          <button
-            onClick={() => setShowFilters(true)}
-            className="inline-flex items-center justify-center px-3 py-2 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition"
-          >
-            <span className="hidden sm:inline mr-1">Sort by</span>
-            <FaChevronDown className="w-3 h-3" />
-          </button>
+            <button
+              onClick={() => setCompanyModalOpen(true)}
+              className="inline-flex items-center justify-center px-4 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-base"
+            >
+              <span className="mr-2">Add</span>
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
+
+            <button
+              onClick={() => setShowFilters(true)}
+              className="inline-flex items-center justify-center px-4 py-3 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition text-base"
+            >
+              <span className="mr-2">Sort by</span>
+              <FaChevronDown className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* filter modal */}

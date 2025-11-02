@@ -38,6 +38,11 @@ const Paginator = ({
 }: PaginatorProps) => {
   const totalPages = Math.ceil(totalItems / perPage);
 
+  // Don't show pagination if there are no items
+  if (totalItems === 0) {
+    return null;
+  }
+
   return (
     <div className="relative mt-4 flex justify-center items-center gap-6">
       {paginatorContent.setPerPage && (

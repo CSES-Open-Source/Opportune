@@ -14,7 +14,8 @@ type Method = "GET" | "POST" | "PATCH" | "DELETE";
  * instead of "http://localhost:3001/api/foo".
  */
 const API_BASE_URL =
-  import.meta.env.VITE_BACKEND_URL || "http://localhost:5173";
+  import.meta.env.VITE_BACKEND_URL ||
+  (import.meta.env.PROD ? "/api" : "http://localhost:3500");
 
 /**
  * A wrapper around the built-in `fetch()` function that abstracts away some of

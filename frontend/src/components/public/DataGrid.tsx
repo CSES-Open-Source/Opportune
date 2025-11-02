@@ -17,7 +17,7 @@ interface BaseDataGridProps<T> {
   TileComponent: React.ComponentType<{ data: T }>;
   onTileClicked?: (row: T) => void; // event emitter for item click
   cols: number; // Number of columns in the grid
-  maxRows: number; // Maximum number of rows to display
+  maxRows?: number; // Maximum number of rows to display
   gridStyle?: GridStyle;
   className?: string;
   useServerPagination?: boolean;
@@ -67,7 +67,7 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
 
   const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState<number>(0);
-  const [perPage, setPerPage] = useState<number>(maxRows * cols);
+  const [perPage, setPerPage] = useState<number>(maxRows ? maxRows * cols : 9);
   const [totalItems, setTotalItems] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -138,7 +138,7 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
       className={`flex flex-col h-full overflow-hidden ${className}`}
     >
       {/* Grid container */}
-      <div className="flex-1 overflow-y-auto">
+      <div className={useServerPagination ? "flex-1" : "flex-1 overflow-y-auto"}>
         <div
           className="grid"
           style={{
@@ -160,7 +160,7 @@ const DataGrid = <T extends object>(props: DataGridProps<T>) => {
 
       {/* Pagination Controls */}
       {(useServerPagination || props.usePagination) && (
-        <div>
+        <div className="mt-4">
           <Paginator
             page={page}
             perPage={perPage}

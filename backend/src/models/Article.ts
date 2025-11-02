@@ -23,6 +23,11 @@ const articleSchema = new Schema(
   },
 );
 
+// Add indexes for better performance
+articleSchema.index({ title: "text", content: "text" }); // Text search
+articleSchema.index({ userId: 1 }); // User's articles
+articleSchema.index({ createdAt: -1 }); // Recent articles
+
 type Article = InferSchemaType<typeof articleSchema>;
 
 export default model<Article>("Article", articleSchema);

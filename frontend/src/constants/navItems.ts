@@ -7,6 +7,7 @@ import {
   FiCode,
   FiFileText,
   FiTerminal,
+  FiBarChart,
 } from "react-icons/fi";
 import { NavItem } from "../types/NavItem";
 
@@ -35,6 +36,11 @@ export const navItems: NavItem[] = [
     label: "Saved Jobs",
     path: "/applications/saved",
     icon: FiBookmark,
+  },
+  {
+    label: "Analytics",
+    path: "/analytics",
+    icon: FiBarChart,
   },
   {
     label: "Interview",

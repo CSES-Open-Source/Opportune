@@ -11,7 +11,12 @@ module.exports = {
     project: "./tsconfig.json",
     tsconfigRootDir: __dirname,
   },
-  ignorePatterns: [".eslintrc.cjs"],
+  ignorePatterns: [
+    ".eslintrc.cjs",
+    "seed-companies.js",
+    "seed-companies.ts",
+    "seed-alumni.ts",
+  ],
   plugins: ["@typescript-eslint", "no-relative-import-paths"],
   rules: {
     "default-case": "off",
