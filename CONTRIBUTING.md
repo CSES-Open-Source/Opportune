@@ -182,6 +182,13 @@ By participating in this project, you agree to uphold the [Code of Conduct](CODE
    VITE_BACKEND_URL=http://localhost:3500
    ```
 5. Go back to the firebase console and select **Authentication** on the homepage, click **Set up a new sign in provider** and choose Google as the provider.
+6. To use seed data in your MongoDB database, run these commands:
+   ```bash
+   cd backend
+   npm install ts-node
+   ts-node seed-companies.ts
+   ts-node seed-alumni.ts
+   ```
 
 ### Running the Backend and Frontend
 
