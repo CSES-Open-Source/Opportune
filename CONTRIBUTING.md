@@ -54,11 +54,11 @@ By participating in this project, you agree to uphold the [Code of Conduct](CODE
    This should output the version of nvm you installed.
 3. Install **Node.js v18.20.4**:
    ```bash
-   nvm install v18.20.4**
+   nvm install v24.11.0**
    ```
 4. Switch to the installed version:
    ```bash
-   nvm use v18.20.4**
+   nvm use v24.11.0**
    ```
 5. Run:
    ```bash
@@ -67,8 +67,8 @@ By participating in this project, you agree to uphold the [Code of Conduct](CODE
    ```
    The results should be something like:
    ```bash
-   v18.20.4
-   10.7.0
+   v24.11.0
+   11.2.0
    ```
 
 ### Setting Up the Local Repository
@@ -127,7 +127,7 @@ By participating in this project, you agree to uphold the [Code of Conduct](CODE
    ```
    MONGODB_URI=[link-copied-from-mongodb]
    PORT=3500
-   FRONTEND_ORIGIN=http://localhost:3000
+   FRONTEND_ORIGIN=http://localhost:5173
    ```
    Make sure to fill in the `<db_password>` field with the password of your account.
 
@@ -137,6 +137,7 @@ By participating in this project, you agree to uphold the [Code of Conduct](CODE
 2. Search for S3 in the search bar and **create a new bucket**.
 3. Then search for IAM in the search bar and create a new user (feel free to name it anything you like), make sure to give the user the **AmazonS3FullAccess** policy. This allows the users to have access to your S3 bucket.
 4. Then, go to the permissions tab of your bucket and disable "block all public access", and then paste the following into a new bucket policy:
+
    ```
    {
        "Version": "2012-10-17",
@@ -151,11 +152,12 @@ By participating in this project, you agree to uphold the [Code of Conduct](CODE
        ]
    }
    ```
+
    In the end this should look something like the following:
    ![image](https://github.com/user-attachments/assets/4dadb3c1-6135-4305-addb-843fb840ad37)
 
-6. For the user created, **add a new access key**. Make sure to keep this page open so that we can copy the Access Key.
-7. Then go to the `.env` file under the `backend` folder again and add the following to the file:
+5. For the user created, **add a new access key**. Make sure to keep this page open so that we can copy the Access Key.
+6. Then go to the `.env` file under the `backend` folder again and add the following to the file:
    ```
    AWS_ACCESS_KEY_ID=[access-key-id]
    AWS_SECRET_ACCESS_KEY=[secret-access-key]
@@ -171,12 +173,13 @@ By participating in this project, you agree to uphold the [Code of Conduct](CODE
 3. Go to the **Get started** portion of the page and add a new **web app** to the project.
 4. After adding an app to the project, you will see your secrets. Create a new file in the local repo under the `frontend` folder called `.env` and add the following to the file:
    ```
-   REACT_APP_FIREBASE_API_KEY=[api-key]
-   REACT_APP_FIREBASE_AUTH_DOMAIN=[auth-domain]
-   REACT_APP_FIREBASE_PROJECT_ID=[project-id]
-   REACT_APP_FIREBASE_STORAGE_BUCKET=[storage-bucket]
-   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=[messaging-sender-id]
-   REACT_APP_FIREBASE_APP_ID=[app-id]
+   VITE_FIREBASE_API_KEY=[api-key]
+   VITE_FIREBASE_AUTH_DOMAIN=[auth-domain]
+   VITE_FIREBASE_PROJECT_ID=[project-id]
+   VITE_FIREBASE_STORAGE_BUCKET=[storage-bucket]
+   VITE_FIREBASE_MESSAGING_SENDER_ID=[messaging-sender-id]
+   VITE_FIREBASE_APP_ID=[app-id]
+   VITE_BACKEND_URL=http://localhost:3500
    ```
 5. Go back to the firebase console and select **Authentication** on the homepage, click **Set up a new sign in provider** and choose Google as the provider.
 
