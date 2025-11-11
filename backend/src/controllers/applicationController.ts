@@ -359,27 +359,38 @@ export const getApplicationDetails = asyncHandler(async (req, res, next) => {
     return next(createHttpError(400, validationErrorParser(errors)));
   }
 
-  const { userId } = matchedData(req, { locations: ["params"] }) as { userId: string };
+  const { userId } = matchedData(req, { locations: ["params"] }) as {
+    userId: string;
+  };
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return next(createHttpError(400, "Invalid user ID format"));
   }
 
-  // Find all applications for the user
-  const applications = await Application.find({ userId })
-    .populate({ path: "company", model: Company })
-    .exec();
+  const total = await Application.countDocuments({ userId });
+  const offers = await Application.countDocuments({
+    userId,
+    "process.status": "OFFER",
+  });
+  const applied = await Application.countDocuments({
+    userId,
+    "process.status": "APPLIED",
+  });
+  const interviews = await Application.countDocuments({
+    userId,
+    "process.status": { $in: ["PHONE", "FINAL", "OA"] },
+  });
 
-  if (!applications || applications.length === 0) {
-    return next(createHttpError(404, "No applications found for this user."));
-  }
+  const rejected = await Application.countDocuments({
+    userId,
+    "process.status": "REJECTED",
+  });
 
-  // Sort process dates for each application
-  applications.forEach((app) =>
-    app.process.sort(
-      (a: ApplicationStatus, b: ApplicationStatus) => a.date.getTime() - b.date.getTime(),
-    ),
-  );
-
-  res.status(200).json(applications);
+  res.status(200).json({
+    total: total,
+    applied: applied,
+    interview: interviews,
+    offer: offers,
+    rejected: rejected,
+  });
 });
