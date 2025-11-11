@@ -354,43 +354,49 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
 //  @throws {404} - If no applications found for user
 //  @throws {400} - If user ID is invalid
 export const getApplicationDetails = asyncHandler(async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(createHttpError(400, validationErrorParser(errors)));
-  }
 
   const { userId } = matchedData(req, { locations: ["params"] }) as {
     userId: string;
   };
 
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    return next(createHttpError(400, "Invalid user ID format"));
+  if (!userId || typeof userId !== "string") {
+    return next(createHttpError(400, "Missing or invalid user ID"));
   }
 
   const total = await Application.countDocuments({ userId });
-  const offers = await Application.countDocuments({
-    userId,
-    "process.status": "OFFER",
-  });
-  const applied = await Application.countDocuments({
-    userId,
-    "process.status": "APPLIED",
-  });
+  const offers = await Application.countDocuments({ userId, "process.status": "OFFER" });
   const interviews = await Application.countDocuments({
     userId,
-    "process.status": { $in: ["PHONE", "FINAL", "OA"] },
+    "process.status": { $in: ["PHONE", "FINAL", "OFFER"] },
   });
 
-  const rejected = await Application.countDocuments({
+  const thisYear = new Date(new Date().getFullYear(), 0, 1);
+  const thisYearCount = await Application.countDocuments({
     userId,
-    "process.status": "REJECTED",
+    createdAt: { $gte: thisYear },
   });
+
+  const statusBreakdown = await Application.aggregate([
+    { $match: { userId } },
+    { $unwind: "$process" },
+    { $group: { _id: "$process.status", count: { $sum: 1 } } },
+  ]);
+
+  const successRate = total ? ((offers / total) * 100).toFixed(2) : 0;
+  const interviewRate = total ? ((interviews / total) * 100).toFixed(2) : 0;
 
   res.status(200).json({
-    total: total,
-    applied: applied,
-    interview: interviews,
-    offer: offers,
-    rejected: rejected,
+    totalApplications: total,
+    successRate: `${successRate}%`,
+    interviewRate: `${interviewRate}%`,
+    offersReceived: offers,
+    applicationsThisYear: thisYearCount,
+    applicationStatus: statusBreakdown,
+    insights: {
+      tip:
+        Number(successRate) > 50
+          ? "Strong application performance — keep refining!"
+          : "Try improving resume or targeting better-fit roles.",
+    },
   });
 });
