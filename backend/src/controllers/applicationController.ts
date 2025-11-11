@@ -344,3 +344,42 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
     data: applications || [],
   });
 });
+
+//  @desc Get all applications for a specific user (simple version)
+//  @route GET /api/applications/by-user/:userId
+//  @access Private
+//
+//  @param {string} userId.path.required - User ID
+//  @returns {Application[]} 200 - Array of user's applications
+//  @throws {404} - If no applications found for user
+//  @throws {400} - If user ID is invalid
+export const getApplicationDetails = asyncHandler(async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(createHttpError(400, validationErrorParser(errors)));
+  }
+
+  const { userId } = matchedData(req, { locations: ["params"] }) as { userId: string };
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return next(createHttpError(400, "Invalid user ID format"));
+  }
+
+  // Find all applications for the user
+  const applications = await Application.find({ userId })
+    .populate({ path: "company", model: Company })
+    .exec();
+
+  if (!applications || applications.length === 0) {
+    return next(createHttpError(404, "No applications found for this user."));
+  }
+
+  // Sort process dates for each application
+  applications.forEach((app) =>
+    app.process.sort(
+      (a: ApplicationStatus, b: ApplicationStatus) => a.date.getTime() - b.date.getTime(),
+    ),
+  );
+
+  res.status(200).json(applications);
+});
