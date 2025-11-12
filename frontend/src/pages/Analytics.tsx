@@ -1,6 +1,39 @@
 import React, { useState, useEffect } from "react";
 import { FiTrendingUp, FiCalendar, FiTarget, FiCheckCircle } from "react-icons/fi";
 import { useAuth } from "../contexts/useAuth";
+import { ResponsiveContainer, Sankey, Tooltip } from 'recharts';
+
+/* 
+interface SankeyNode {
+  name: string;
+}
+
+interface SankeyLink {
+  source: number;
+  target: number;
+  value: number;
+}
+
+interface SankeyData {
+  nodes: SankeyNode[];
+  links: SankeyLink[];
+}
+*/
+
+interface SankeyTooltipEntry {
+  name?: string;
+  value?: number | string;
+  [key: string]: any;
+}
+
+interface CustomLinkProps {
+  sourceX: number;
+  sourceY: number;
+  targetX: number;
+  targetY: number;
+  color?: string;
+  [key: string]: any;
+}
 
 interface ApplicationStats {
   total: number;
@@ -27,6 +60,7 @@ const Analytics: React.FC = () => {
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
   const [loading, setLoading] = useState(true);
 
+
   // Mock data for now - replace with real API calls later
   useEffect(() => {
     if (isAuthenticated) {
@@ -39,7 +73,7 @@ const Analytics: React.FC = () => {
           offer: 2,
           rejected: 7,
         });
-        
+
         setMonthlyData([
           { month: "Jan", applications: 3 },
           { month: "Feb", applications: 5 },
@@ -47,11 +81,174 @@ const Analytics: React.FC = () => {
           { month: "Apr", applications: 6 },
           { month: "May", applications: 2 },
         ]);
-        
+
         setLoading(false);
       }, 1000);
     }
   }, [isAuthenticated]);
+
+  const data = {
+    nodes: [
+      { name: 'Applications', value: 50, info: 'Applications' }, // node 0
+      { name: 'Phone', value: 30, info: '1st Round' }, // node 1
+      { name: 'Final', value: 15, info: 'Final' }, // node 2
+      { name: 'Rejected', value: 22, info: 'Rejected' }, // node 3
+      { name: 'Ghosted', value: 29, info: 'Ghosted' }, // node 4
+      { name: 'Offer', value: 9, info: 'Offer' },
+      // node 5
+
+
+    ],
+    links: [
+      { source: 0, target: 3, value: 10, color: '#EF4444' },
+      { source: 0, target: 4, value: 20, color: '#EF4444' },
+      { source: 0, target: 1, value: 30, color: '#EAB308' },
+      { source: 1, target: 5, value: 4, color: '#22C55E' },
+      { source: 1, target: 3, value: 6, color: '#EF4444' },
+      { source: 1, target: 4, value: 5, color: '#EF4444' },
+      { source: 1, target: 2, value: 15, color: '#EAB308' },
+      { source: 2, target: 3, value: 6, color: '#EF4444' },
+      { source: 2, target: 4, value: 4, color: '#EF4444' },
+      { source: 2, target: 5, value: 5, color: '#22C55E' },
+    ],
+  };
+
+  const CustomNode = ({ x, y, width, height, payload, containerWidth, index }: any) => {
+    const fillings = [
+      { name: 'Applications', color: '#3b82f6' },
+      { name: 'Rejected', color: '#EF4444' },
+      { name: 'Ghosted', color: '#EF4444' },
+      { name: 'Phone', color: '#EAB308' },
+      { name: 'Final', color: '#EAB308' },
+      { name: 'Offer', color: '#22C55E' },
+
+    ];
+
+    const findFilling = fillings.findIndex(fillings => fillings.name === payload.name);
+    const filling = fillings[findFilling].color;
+
+    if (index === 0) {
+      return (
+        <g>
+          <rect x={x} y={y} width={width + 10} height={height} fill={filling} stroke="none" rx={4} />
+          <text
+            x={x + width + 15 + 35}
+            y={y + height / 2 - 25}
+            textAnchor="start"
+            alignmentBaseline="middle"
+            fontSize={26}
+            fontWeight="bold"
+            className="font-semibold text-gray-900"
+          >
+            {payload.value}
+          </text>
+          <text
+            x={x + width + 15}
+            y={y + height / 2}
+            textAnchor="start"
+            alignmentBaseline="middle"
+            fontSize={16}
+            fontWeight="bold"
+            className="text-lg font-semibold text-gray-900 mb-4"
+          >
+            {payload.name}
+          </text>
+        </g>
+      );
+    }
+
+    const isLeft = x < containerWidth / 2;
+    const textX = isLeft ? x + width + 6 : x - 6;
+    const textAnchor = isLeft ? "start" : "end";
+
+    return (
+      <g>
+        <rect x={x} y={y} width={width + 10} height={height} fill={filling} stroke="none" rx={4} />
+        <text
+          x={textX}
+          y={y + height / 2 - 25}
+          textAnchor={textAnchor}
+          alignmentBaseline="middle"
+          fontSize={26}
+          fontWeight="bold"
+          className="font-semibold text-gray-900"
+        >
+          {payload.value}
+        </text>
+        <text
+          x={textX}
+          y={y + height / 2}
+          textAnchor={textAnchor}
+          alignmentBaseline="middle"
+          fontSize={16}
+          fontWeight="bold"
+          className="font-semibold text-gray-900"
+        >
+          {payload.name}
+        </text>
+      </g>
+    );
+  }
+
+  const CustomLink = (props: any): React.ReactElement<React.SVGProps<SVGPathElement>> | null => {
+
+    const [hovered, setHovered] = useState(false);
+
+    const strokeWidth = props.linkWidth;
+    const strokeColor = props.payload.color;
+
+    const sx = props.sourceX;
+    const sy = props.sourceY;
+    const tx = props.targetX;
+    const ty = props.targetY;
+
+
+    const curvature = 0.5;
+    const cx1 = sx + (tx - sx) * curvature;
+    const cy1 = sy;
+    const cx2 = tx - (tx - sx) * curvature;
+    const cy2 = ty;
+    const curvedPath = `M${sx},${sy} C${cx1},${cy1} ${cx2},${cy2} ${tx},${ty}`;
+
+    return (
+      <path
+        d={curvedPath}
+        stroke={strokeColor}
+        strokeWidth={strokeWidth}
+        strokeOpacity={hovered ? 0.9 : 0.4}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        fill="none"
+      />
+    );
+
+  };
+
+  const CustomTooltip = (props: any) => {
+    return (
+      <div
+        style={{
+          background: "#fff",
+          border: "1px solid #eee",
+          borderRadius: "4px",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+          padding: "4px 10px",
+          color: "#222",
+          fontSize: "12px",
+          minWidth: 0,
+          maxWidth: 120,
+          lineHeight: 1.2,
+          pointerEvents: "none",
+        }}
+      >
+        {props.payload.map((entry: SankeyTooltipEntry, idx: number) => (
+          <div key={idx} style={{ marginBottom: idx }}>
+            <b>{entry.name}</b>: {entry.value}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   if (!isAuthenticated) {
     return (
@@ -184,8 +381,8 @@ const Analytics: React.FC = () => {
                   <div className="w-16 text-sm text-gray-600">{data.month}</div>
                   <div className="flex-1 mx-4">
                     <div className="bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-blue-500 h-2 rounded-full" 
+                      <div
+                        className="bg-blue-500 h-2 rounded-full"
                         style={{ width: `${(data.applications / 10) * 100}%` }}
                       ></div>
                     </div>
@@ -197,19 +394,35 @@ const Analytics: React.FC = () => {
           </div>
         </div>
 
+        {/*Sankey Chart Section*/}
+        <div style={{ width: "100%", height: 400 }}>
+          <ResponsiveContainer>
+            <Sankey
+              data={data}
+              node={<CustomNode />}
+              link={CustomLink as any}
+              linkCurvature={0.8}
+              nodePadding={30}
+              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+            >
+              <Tooltip content={CustomTooltip as any} />
+            </Sankey>
+          </ResponsiveContainer>
+        </div>
+
         {/* Insights Section */}
         <div className="mt-8 bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Insights & Recommendations</h3>
           <div className="space-y-4">
             <div className="p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Great progress!</strong> You&apos;ve applied to {stats.total} companies. 
+                <strong>Great progress!</strong> You&apos;ve applied to {stats.total} companies.
                 Your {interviewRate}% interview rate is above average for your field.
               </p>
             </div>
             <div className="p-4 bg-green-50 rounded-lg">
               <p className="text-sm text-green-800">
-                <strong>Success tip:</strong> Focus on companies where you&apos;ve received interviews. 
+                <strong>Success tip:</strong> Focus on companies where you&apos;ve received interviews.
                 Your conversion rate from interview to offer is {stats.interview > 0 ? Math.round((stats.offer / stats.interview) * 100) : 0}%.
               </p>
             </div>
