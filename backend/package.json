@@ -12,7 +12,7 @@
     "firebase": "^12.5.0",
     "http-errors": "^2.0.0",
     "module-alias": "^2.2.3",
-    "mongodb": "^5.7.0",
+    "mongodb": "^5.9.2",
     "mongoose": "^7.4.0",
     "multer": "^1.4.5-lts.1",
     "uuid": "^11.1.0"

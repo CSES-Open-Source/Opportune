@@ -344,3 +344,59 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
     data: applications || [],
   });
 });
+
+//  @desc Get all applications for a specific user (simple version)
+//  @route GET /api/applications/by-user/:userId
+//  @access Private
+//
+//  @param {string} userId.path.required - User ID
+//  @returns {Application[]} 200 - Array of user's applications
+//  @throws {404} - If no applications found for user
+//  @throws {400} - If user ID is invalid
+export const getApplicationDetails = asyncHandler(async (req, res, next) => {
+
+  const { userId } = matchedData(req, { locations: ["params"] }) as {
+    userId: string;
+  };
+
+  if (!userId || typeof userId !== "string") {
+    return next(createHttpError(400, "Missing or invalid user ID"));
+  }
+
+  const total = await Application.countDocuments({ userId });
+  const offers = await Application.countDocuments({ userId, "process.status": "OFFER" });
+  const interviews = await Application.countDocuments({
+    userId,
+    "process.status": { $in: ["PHONE", "FINAL", "OFFER"] },
+  });
+
+  const thisYear = new Date(new Date().getFullYear(), 0, 1);
+  const thisYearCount = await Application.countDocuments({
+    userId,
+    createdAt: { $gte: thisYear },
+  });
+
+  const statusBreakdown = await Application.aggregate([
+    { $match: { userId } },
+    { $unwind: "$process" },
+    { $group: { _id: "$process.status", count: { $sum: 1 } } },
+  ]);
+
+  const successRate = total ? ((offers / total) * 100).toFixed(2) : 0;
+  const interviewRate = total ? ((interviews / total) * 100).toFixed(2) : 0;
+
+  res.status(200).json({
+    totalApplications: total,
+    successRate: `${successRate}%`,
+    interviewRate: `${interviewRate}%`,
+    offersReceived: offers,
+    applicationsThisYear: thisYearCount,
+    applicationStatus: statusBreakdown,
+    insights: {
+      tip:
+        Number(successRate) > 50
+          ? "Strong application performance — keep refining!"
+          : "Try improving resume or targeting better-fit roles.",
+    },
+  });
+});
