@@ -123,7 +123,7 @@ const Companies: React.FC = () => {
               onClick={() => setShowFilters(true)}
               className="inline-flex items-center justify-center px-4 py-3 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition text-base"
             >
-              <span className="mr-2">Sort by</span>
+              <span className="mr-2">Filter</span>
               <FaChevronDown className="w-4 h-4" />
             </button>
           </div>
