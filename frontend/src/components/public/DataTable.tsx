@@ -137,7 +137,10 @@ const DataTable = <T extends object>(props: DataTableProps<T>) => {
             ) : data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className="text-center">
-                  No data available.
+                  <br></br>
+                  <p>You have not made any applications yet.</p>
+                  <p>To get started, click on <b> New Application</b> and provide a company and position.</p>
+                  <p>As more information is provided, the table will list all the details for you!</p> 
                 </td>
               </tr>
             ) : (
