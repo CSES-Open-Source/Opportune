@@ -7,7 +7,7 @@ export enum UserType {
 }
 
 export enum ClassLevel {
-  Freshmen = "FRESHMEN",
+  Freshman = "FRESHMAN",
   Sophomore = "SOPHOMORE",
   Junior = "JUNIOR",
   Senior = "SENIOR",
