@@ -105,6 +105,17 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
   return (
     <div style={listStyle} className="flex flex-col h-full">
       {/* 1) scrollable list region */}
+
+      {data.length > 0 ? <div className={`flex-1 overflow-y-auto ${listClassName ?? ""}`}>
+        {data.map((item, i) => (
+          <TileComponent key={i} data={item} />
+        ))}</div> : <div className="text-center">
+          <br></br>
+          <p>No searches currently match your query.</p>
+          <p>Edit your <b>Filter</b> or <b>Add</b> more entries to receive results!</p>
+          <p></p>
+      </div> }
+        
       <div className={`flex-1 overflow-y-auto ${listClassName ?? ""}`}>
         {data.map((item, i) => (
           <TileComponent key={i} data={item} />
