@@ -64,3 +64,23 @@ export interface GetApplicationsByUserIDQuery {
   status?: string;
   sortBy?: string;
 }
+
+export interface ApplicationStats{
+  total: number;
+  applied: number;
+  interview: number;
+  offer: number;
+  rejected: number;
+}
+
+export interface MonthlyData {
+  month: string;
+  applications: number;
+}
+
+export interface RawMonthlyItem {
+  _id?: string;
+  month?: string;
+  count?: number;
+  applications?: number;
+}

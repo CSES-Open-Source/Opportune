@@ -5,6 +5,9 @@ import {
   CreateApplicationRequest,
   GetApplicationsByUserIDQuery,
   UpdateApplicationRequest,
+  ApplicationStats,
+  MonthlyData,
+  RawMonthlyItem,
 } from "../types/Application";
 import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
 
@@ -134,4 +137,103 @@ export async function getApplicationsByUserID(
   } catch (error) {
     return handleAPIError(error);
   }
+}
+
+
+/**
+ * Gets the analytics data for a users application, including application count
+ * interview count and offer count
+ * @param userId 
+ * @returns Returns the application stats for the users application as an application stats object
+ */
+export async function getApplicationAnalytics(
+  userId: string,
+): Promise<APIResult<ApplicationStats>> {
+    try {
+      const response = await get(`/api/applications/applied/analytics/${userId}`);
+      const json = await response.json(); 
+    
+      if(!response.ok){
+        throw new Error(json.message || "Failed to fetch analytics data");
+      }
+      
+      const statusArray = Array.isArray(json.applicationStatus) ? json.applicationStatus : [];
+      let applied = 0;
+      let interview = 0;
+      let offer = 0;
+      let rejected = 0;
+      for (const status of statusArray) {
+        const key = status._id;
+        const count = Number(status.count || 0);
+        if(key === "APPLIED") applied = count;
+        if(key === "OFFER") offer = count;
+        if(key === "INTERVIEW") interview = count;
+        if(key === "REJECTED") rejected = count;
+        if (["PHONE", "FINAL", "OA"].includes(key)) interview += count;
+      }
+
+      const result: ApplicationStats = {
+        total: Number(json.totalApplications ?? json.total ?? applied + interview + offer + rejected),
+        applied,
+        interview,
+        offer,
+        rejected,
+      };
+
+      return { 
+        success: true, 
+        data: result 
+      };
+    } 
+    catch (error) {
+      return handleAPIError(error);
+    }
+  
+}
+
+
+/**
+ * Gets the month by month data of applications submitted for the analytics tab
+ * @param userId 
+ * @returns The name of the month's with applications submitted and the counts as an object
+ */
+export async function getMonthlyData(
+  userId: string,
+): Promise<APIResult<MonthlyData[]>> {
+    try {
+      const response = await get(`/api/applications/applied/analytics/${userId}`);
+      const json = await response.json();
+
+      if(!response.ok){
+        throw new Error(json.message || "Failed to fetch month by month data");
+      }
+      const monthArray = Array.isArray(json.monthlyApplications) ? json.monthlyApplications : [];
+
+      const formatMonth = (raw: string) => {
+        const match = /^(\d{4})-(\d{2})$/.exec(String(raw));
+        if (match) {
+          const year = Number(match[1]);
+          const monthIndex = Number(match[2]) - 1; 
+          const d = new Date(year, monthIndex, 1);
+          return d.toLocaleString(undefined, { month: "long" }); 
+        }
+        return String(raw); 
+      };
+
+      const result: MonthlyData[] = monthArray.map((m: RawMonthlyItem) => {
+        const raw = m.month ?? m._id ?? String(m._id ?? "");
+        return {
+          month: formatMonth(raw),
+          applications: Number(m.count ?? m.applications ?? 0),
+        };
+      });
+      return { 
+        success: true, 
+        data: result,
+      };
+    } 
+    catch (error) {
+      return handleAPIError(error);
+    }
+  
 }

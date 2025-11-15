@@ -210,14 +210,20 @@ const Applications = () => {
       <NewApplicationModal
         isOpen={newApplicationOpen}
         onClose={() => setNewApplicationOpen(false)}
-        onNewApplication={() => setSearch({ ...search })}
+        onNewApplication={() => {
+          setSearch({ ...search });
+          window.dispatchEvent(new CustomEvent("applications:changed"));
+        }}
       />
       <ApplicationModal
         isOpen={applicationModalOpen}
         onClose={onApplicationModalClosed}
         application={selectedApplication}
         setApplication={setSelectedApplication}
-        onSaveApplication={() => setSearch({ ...search })}
+        onSaveApplication={() => {
+          setSearch({ ...search });
+          window.dispatchEvent(new CustomEvent("applications:changed"));
+        }}
       />
     </div>
   );

@@ -1,8 +1,8 @@
 import "module-alias/register";
 import mongoose from "mongoose";
-import app from "./app";
-import env from "./util/validateEnv";
-import s3 from "./aws/s3Client"; // Import your S3 client instance
+import app from "../src/app";
+import env from "../src/util/validateEnv";
+import s3 from "../src/aws/s3Client"; // Import your S3 client instance
 import { ListBucketsCommand } from "@aws-sdk/client-s3";
 
 const PORT = env.PORT;

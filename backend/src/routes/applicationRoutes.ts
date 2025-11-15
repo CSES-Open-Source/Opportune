@@ -38,4 +38,10 @@ applicationRouter.get(
   applicationController.getApplicationsByUserID,
 );
 
+applicationRouter.get(
+  "/analytics/:userId",
+  applicationValidator.getApplicationsByUserID,
+  applicationController.getApplicationDetails,
+);
+
 export default applicationRouter;
