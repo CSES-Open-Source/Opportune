@@ -384,6 +384,29 @@ export const getApplicationDetails = asyncHandler(async (req, res, next) => {
     { $group: { _id: "$process.status", count: { $sum: 1 } } },
   ]);
 
+  const monthlyBreakdown = await Application.aggregate([
+    { $match: { userId } },
+    {
+      $addFields: {
+        appliedDate: {
+          $ifNull: [{ $arrayElemAt: ["$process.date", 0] }, "$createdAt"],
+        },
+      },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m", date: "$appliedDate" } },
+        count: { $sum: 1 },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+
+  const monthlyApplications = monthlyBreakdown.map((m) => ({
+    month: m._id,
+    count: m.count,
+  }));
+
   const successRate = total ? ((offers / total) * 100).toFixed(2) : 0;
   const interviewRate = total ? ((interviews / total) * 100).toFixed(2) : 0;
 
@@ -394,6 +417,7 @@ export const getApplicationDetails = asyncHandler(async (req, res, next) => {
     offersReceived: offers,
     applicationsThisYear: thisYearCount,
     applicationStatus: statusBreakdown,
+    monthlyApplications,
     insights: {
       tip:
         Number(successRate) > 50
