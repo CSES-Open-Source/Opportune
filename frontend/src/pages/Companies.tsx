@@ -199,6 +199,7 @@ const Companies: React.FC = () => {
         <div className="overflow-visible">
           <div className="flex flex-col h-[75vh]">
             <DataList
+              pageType = "companies"
               key={`${filters.query}_${filters.employees}_${filters.industry}`}
               fetchData={fetchCompanies}
               useServerPagination

@@ -13,6 +13,7 @@ interface TableStyle {
 
 interface BaseDataTableProps<T extends object> {
   data?: T[];
+  pageType: string;
   fetchData?: (page: number, perPage: number) => Promise<PaginatedData<T>>;
   columns: ColumnDef<T>[]; // Definition of columns for react table
   useServerPagination?: boolean; // Set to true to toggle server side pagination
@@ -53,7 +54,7 @@ type DataTableProps<T extends object> =
   | DataTableServerPaginationProps<T>;
 
 const DataTable = <T extends object>(props: DataTableProps<T>) => {
-  const { columns, onRowClick, tableStyle, useServerPagination } = props;
+  const { columns, onRowClick, tableStyle, useServerPagination, pageType } = props;
 
   const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState<number>(0);
@@ -136,11 +137,16 @@ const DataTable = <T extends object>(props: DataTableProps<T>) => {
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="text-center">
+                { pageType === "saved" ? (<td colSpan={columns.length} className="text-center">
+                  <br></br>
+                  <p>You have not saved any potential applications yet.</p>
+                  <p>Click on <b> New Saved Application</b> to store an application you are still working on.</p>
+                </td>) : (<td colSpan={columns.length} className="text-center">
                   <br></br>
                   <p>You have not made any applications yet.</p>
                   <p>To get started, click on <b> New Application</b> and provide a company and position.</p>
-                </td>
+                </td>)
+                }
               </tr>
             ) : (
               data.map((row, index) => (

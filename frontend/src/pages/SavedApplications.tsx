@@ -172,6 +172,7 @@ const SavedApplications: React.FC = () => {
         placeholder="Search by company, position, or location..."
       />
       <DataTable<SavedApplication>
+        pageType = "saved"
         tableStyle={{ width: "100%", height: "72vh" }}
         useServerPagination
         paginatorContent={{ setPerPage: true, goToPage: true }}
