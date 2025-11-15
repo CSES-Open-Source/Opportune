@@ -112,7 +112,7 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
         ))}</div> : <div className="text-center">
           <br></br>
           <p>No searches currently match your query.</p>
-          <p>Edit your <b>Filter</b> or <b>Add</b> more entries to receive results!</p>
+          <p>Edit your <b>Filter</b> or <b>Add</b> more entries to receive results.</p>
           <p></p>
       </div> }
         

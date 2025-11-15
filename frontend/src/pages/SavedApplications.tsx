@@ -157,7 +157,7 @@ const SavedApplications: React.FC = () => {
       <SearchBar<SearchBarData>
         selections={[
           {
-            label: "Sort By",
+            label: "Filter",
             options: [
               "Date Saved (Newest)",
               "Date Saved (Oldest)",

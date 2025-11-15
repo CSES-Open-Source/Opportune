@@ -179,7 +179,7 @@ const Applications = () => {
       <SearchBar<SearchBarData>
         selections={[
           {
-            label: "Sort By",
+            label: "Filter",
             options: ["Applied", "Modified", "Status", "Company", "Position"],
             single: true,
           },
