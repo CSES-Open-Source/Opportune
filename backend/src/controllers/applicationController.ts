@@ -354,7 +354,6 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
 //  @throws {404} - If no applications found for user
 //  @throws {400} - If user ID is invalid
 export const getApplicationDetails = asyncHandler(async (req, res, next) => {
-
   const { userId } = matchedData(req, { locations: ["params"] }) as {
     userId: string;
   };
@@ -364,7 +363,10 @@ export const getApplicationDetails = asyncHandler(async (req, res, next) => {
   }
 
   const total = await Application.countDocuments({ userId });
-  const offers = await Application.countDocuments({ userId, "process.status": "OFFER" });
+  const offers = await Application.countDocuments({
+    userId,
+    "process.status": "OFFER",
+  });
   const interviews = await Application.countDocuments({
     userId,
     "process.status": { $in: ["PHONE", "FINAL", "OFFER"] },
