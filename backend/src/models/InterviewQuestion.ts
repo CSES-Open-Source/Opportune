@@ -5,7 +5,7 @@ const interviewQuestionSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true,
   },
-  user: {
+  userId: {
     type: String,
     required: true,
   },

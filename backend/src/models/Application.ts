@@ -44,6 +44,11 @@ const applicationSchema = new Schema(
       type: Schema.Types.ObjectId,
       required: true,
     },
+    companyName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     position: {
       type: String,
       required: true,
