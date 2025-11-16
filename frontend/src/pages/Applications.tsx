@@ -179,7 +179,7 @@ const Applications = () => {
       <SearchBar<SearchBarData>
         selections={[
           {
-            label: "Filter",
+            label: "Sort By",
             options: ["Applied", "Modified", "Status", "Company", "Position"],
             single: true,
           },
@@ -191,7 +191,7 @@ const Applications = () => {
         onSubmitForm={setSearch}
       />
       <DataTable<Application>
-        pageType = "applications"
+        pageType="applications"
         tableStyle={{
           width: "100%",
           height: "72vh",
