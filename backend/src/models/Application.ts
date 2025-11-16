@@ -8,6 +8,7 @@ export enum Status {
   Final = "FINAL",
   Offer = "OFFER",
   Rejected = "REJECTED",
+  Ghosted = "GHOSTED",
 }
 
 export enum SortingOptions {
