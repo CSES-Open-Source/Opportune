@@ -191,6 +191,7 @@ const Applications = () => {
         onSubmitForm={setSearch}
       />
       <DataTable<Application>
+        pageType="applications"
         tableStyle={{
           width: "100%",
           height: "72vh",

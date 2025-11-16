@@ -214,7 +214,7 @@ const Home: React.FC = () => {
                   <FaLinkedin className="w-6 h-6" />
                 </a>
                 <a
-                  href="https://www.instagram.com/cses_ucsd"
+                  href="https://www.instagram.com/cses_at_ucsd"
                   className="text-gray-400 hover:text-white transition-colors duration-200"
                   aria-label="Instagram"
                   target="_blank"
@@ -241,7 +241,7 @@ const Home: React.FC = () => {
                   <FaDiscord className="w-6 h-6" />
                 </a>
                 <a
-                  href="https://linktr.ee/csesucsd"
+                  href="https://linktr.ee/cses_at_ucsd"
                   className="text-gray-400 hover:text-white transition-colors duration-200"
                   aria-label="Linktree"
                   target="_blank"
