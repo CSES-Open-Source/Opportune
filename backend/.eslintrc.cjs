@@ -63,9 +63,18 @@ module.exports = {
     // Stylistic rules.
     "lines-between-class-members": "off",
 
-    "no-relative-import-paths/no-relative-import-paths": [
-      "warn",
-      { allowSameFolder: false, rootDir: "backend" },
-    ],
+    // "no-relative-import-paths/no-relative-import-paths": [
+    //   "warn",
+    //   { allowSameFolder: false, rootDir: "backend" },
+    // ],
+    "no-relative-import-paths/no-relative-import-paths": "off",
   },
+  overrides: [
+    {
+      files: ["index.ts"],
+      rules: {
+        "@typescript-eslint/ban-ts-comment": "off",
+      },
+    },
+  ],
 };
