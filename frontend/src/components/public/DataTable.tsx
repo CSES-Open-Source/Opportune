@@ -54,7 +54,8 @@ type DataTableProps<T extends object> =
   | DataTableServerPaginationProps<T>;
 
 const DataTable = <T extends object>(props: DataTableProps<T>) => {
-  const { columns, onRowClick, tableStyle, useServerPagination, pageType } = props;
+  const { columns, onRowClick, tableStyle, useServerPagination, pageType } =
+    props;
 
   const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState<number>(0);
@@ -137,16 +138,25 @@ const DataTable = <T extends object>(props: DataTableProps<T>) => {
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                { pageType === "saved" ? (<td colSpan={columns.length} className="text-center">
-                  <br></br>
-                  <p>There are no potential applications for this query.</p>
-                  <p>Click on <b> New Saved Application</b> to store an application you are still working on.</p>
-                </td>) : (<td colSpan={columns.length} className="text-center">
-                  <br></br>
-                  <p>No applications could be found matching this query.</p>
-                  <p>To add more entries, click on <b> New Application</b> and provide a company and position.</p>
-                </td>)
-                }
+                {pageType === "saved" ? (
+                  <td colSpan={columns.length} className="text-center">
+                    <br></br>
+                    <p>No saved applications found.</p>
+                    <p>
+                      Click on <b> New Saved Application</b> to store an
+                      application you are still working on.
+                    </p>
+                  </td>
+                ) : (
+                  <td colSpan={columns.length} className="text-center">
+                    <br></br>
+                    <p>No applications found.</p>
+                    <p>
+                      To add more entries, click on <b> New Application</b> and
+                      provide a company and position.
+                    </p>
+                  </td>
+                )}
               </tr>
             ) : (
               data.map((row, index) => (
