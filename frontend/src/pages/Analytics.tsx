@@ -3,8 +3,6 @@ import { FiTrendingUp, FiCalendar, FiTarget, FiCheckCircle } from "react-icons/f
 import { useAuth } from "../contexts/useAuth";
 import { ResponsiveContainer, Sankey, Tooltip } from 'recharts';
 import { getApplicationDetails, ApplicationAnalytics } from "../api/applications";
-import { axisBottom } from "d3";
-import axios from "axios";
 
 /* 
 interface SankeyNode {
@@ -26,15 +24,6 @@ interface SankeyData {
 interface SankeyTooltipEntry {
   name?: string;
   value?: number | string;
-  [key: string]: any;
-}
-
-interface CustomLinkProps {
-  sourceX: number;
-  sourceY: number;
-  targetX: number;
-  targetY: number;
-  color?: string;
   [key: string]: any;
 }
 
@@ -128,7 +117,6 @@ function buildSankeyFromTimelines(applicationTimelines: ApplicationTimeline[]): 
 
 const Analytics: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
-  const [analytics, setAnalytics] = useState<ApplicationAnalytics | null>(null);
   const [sankeyData, setSankeyData] = useState<any>({ nodes: [], links: [] });
   const [stats, setStats] = useState<ApplicationStats>({
     total: 0,
@@ -165,8 +153,6 @@ const Analytics: React.FC = () => {
 
 
         setLoading(false);
-
-        setAnalytics(res.data);
 
         setStats({
           total: res.data.totalApplications,

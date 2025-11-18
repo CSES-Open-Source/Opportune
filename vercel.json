@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/build",
-  "installCommand": "cd backend && npm install && cd ..",
+  "installCommand": "cd backend && npm install --production && cd ..",
   "framework": null,
   "functions": {
     "api/index.ts": {
@@ -17,5 +17,3 @@
     }
   ]
 }
-
-
