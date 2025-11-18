@@ -25,7 +25,7 @@
     "format": "npm run check-git-hooks && prettier --write .",
     "lint-fix": "npm run check-git-hooks && (eslint --fix --cache --report-unused-disable-directives . || true) && prettier --write .",
     "lint-check": "npm run check-git-hooks && eslint --cache --report-unused-disable-directives . && prettier --check .",
-    "prepare": "cd .. && husky",
+    "prepare": "cd ..",
     "check-git-hooks": "cd .. && node .secret-scan/secret-scan.js -- --check-git-hooks"
   },
   "keywords": [],
