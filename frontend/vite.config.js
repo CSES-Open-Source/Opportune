@@ -5,5 +5,17 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: "build",
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "vendor-quill": ["quill"],
+          "vendor-react": ["react", "react-dom"],
+          "vendor-recharts": ["recharts"],
+          "vendor-icons": ["react-icons"],
+          "vendor-firebase": ["firebase/app", "firebase/auth"],
+        },
+      },
+    },
   },
 });

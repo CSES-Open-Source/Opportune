@@ -6,8 +6,13 @@
   "framework": null,
   "functions": {
     "api/index.ts": {
-      "includeFiles": "backend/**",
-      "maxDuration": 30
+      "includeFiles": [
+        "backend/dist/**",
+        "backend/package.json",
+        "backend/config/**"
+      ],
+      "maxDuration": 30,
+      "memory": 1052
     }
   },
   "rewrites": [
