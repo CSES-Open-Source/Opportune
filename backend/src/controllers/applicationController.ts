@@ -24,7 +24,7 @@ interface ApplicationCreate {
     note?: string;
   }>;
 }
-interface ApplicationUpdate extends Partial<ApplicationCreate> {}
+interface ApplicationUpdate extends Partial<ApplicationCreate> { }
 
 // @desc Retrieve all applications
 // @route GET /api/applications/applied
@@ -353,7 +353,7 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
 //  @returns {Application[]} 200 - Array of user's applications
 //  @throws {404} - If no applications found for user
 //  @throws {400} - If user ID is invalid
-export const getApplicationDetails = asyncHandler(async (req, res, next) => {
+export const getApplicationDetails = asyncHandler(async (req, res, _next) => {
   const { userId } = matchedData(req, { locations: ["params"] }) as {
     userId: string;
   };
