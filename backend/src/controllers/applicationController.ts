@@ -24,7 +24,7 @@ interface ApplicationCreate {
     note?: string;
   }>;
 }
-interface ApplicationUpdate extends Partial<ApplicationCreate> { }
+interface ApplicationUpdate extends Partial<ApplicationCreate> {}
 
 // @desc Retrieve all applications
 // @route GET /api/applications/applied
