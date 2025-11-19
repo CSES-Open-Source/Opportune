@@ -24,7 +24,7 @@ interface ApplicationCreate {
     note?: string;
   }>;
 }
-interface ApplicationUpdate extends Partial<ApplicationCreate> { }
+interface ApplicationUpdate extends Partial<ApplicationCreate> {}
 
 // @desc Retrieve all applications
 // @route GET /api/applications/applied
@@ -354,23 +354,40 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
 //  @throws {404} - If no applications found for user
 //  @throws {400} - If user ID is invalid
 export const getApplicationDetails = asyncHandler(async (req, res, next) => {
-
   const { userId } = matchedData(req, { locations: ["params"] }) as {
     userId: string;
   };
 
   const total = await Application.countDocuments({ userId });
-  const offers = await Application.countDocuments({ userId, "process.status": "OFFER" });
-  const OA = await Application.countDocuments({ userId, "process.status": "OA" });
-  const phone = await Application.countDocuments({ userId, "process.status": "PHONE" });
-  const final = await Application.countDocuments({ userId, "process.status": "FINAL" });
-  const rejected = await Application.countDocuments({ userId, "process.status": "REJECTED" });
+  const offers = await Application.countDocuments({
+    userId,
+    "process.status": "OFFER",
+  });
+  const OA = await Application.countDocuments({
+    userId,
+    "process.status": "OA",
+  });
+  const phone = await Application.countDocuments({
+    userId,
+    "process.status": "PHONE",
+  });
+  const final = await Application.countDocuments({
+    userId,
+    "process.status": "FINAL",
+  });
+  const rejected = await Application.countDocuments({
+    userId,
+    "process.status": "REJECTED",
+  });
   const interviews = await Application.countDocuments({
     userId,
     "process.status": { $in: ["PHONE", "FINAL", "OFFER"] },
   });
 
-  const ghosted = await Application.countDocuments({ userId, "process.status": "GHOSTED" });
+  const ghosted = await Application.countDocuments({
+    userId,
+    "process.status": "GHOSTED",
+  });
 
   const thisYear = new Date(new Date().getFullYear(), 0, 1);
   const thisYearCount = await Application.countDocuments({
@@ -384,7 +401,20 @@ export const getApplicationDetails = asyncHandler(async (req, res, next) => {
     { $project: { month: "$_id", count: 1, _id: 0 } },
   ]);
 
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
   const monthsMap: Record<string, number> = {};
   for (let i = 0; i < 12; i++) monthsMap[monthNames[i]] = 0;
@@ -403,18 +433,29 @@ export const getApplicationDetails = asyncHandler(async (req, res, next) => {
   // chetan: creating a timeline for a more static sankey model
   const applicationsForTimelines = await Application.find({ userId }).exec();
 
-  const applicationTimelines = applicationsForTimelines.map((app) => {
+  interface TimelineEntry {
+    status: string;
+  }
 
-    const sortedProcess = (app.process || []).slice().sort((a: ApplicationStatus, b: ApplicationStatus) =>
-      new Date(a.date).getTime() - new Date(b.date).getTime(),
+  const applicationTimelines = applicationsForTimelines.map((app) => {
+    const sortedProcess = (app.process || [])
+      .slice()
+      .sort(
+        (a: ApplicationStatus, b: ApplicationStatus) =>
+          new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+
+    const timeline: TimelineEntry[] = sortedProcess.map(
+      (p: ApplicationStatus) => ({
+        status: p.status,
+      }),
     );
 
-    const timeline = sortedProcess.map((p: ApplicationStatus) => ({
-      status: p.status,
-    }));
-
-    if (timeline.length === 0 || timeline[0].status.toUpperCase() !== "APPLIED") {
-      timeline.unshift({ status: 'APPLIED' as any });
+    if (
+      timeline.length === 0 ||
+      timeline[0].status.toUpperCase() !== "APPLIED"
+    ) {
+      timeline.unshift({ status: "APPLIED" });
     }
 
     return {
@@ -425,7 +466,6 @@ export const getApplicationDetails = asyncHandler(async (req, res, next) => {
 
   const successRate = total ? ((offers / total) * 100).toFixed(2) : 0;
   const interviewRate = total ? ((interviews / total) * 100).toFixed(2) : 0;
-
 
   res.status(200).json({
     totalApplications: total,

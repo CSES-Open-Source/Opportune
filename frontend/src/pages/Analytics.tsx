@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { FiTrendingUp, FiCalendar, FiTarget, FiCheckCircle } from "react-icons/fi";
 import { useAuth } from "../contexts/useAuth";
 import { ResponsiveContainer, Sankey, Tooltip } from 'recharts';
-import { getApplicationDetails, ApplicationAnalytics } from "../api/applications";
+import { getApplicationDetails } from "../api/applications";
 
-/* 
 interface SankeyNode {
   name: string;
+  // optional color and value fields are provided by the Sankey layout
+  color?: string;
+  value?: number;
 }
 
 interface SankeyLink {
@@ -19,12 +21,11 @@ interface SankeyData {
   nodes: SankeyNode[];
   links: SankeyLink[];
 }
-*/
 
 interface SankeyTooltipEntry {
   name?: string;
   value?: number | string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface ApplicationStats {
@@ -46,7 +47,7 @@ interface MonthlyData {
 type TimelineEntry = { status: string; date: string | Date; note?: string | null };
 type ApplicationTimeline = { _id: string; company?: string | null; position?: string; timeline: TimelineEntry[] };
 
-function buildSankeyFromTimelines(applicationTimelines: ApplicationTimeline[]): any {
+function buildSankeyFromTimelines(applicationTimelines: ApplicationTimeline[]): SankeyData {
 
   const fillings = [
     { name: 'APPLIED', color: '#3b82f6' },
@@ -117,7 +118,7 @@ function buildSankeyFromTimelines(applicationTimelines: ApplicationTimeline[]): 
 
 const Analytics: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
-  const [sankeyData, setSankeyData] = useState<any>({ nodes: [], links: [] });
+  const [sankeyData, setSankeyData] = useState<SankeyData>({ nodes: [], links: [] });
   const [stats, setStats] = useState<ApplicationStats>({
     total: 0,
     phone: 0,
@@ -148,7 +149,6 @@ const Analytics: React.FC = () => {
           setLoading(false);
           return;
         }
-        console.log(res.data.applicationsByMonth);
 
 
 
@@ -171,7 +171,7 @@ const Analytics: React.FC = () => {
         const monthDataFromAPI = res.data.applicationsByMonth;
 
         const filteredMonthlyArray = Object.entries(monthDataFromAPI)
-          .filter(([_, count]) => count > 0)
+          .filter(([, count]) => count > 0)
           .map(([month, count]) => ({ month, applications: count }));
 
         setMonthlyData(filteredMonthlyArray);
@@ -184,7 +184,17 @@ const Analytics: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  const CustomNode = ({ x, y, width, height, payload, containerWidth, index }: any) => {
+  interface CustomNodeProps {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    payload?: { name: string; value: number };
+    containerWidth?: number;
+    index?: number;
+  }
+
+  const CustomNode: React.FC<CustomNodeProps> = ({ x = 0, y = 0, width = 0, height = 0, payload = {}, containerWidth = 0, index = 0 }) => {
     const fillings = [
       { name: 'APPLIED', color: '#3b82f6' },
       { name: 'REJECTED', color: '#EF4444' },
@@ -262,17 +272,32 @@ const Analytics: React.FC = () => {
     );
   }
 
-  const CustomLink = (props: any): React.ReactElement<React.SVGProps<SVGPathElement>> | null => {
+  interface CustomLinkProps {
+    linkWidth?: number;
+    payload: {
+      source: SankeyNode;
+      target: SankeyNode;
+      value?: number;
+    };
+    sourceX?: number;
+    sourceY?: number;
+    targetX?: number;
+    targetY?: number;
+    index?: number;
+  }
+
+
+  const CustomLink: React.FC<CustomLinkProps> = (props) => {
 
     const [hovered, setHovered] = useState(false);
 
-    const strokeWidth = props.linkWidth;
+    const strokeWidth = props.linkWidth ?? 1;
     const strokeColor = props.payload.target.color;
 
-    const sx = props.sourceX;
-    const sy = props.sourceY;
-    const tx = props.targetX;
-    const ty = props.targetY;
+    const sx = props.sourceX ?? 0;
+    const sy = props.sourceY ?? 0;
+    const tx = props.targetX ?? 0;
+    const ty = props.targetY ?? 0;
 
 
     const curvature = 0.5;
@@ -296,7 +321,11 @@ const Analytics: React.FC = () => {
 
   };
 
-  const CustomTooltip = (props: any) => {
+  interface CustomTooltipProps {
+    payload: SankeyTooltipEntry[];
+  }
+
+  const CustomTooltip: React.FC<CustomTooltipProps> = (props) => {
     return (
       <div
         style={{
@@ -373,12 +402,12 @@ const Analytics: React.FC = () => {
                 <Sankey
                   data={sankeyData}
                   node={<CustomNode />}
-                  link={CustomLink as any}
+                  link={(props) => <CustomLink {...props} />}
                   linkCurvature={0.8}
                   nodePadding={30}
                   margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
                 >
-                  <Tooltip content={CustomTooltip as any} />
+                  <Tooltip content={(props) => <CustomTooltip {...props} />} />
                 </Sankey>
               </ResponsiveContainer>
             </div>
