@@ -124,12 +124,6 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
           <p></p>
         </div>
       }
-        
-      <div className={`flex-1 overflow-y-auto ${listClassName ?? ""}`}>
-        {data.map((item, i) => (
-          <TileComponent key={i} data={item} />
-        ))}
-      </div>
 
       {/* 2) paginator "below" the scroll region */}
       {(useServerPagination || props.usePagination) && (
