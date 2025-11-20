@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FiTrendingUp, FiCalendar, FiTarget, FiCheckCircle } from "react-icons/fi";
 import { useAuth } from "../contexts/useAuth";
 import { getApplicationAnalytics, getMonthlyData } from "../api/applications";
 import { ApplicationStats, MonthlyData} from "../types/Application";
-
+import { Toast } from "primereact/toast";
 
 
 const Analytics: React.FC = () => {
@@ -17,7 +17,7 @@ const Analytics: React.FC = () => {
   });
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const toast = useRef<Toast>(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -53,6 +53,11 @@ const Analytics: React.FC = () => {
           setStats(res.data);
         } catch (err) {
           console.error("Error fetching analytics:", err);
+          toast.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail: `Failed to update analytics ${err}`,
+          });
         }
       };
 
