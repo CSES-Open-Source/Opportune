@@ -70,6 +70,7 @@ const Connect = () => {
         <div className="overflow-visible">
           <div className="flex flex-col h-[75vh]">
             <DataList<Alumni>
+              pageType = "connect"
               key={`${search.query}_${search.industry.join(',')}`}
               fetchData={getPaginatedOpenAlumni}
               useServerPagination

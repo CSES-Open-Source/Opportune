@@ -2,7 +2,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.798.0",
     "@aws-sdk/s3-request-presigner": "^3.798.0",
-    "@vercel/node": "^5.3.26",
+    "@vercel/node": "^2.3.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "envalid": "^7.3.1",
@@ -50,7 +50,7 @@
     "husky": "^9.0.11",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.0",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.1.6"
   },
   "_moduleAliases": {
