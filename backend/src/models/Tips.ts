@@ -2,7 +2,7 @@ import { InferSchemaType, Schema, model } from "mongoose";
 
 const tipSchema = new Schema(
   {
-    user: {
+    userId: {
       type: String,
       required: true,
     },

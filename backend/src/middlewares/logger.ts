@@ -8,8 +8,14 @@ export const logEvents = async (message: string, logFileName: string) => {
   const dateTime = new Date();
   const logItem = `${dateTime}\t${message}\n`;
 
+  // Skip file logging on Vercel (read-only filesystem)
+  if (process.env.VERCEL === "1") {
+    console.log(logItem);
+    return;
+  }
+
   try {
-    // Create logs directory if it doesn't exist
+    // Create logs directory if it doesn't exist (local only)
     if (!fs.existsSync(path.join(__dirname, "..", "logs"))) {
       await fsPromises.mkdir(path.join(__dirname, "..", "logs"));
     }
