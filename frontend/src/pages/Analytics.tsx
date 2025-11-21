@@ -52,11 +52,12 @@ const Analytics: React.FC = () => {
           setMonthlyData(monthRes.data ?? []);
           setStats(res.data);
         } catch (err) {
-          console.error("Error fetching analytics:", err);
+          const error = err as Error;
+          console.error("Error fetching analytics:", error.message);
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: `Failed to update analytics ${err}`,
+            detail: `Failed to update analytics: ${error.message || "Unknown error"}`,
           });
         }
       };
@@ -230,7 +231,7 @@ const Analytics: React.FC = () => {
           <div className="space-y-4">
             <div className="p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Great progress!</strong> You&apos;ve applied to {stats.total} companies. 
+                <strong>Great progress!</strong> You&apos;ve applied to {stats.total} companies.{" "}
                   {interviewRate >= 50 && (
                     <>Your {interviewRate}% interview rate is excellent — you&apos;re doing amazing!</>
                   )}
@@ -257,6 +258,7 @@ const Analytics: React.FC = () => {
           </div>
         </div>
       </div>
+      <Toast ref={toast} />
     </div>
   );
 };
