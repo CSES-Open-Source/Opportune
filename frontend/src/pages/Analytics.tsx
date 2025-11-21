@@ -231,7 +231,21 @@ const Analytics: React.FC = () => {
             <div className="p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
                 <strong>Great progress!</strong> You&apos;ve applied to {stats.total} companies. 
-                Your {interviewRate}% interview rate is above average for your field.
+                  {interviewRate >= 50 && (
+                    <>Your {interviewRate}% interview rate is excellent — you&apos;re doing amazing!</>
+                  )}
+
+                  {interviewRate >= 25 && interviewRate < 50 && (
+                    <>Your {interviewRate}% interview rate is solid — keep applying strategically.</>
+                  )}
+
+                  {interviewRate > 0 && interviewRate < 25 && (
+                    <>Your {interviewRate}% interview rate is below average — consider refining your resume or targeting different roles.</>
+                  )}
+
+                  {interviewRate === 0 && (
+                    <>You haven&apos;t received interviews yet — time to adjust your resume or application strategy.</>
+                  )}
               </p>
             </div>
             <div className="p-4 bg-green-50 rounded-lg">
