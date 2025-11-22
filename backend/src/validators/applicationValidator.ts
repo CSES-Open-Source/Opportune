@@ -5,7 +5,7 @@ import { SortingOptions, Status } from "../models/Application";
 const DEFAULT_PAGE = 0;
 const DEFAULT_PER_PAGE = 10;
 
-const validateUserIdParam = param("userId")
+export const validateUserIdParam = param("userId")
   .isString()
   .notEmpty()
   .withMessage("User ID must be a non-empty string");

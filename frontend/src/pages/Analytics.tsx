@@ -1,22 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FiTrendingUp, FiCalendar, FiTarget, FiCheckCircle } from "react-icons/fi";
 import { useAuth } from "../contexts/useAuth";
+import { getApplicationAnalytics, getMonthlyData } from "../api/applications";
+import { ApplicationStats, MonthlyData} from "../types/Application";
+import { Toast } from "primereact/toast";
 
-interface ApplicationStats {
-  total: number;
-  applied: number;
-  interview: number;
-  offer: number;
-  rejected: number;
-}
-
-interface MonthlyData {
-  month: string;
-  applications: number;
-}
 
 const Analytics: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [stats, setStats] = useState<ApplicationStats>({
     total: 0,
     applied: 0,
@@ -26,32 +17,69 @@ const Analytics: React.FC = () => {
   });
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
   const [loading, setLoading] = useState(true);
+  const toast = useRef<Toast>(null);
 
-  // Mock data for now - replace with real API calls later
   useEffect(() => {
     if (isAuthenticated) {
-      // Simulate API call
-      setTimeout(() => {
-        setStats({
-          total: 24,
-          applied: 15,
-          interview: 6,
-          offer: 2,
-          rejected: 7,
-        });
-        
-        setMonthlyData([
-          { month: "Jan", applications: 3 },
-          { month: "Feb", applications: 5 },
-          { month: "Mar", applications: 8 },
-          { month: "Apr", applications: 6 },
-          { month: "May", applications: 2 },
-        ]);
-        
+      const resolveUserId = (): string | null => {
+        if (user) {
+          return user._id ?? null;
+        }
+        return null;
+      };
+
+      // Fetch analytics and monthly data for the resolved user id
+      const fetchAnalytics = async () => {
+        try {
+          const userId = resolveUserId();
+          if (!userId) {
+            console.error("UserId not found:", { isAuthenticated, user });
+            return;
+          }
+
+          console.log("Fetching analytics for userId:", userId);
+          const res = await getApplicationAnalytics(userId);
+          console.log("getApplicationAnalytics result:", res);
+          if (!res.success) {
+            throw new Error("Failed to fetch analytics data");
+          }
+
+          const monthRes = await getMonthlyData(userId);
+          if (!monthRes.success) {
+            throw new Error("Failed to fetch montly analytics data");
+          }
+
+          setMonthlyData(monthRes.data ?? []);
+          setStats(res.data);
+        } catch (err) {
+          const error = err as Error;
+          console.error("Error fetching analytics:", error.message);
+          toast.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail: `Failed to update analytics: ${error.message || "Unknown error"}`,
+          });
+        }
+      };
+
+      
+      const initialTimer = setTimeout(() => {
+        fetchAnalytics();
         setLoading(false);
       }, 1000);
+
+      
+      const handleApplicationsChanged = () => {
+        fetchAnalytics();
+      };
+      window.addEventListener("applications:changed", handleApplicationsChanged);
+
+      return () => {
+        clearTimeout(initialTimer);
+        window.removeEventListener("applications:changed", handleApplicationsChanged);
+      };
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   if (!isAuthenticated) {
     return (
@@ -203,8 +231,22 @@ const Analytics: React.FC = () => {
           <div className="space-y-4">
             <div className="p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Great progress!</strong> You&apos;ve applied to {stats.total} companies. 
-                Your {interviewRate}% interview rate is above average for your field.
+                <strong>Great progress!</strong> You&apos;ve applied to {stats.total} companies.{" "}
+                  {interviewRate >= 50 && (
+                    <>Your {interviewRate}% interview rate is excellent — you&apos;re doing amazing!</>
+                  )}
+
+                  {interviewRate >= 25 && interviewRate < 50 && (
+                    <>Your {interviewRate}% interview rate is solid — keep applying strategically.</>
+                  )}
+
+                  {interviewRate > 0 && interviewRate < 25 && (
+                    <>Your {interviewRate}% interview rate is below average — consider refining your resume or targeting different roles.</>
+                  )}
+
+                  {interviewRate === 0 && (
+                    <>You haven&apos;t received interviews yet — time to adjust your resume or application strategy.</>
+                  )}
               </p>
             </div>
             <div className="p-4 bg-green-50 rounded-lg">
@@ -216,6 +258,7 @@ const Analytics: React.FC = () => {
           </div>
         </div>
       </div>
+      <Toast ref={toast} />
     </div>
   );
 };

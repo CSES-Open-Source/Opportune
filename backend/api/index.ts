@@ -1,5 +1,5 @@
 // Explicitly tell module-alias where to find package.json in backend directory
-// @ts-ignore - module-alias doesn't have types
+// @ts-expect-error - module-alias doesn't have types
 import moduleAlias from "module-alias";
 
 moduleAlias(require.resolve("../package.json"));
