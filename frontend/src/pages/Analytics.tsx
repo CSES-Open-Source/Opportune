@@ -321,11 +321,10 @@ const Analytics: React.FC = () => {
 
   };
 
-  interface CustomTooltipProps {
-    payload: SankeyTooltipEntry[];
-  }
+  const CustomTooltip: React.FC<{ payload?: unknown }> = ({ payload }) => {
 
-  const CustomTooltip: React.FC<CustomTooltipProps> = (props) => {
+    const entries = Array.isArray(payload) ? payload : [];
+
     return (
       <div
         style={{
@@ -342,7 +341,7 @@ const Analytics: React.FC = () => {
           pointerEvents: "none",
         }}
       >
-        {props.payload.map((entry: SankeyTooltipEntry, idx: number) => (
+        {entries.map((entry: SankeyTooltipEntry, idx: number) => (
           <div key={idx} style={{ marginBottom: idx }}>
             <b>{entry.name}</b>: {entry.value}
           </div>
@@ -407,7 +406,7 @@ const Analytics: React.FC = () => {
                   nodePadding={30}
                   margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
                 >
-                  <Tooltip content={(props) => <CustomTooltip {...props} />} />
+                  <Tooltip content={props => <CustomTooltip {...props} />} />
                 </Sankey>
               </ResponsiveContainer>
             </div>
