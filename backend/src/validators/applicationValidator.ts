@@ -5,7 +5,7 @@ import { SortingOptions, Status } from "../models/Application";
 const DEFAULT_PAGE = 0;
 const DEFAULT_PER_PAGE = 10;
 
-const validateUserIdParam = param("userId")
+export const validateUserIdParam = param("userId")
   .isString()
   .notEmpty()
   .withMessage("User ID must be a non-empty string");
@@ -96,7 +96,7 @@ const validateProcess = [
     .withMessage("process must be an array of application statuses."),
   body("process.*.status")
     .toUpperCase()
-    .isIn(["APPLIED", "OA", "PHONE", "FINAL", "OFFER", "REJECTED"])
+    .isIn(["APPLIED", "OA", "PHONE", "FINAL", "OFFER", "REJECTED", "GHOSTED"])
     .withMessage(
       "Status must be one of: APPLIED, OA, PHONE, FINAL, OFFER, REJECTED",
     ),

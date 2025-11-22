@@ -8,6 +8,41 @@ import {
 } from "../types/Application";
 import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
 
+// Timeline entry for an application status
+export type TimelineEntry = {
+  status: string;
+  date: string | Date;
+  note?: string | null;
+};
+
+// Application timeline (with full process history)
+export type ApplicationTimeline = {
+  _id: string;
+  company?: string | null;
+  position?: string;
+  timeline: TimelineEntry[];
+};
+
+// chetan: fetching analytics values portion from backend
+export type ApplicationAnalytics = {
+  totalApplications: number;
+  successRate: string;
+  interviewRate: string;
+  offersReceived: number;
+  applicationsThisYear: number;
+  applicationStatus: Record<string, number>;
+  oa: number;
+  final: number;
+  applicationsByMonth: Record<string, number>;
+  phone: number;
+  ghosted: number;
+  rejected: number;
+  interviews: number;
+  applicationTimelines: ApplicationTimeline[];
+  insights?: { tip?: string };
+}
+
+
 function parseApplication(application: ApplicationJSON): Application {
   return {
     ...application,
@@ -131,6 +166,19 @@ export async function getApplicationsByUserID(
       data: json.data.map((application) => parseApplication(application)),
     };
     return { success: true, data: applications };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+// chetan: api call for fetching analytics data
+export async function getApplicationDetails(
+  userId: string,
+): Promise<APIResult<ApplicationAnalytics>> {
+  try {
+    const response = await get(`/api/applications/applied/analytics/${userId}`);
+    const json = (await response.json()) as ApplicationAnalytics;
+    return { success: true, data: json };
   } catch (error) {
     return handleAPIError(error);
   }

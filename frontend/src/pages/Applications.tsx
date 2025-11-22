@@ -20,13 +20,12 @@ const applicationColumns: ColumnDef<Application>[] = [
       return (
         <div className="flex flex-row items-center">
           <div
-            className={`w-[6px] h-[40.57px] mr-2 bg-opacity-60 ${
-              statusColors[
-                row.process && row.process.length > 0
-                  ? row.process[row.process.length - 1].status
-                  : ""
+            className={`w-[6px] h-[40.57px] mr-2 bg-opacity-60 ${statusColors[
+              row.process && row.process.length > 0
+                ? row.process[row.process.length - 1].status
+                : ""
               ]
-            }`}
+              }`}
           />
           <img
             src={row.company.logo || defaultLogo}
@@ -185,7 +184,7 @@ const Applications = () => {
           },
           {
             label: "Status",
-            options: ["Applied", "OA", "Phone", "Final", "Offer", "Rejected"],
+            options: ["Applied", "OA", "Phone", "Final", "Offer", "Rejected", "Ghosted"],
           },
         ]}
         onSubmitForm={setSearch}
