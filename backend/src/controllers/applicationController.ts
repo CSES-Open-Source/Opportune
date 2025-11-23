@@ -15,6 +15,7 @@ import mongoose, { PipelineStage } from "mongoose";
 interface ApplicationCreate {
   userId: string;
   company: mongoose.Types.ObjectId;
+  companyName: string;
   position: string;
   link?: string;
   location?: string;

@@ -21,6 +21,13 @@ const validateCompany = body("company")
   .withMessage("invalid company id. (Must be a Mongo ObjectID.)")
   .trim();
 
+const validateCompanyName = body("companyName")
+  .isString()
+  .withMessage("companyName must be a string.")
+  .trim()
+  .notEmpty()
+  .withMessage("companyName must be a non-empty string.");
+
 const validateLocation = body("location")
   .optional()
   .isString()
@@ -81,6 +88,7 @@ const validatePerPage = query("perPage")
 export const createSavedApplicationValidator = [
   validateUserId,
   validateCompany,
+  validateCompanyName,
   validatePosition,
   validateLocation,
   validateLink,
@@ -93,6 +101,7 @@ export const getSavedApplicationValidator = [validateParamId];
 export const updateSavedApplicationValidator = [
   validateParamId,
   validateCompany.optional(),
+  validateCompanyName.optional(),
   validatePosition.optional(),
   validateLink.optional(),
   validateLocation.optional(),

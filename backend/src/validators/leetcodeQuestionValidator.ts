@@ -20,10 +20,12 @@ const validateCompanyIdParam = param("companyId")
   .withMessage("invalid company id. (Must be a Mongo ObjectID.)")
   .trim();
 
-const validateUser = body("user")
+const validateUserId = body("userId")
   .isString()
-  .withMessage("invalid user id. (Must be a string)")
-  .trim();
+  .withMessage("invalid userId. (Must be a string)")
+  .trim()
+  .notEmpty()
+  .withMessage("userId must be a non-empty string.");
 
 const validateTitle = body("title")
   .isString()
@@ -105,7 +107,7 @@ export const getLeetcodeQuestionsValidator = [
 
 export const createLeetcodeQuestionValidator = [
   validateCompany,
-  validateUser,
+  validateUserId,
   validateTitle,
   validateURL,
   validateDifficulty,
@@ -116,7 +118,7 @@ export const getLeetcodeQuestionByIdValidator = [validateIdParam];
 
 export const updateLeetcodeQuestionValidator = [
   validateIdParam,
-  validateUser.optional(),
+  validateUserId.optional(),
   validateCompany.optional(),
   validateTitle.optional(),
   validateURL.optional(),

@@ -5,11 +5,10 @@ import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import { Schema } from "mongoose";
 import Company from "../models/Company";
-import User from "../models/User";
 
 // Interface for creating/updating a tip
 interface TipCreate {
-  user: string;
+  userId: string;
   company: Schema.Types.ObjectId;
   text: string;
 }
@@ -25,7 +24,6 @@ export const getAllTips = asyncHandler(async (req, res, _) => {
   // Retrieve all tips from the database
   const tips = await Tip.find()
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
     .lean()
     .exec();
 
@@ -55,7 +53,6 @@ export const createTip = asyncHandler(async (req, res, next) => {
 
   const populatedTip = await Tip.findById(newTip._id)
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
     .lean()
     .exec();
 
@@ -82,7 +79,6 @@ export const getTipById = asyncHandler(async (req, res, next) => {
   // Find the tip by ID
   const tip = await Tip.findById(id)
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
     .lean()
     .exec();
 
@@ -130,7 +126,6 @@ export const updateTipById = asyncHandler(async (req, res, next) => {
     { new: true, runValidators: true },
   )
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
     .lean()
     .exec();
 
@@ -189,7 +184,6 @@ export const getTipsByCompanyId = asyncHandler(async (req, res, next) => {
   // Find tips for the specified company with pagination
   const tips = await Tip.find({ company: id })
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
     .lean()
     .exec();
 

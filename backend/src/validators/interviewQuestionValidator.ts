@@ -19,10 +19,12 @@ const validateCompanyIdParam = param("companyId")
   .withMessage("invalid company id. (Must be a Mongo ObjectID.)")
   .trim();
 
-const validateUser = body("user")
+const validateUserId = body("userId")
   .isString()
-  .withMessage("invalid user id. (Must be a string)")
-  .trim();
+  .withMessage("invalid userId. (Must be a string)")
+  .trim()
+  .notEmpty()
+  .withMessage("userId must be a non-empty string.");
 
 const validateQuestion = body("question")
   .isString()
@@ -68,7 +70,7 @@ export const getInterviewQuestionsValidator = [
 
 export const createInterviewQuestionValidator = [
   validateCompany,
-  validateUser,
+  validateUserId,
   validateQuestion,
   validateDate,
 ];
@@ -77,7 +79,7 @@ export const getInterviewQuestionByIdValidator = [validateIdParam];
 
 export const updateInterviewQuestionValidator = [
   validateIdParam,
-  validateUser.optional(),
+  validateUserId.optional(),
   validateCompany.optional(),
   validateQuestion.optional(),
   validateDate,

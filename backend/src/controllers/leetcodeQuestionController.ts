@@ -6,12 +6,11 @@ import validationErrorParser from "../util/validationErrorParser";
 import createHttpError from "http-errors";
 import Company from "../models/Company";
 import mongoose from "mongoose";
-import User from "../models/User";
 
 // interface for creating/updating leetcodeQuestions
 interface leetcodeQuestionCreate {
   company: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId;
+  userId: string;
   title: string;
   url: string;
   difficulty: Difficulty;
@@ -61,7 +60,6 @@ export const getLeetcodeQuestions = asyncHandler(async (req, res, next) => {
       .skip(page * perPage)
       .limit(perPage)
       .populate({ path: "company", model: Company })
-      .populate({ path: "user", model: User })
       .lean()
       .exec(),
   ]);
@@ -106,7 +104,6 @@ export const createLeetcodeQuestion = asyncHandler(async (req, res, next) => {
     newLeetcodeQuestion._id,
   )
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
     .lean()
     .exec();
 
@@ -134,7 +131,6 @@ export const getLeetcodeQuestionById = asyncHandler(async (req, res, next) => {
   // Find leetcodeQuestion by ID
   const leetcodeQuestion = await LeetcodeQuestion.findById(id)
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
     .lean()
     .exec();
 
@@ -176,7 +172,6 @@ export const updateLeetcodeQuestion = asyncHandler(async (req, res, next) => {
     { new: true, runValidators: true },
   )
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
     .lean()
     .exec();
 
@@ -226,7 +221,6 @@ export const getLeetcodeQuestionByCompanyId = asyncHandler(
       company: companyId,
     })
       .populate({ path: "company", model: Company })
-      .populate({ path: "user", model: User })
       .lean()
       .exec();
 
