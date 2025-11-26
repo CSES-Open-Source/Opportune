@@ -376,10 +376,10 @@ const Analytics: React.FC = () => {
   const interviewRate = stats.total > 0 ? Math.round((stats.interviews / stats.total) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="h-screen overflow-auto bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Application Analytics</h1>
           <p className="text-gray-600">Track your internship application progress and success rates</p>
         </div>
