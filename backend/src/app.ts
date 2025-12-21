@@ -12,6 +12,7 @@ import articleRouter from "../src/routes/articleRoutes";
 import errorHandler from "../src/middlewares/errorHandler";
 import { logger } from "../src/middlewares/logger";
 import tipRouter from "../src/routes/tipRoutes";
+import profileRoutes from "../src/routes/profileRoutes";
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use(
 );
 
 app.use("/api/users", userRouter);
+app.use("/api/profile", profileRoutes);
 app.use("/api/applications/applied", applicationRouter);
 app.use("/api/companies", companyRouter);
 app.use("/api/applications/saved", savedApplicationRouter);

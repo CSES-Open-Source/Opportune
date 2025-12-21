@@ -7,7 +7,7 @@ export enum UserType {
 }
 
 export enum ClassLevel {
-  Freshman = "FRESHMAN",
+  Freshmen = "FRESHMEN",
   Sophomore = "SOPHOMORE",
   Junior = "JUNIOR",
   Senior = "SENIOR",
@@ -28,6 +28,12 @@ export interface Student extends BaseUser {
   type: UserType.Student;
   major?: string;
   classLevel?: ClassLevel;
+  school?: string;
+  fieldOfInterest?: string[];
+  projects?: string[];
+  hobbies?: string[];
+  skills?: string[];
+  companiesOfInterest?: string[];
 }
 
 export interface Alumni extends BaseUser {

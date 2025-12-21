@@ -28,6 +28,10 @@ const Profile = () => {
 
   const { user, updateUser } = useAuth();
 
+  const [studentProfile, setStudentProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
+  const [alumniProfile, setAlumniProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
+
+
   const [isEditing, setIsEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState<UpdateUserRequest>(
     user || { type: UserType.Student },
@@ -37,8 +41,33 @@ const Profile = () => {
   const [canSave, setCanSave] = useState<boolean>(true);
 
   useEffect(() => {
+    if (!user?._id) return;
+
+    if (user?.type === UserType.Student) {
+      fetch(`/api/profile/student/${user._id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data || data.error) {
+            setStudentProfile({ userId: user._id });
+          } else {
+            setStudentProfile(data);
+          }
+        });
+    }
+    if (user?.type === UserType.Alumni) {
+      fetch(`/api/profile/alumni/${user._id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data || data.error) {
+            setAlumniProfile({ userId: user._id });
+          } else {
+            setAlumniProfile(data);
+          }
+        });
+    }
+
     setCanSave(isValidLinkedIn && isValidPhoneNumber);
-  }, [isValidLinkedIn, isValidPhoneNumber]);
+  }, [user, isValidLinkedIn, isValidPhoneNumber]);
 
   const onSave = () => {
     if (!user) {
@@ -59,6 +88,13 @@ const Profile = () => {
       if (response.success) {
         setIsEditing(false);
       }
+
+      if (updatedUser.type === UserType.Student) {
+        saveStudentProfile();
+      } else if (updatedUser.type === UserType.Alumni) {
+        saveAlumniProfile();
+      }
+
     });
   };
 
@@ -66,6 +102,64 @@ const Profile = () => {
     if (user) {
       setUpdatedUser(user);
       setIsEditing(true);
+    }
+  };
+
+  const saveStudentProfile = () => {
+    if (!studentProfile) return;
+    if (!studentProfile._id) {
+      // No profile in db, then create profile
+      fetch(`/api/profile/student`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(studentProfile),
+      })
+        .then(r => r.json())
+        .then((data) => {
+          setStudentProfile(data);
+          console.log("created student profile", data);
+        });
+    } else {
+      // updating profile
+      fetch(`/api/profile/student/${user?._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(studentProfile),
+      })
+        .then(r => r.json())
+        .then((data) => {
+          setStudentProfile(data);
+          console.log("saved student profile", data);
+        });
+    }
+  };
+
+  const saveAlumniProfile = () => {
+    if (!alumniProfile) return;
+    if (!alumniProfile._id) {
+      // No profile in db, then create profile
+      fetch(`/api/profile/alumni`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(alumniProfile),
+      })
+        .then(r => r.json())
+        .then((data) => {
+          setAlumniProfile(data);
+          console.log("created alumni profile", data);
+        });
+    } else {
+      // updating profile
+      fetch(`/api/profile/alumni/${user?._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(alumniProfile),
+      })
+        .then(r => r.json())
+        .then((data) => {
+          setAlumniProfile(data);
+          console.log("saved alumni profile", data);
+        });
     }
   };
 
@@ -264,11 +358,10 @@ const Profile = () => {
                       type="text"
                       value={updatedUser.phoneNumber}
                       placeholder="Add phone number"
-                      className={`w-full p-2 border-2 focus:border-blue-500 focus:outline-none rounded-md ${
-                        isValidPhoneNumber
-                          ? "border-gray-300"
-                          : "border-red-600"
-                      }`}
+                      className={`w-full p-2 border-2 focus:border-blue-500 focus:outline-none rounded-md ${isValidPhoneNumber
+                        ? "border-gray-300"
+                        : "border-red-600"
+                        }`}
                       onChange={onPhoneNumberChanged}
                     />
                   ) : (
@@ -293,9 +386,8 @@ const Profile = () => {
                   type="url"
                   value={updatedUser.linkedIn}
                   placeholder="Add LinkedIn profile"
-                  className={`w-full p-2 border-2 rounded-md focus:border-blue-500 focus:outline-none ${
-                    isValidLinkedIn ? "border-gray-300" : "border-red-600"
-                  }`}
+                  className={`w-full p-2 border-2 rounded-md focus:border-blue-500 focus:outline-none ${isValidLinkedIn ? "border-gray-300" : "border-red-600"
+                    }`}
                   onChange={onLinkedInChanged}
                 />
               ) : user.linkedIn ? (
@@ -338,11 +430,23 @@ const Profile = () => {
                     <p className="text-gray-800">
                       {user.classLevel
                         ? user.classLevel.charAt(0).toUpperCase() +
-                          user.classLevel.slice(1).toLowerCase()
+                        user.classLevel.slice(1).toLowerCase()
                         : "Not specified"}
                     </p>
                   </div>
                 </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>School</span>
+                    </label>
+                    <p className="text-gray-800">
+                      {user.school
+                        ? user.school.charAt(0).toUpperCase() +
+                        user.school.slice(1).toLowerCase()
+                        : "Not specified"}
+                    </p>
+                  </div>
               </div>
             )}
 
@@ -527,9 +631,8 @@ const Profile = () => {
                 </button>
                 <button
                   onClick={onSave}
-                  className={`px-4 py-2 text-white rounded-md ${
-                    canSave ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-300"
-                  }`}
+                  className={`px-4 py-2 text-white rounded-md ${canSave ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-300"
+                    }`}
                   disabled={!canSave}
                 >
                   Save Changes
