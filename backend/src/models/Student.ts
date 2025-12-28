@@ -3,17 +3,17 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface StudentDocument extends Document {
   userId: string;
   school: string;
-  fieldOfInterest: [string];
-  projects: [string];
-  hobbies: [string];
-  skills: [string];
-  companiesOfInterest: [string];
+  fieldOfInterest: string[];
+  projects: string[];
+  hobbies: string[];
+  skills: string[];
+  companiesOfInterest: string[];
 }
 
 const StudentSchema = new Schema<StudentDocument>({
   userId: {
     type: String,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   school: {
@@ -22,23 +22,23 @@ const StudentSchema = new Schema<StudentDocument>({
   },
   fieldOfInterest: {
     type: [String],
-    required: false,
+    default: [],
   },
   projects: {
     type: [String],
-    required: false,
+    default: [],
   },
   hobbies: {
     type: [String],
-    required: true,
+    default: [],
   },
   skills: {
     type: [String],
-    required: false,
+    default: [],
   },
   companiesOfInterest: {
     type: [String],
-    required: false,
+    default: [],
   },
 });
 

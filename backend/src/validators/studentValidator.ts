@@ -58,3 +58,12 @@ export const createStudentValidator = [
   validateSkills,
   validateCompaniesOfInterest,
 ];
+
+export const updateStudentValidator = [
+  validateSchool.optional(),
+  validateFieldOfInterest.optional(),
+  validateProjects.optional(),
+  validateHobbies.optional(),
+  validateSkills.optional(),
+  validateCompaniesOfInterest.optional(),
+];

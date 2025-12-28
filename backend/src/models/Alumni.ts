@@ -12,7 +12,7 @@ export interface AlumniDocument extends Document {
 const AlumniSchema = new Schema<AlumniDocument>({
   userId: {
     type: String,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   organizations: {

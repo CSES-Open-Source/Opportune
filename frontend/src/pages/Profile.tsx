@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState} from "react";
 import {
   LuGraduationCap,
   LuBriefcase,
@@ -30,7 +30,6 @@ const Profile = () => {
 
   const [studentProfile, setStudentProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
   const [alumniProfile, setAlumniProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
-
 
   const [isEditing, setIsEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState<UpdateUserRequest>(
@@ -434,7 +433,7 @@ const Profile = () => {
                         : "Not specified"}
                     </p>
                   </div>
-                </div>
+                
 
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">
@@ -447,6 +446,7 @@ const Profile = () => {
                         : "Not specified"}
                     </p>
                   </div>
+                </div>
               </div>
             )}
 
@@ -489,6 +489,24 @@ const Profile = () => {
                       className="w-full border-2 text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <div className="flex items-center gap-2">
+                        <span>School</span>
+                      </div>
+                    </label>
+                    <input
+                      type="text"
+                      value={updatedUser.school}
+                      placeholder="Enter your school"
+                      onChange={(e) =>
+                        handleInputChange("school", e.target.value)
+                      }
+                      className="w-full p-2 border-2 focus:outline-none focus:border-blue-500 border-gray-300 rounded-md"
+                    />
+                  </div>
+                  
                 </div>
               </div>
             )}
