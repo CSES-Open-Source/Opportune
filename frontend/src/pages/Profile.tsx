@@ -446,6 +446,23 @@ const Profile = () => {
                         : "Not specified"}
                     </p>
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Field Of Interest</span>
+                    </label>
+                    <p className="text-gray-800">
+                      {user.fieldOfInterest && user.fieldOfInterest.length > 0
+                        ? user.fieldOfInterest.map((field, index, arr) => (
+                            <span key={index}>
+                              {field.charAt(0).toUpperCase() +
+                              field.slice(1).toLowerCase()}
+                              {index < arr.length - 1 ? ", " : ""}
+                            </span>
+                          ))
+                        : "Not specified"}
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
@@ -506,7 +523,25 @@ const Profile = () => {
                       className="w-full p-2 border-2 focus:outline-none focus:border-blue-500 border-gray-300 rounded-md"
                     />
                   </div>
-                  
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <div className="flex items-center gap-2">
+                        <span>Field Of Interest</span>
+                      </div>
+                    </label>
+                    <input
+                      type="text"
+                      value={updatedUser.fieldOfInterest}
+                      placeholder="Enter your field of interest"
+                      onChange={(e) =>
+                        handleInputChange("fieldOfInterest", e.target.value)
+                      }
+                      className="w-full p-2 border-2 focus:outline-none focus:border-blue-500 border-gray-300 rounded-md"
+                    />
+                  </div>
+                    
+
                 </div>
               </div>
             )}

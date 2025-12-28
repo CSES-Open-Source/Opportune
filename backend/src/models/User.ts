@@ -57,6 +57,31 @@ const userSchema = new Schema({
     type: String,
     required: false, // also eventually an enum?
   },
+  school:{
+    type: String,
+    required: false,
+    trim: true,
+  },
+  fieldOfInterest: {
+    type: [String],
+    default: [],
+  },
+  projects: {
+    type: [String],
+    default: [],
+  },
+  hobbies: {
+    type: [String],
+    default: [],
+  },
+  skills: {
+    type: [String],
+    default: [],
+  },
+  companiesOfInterest: {
+    type: [String],
+    default: [],
+  },
   // Only for alumni
   position: {
     type: String,
