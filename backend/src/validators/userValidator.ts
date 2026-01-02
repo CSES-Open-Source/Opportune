@@ -152,6 +152,21 @@ const validateFieldOfInterest = body("fieldOfInterest")
     return true;
   });
 
+  const validateProjects = body("projects")
+  .optional()
+  .isArray()
+  .withMessage("Projects must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in projects must be a string.");
+        }
+      }
+    }
+    return true;
+  });
+
 export const createUserValidator = [
   validateIdBody,
   validateEmail,
@@ -165,6 +180,7 @@ export const createUserValidator = [
   validateCompany,
   validateShareProfile,
   validatePosition,
+
 ];
 
 export const getUservalidator = [validateIdParam];
@@ -183,6 +199,7 @@ export const updateUserValidator = [
   validateShareProfile,
   validatePosition,
   validateFieldOfInterest,
+  validateProjects,
 ];
 
 export const deleteUserValidator = [validateIdParam];

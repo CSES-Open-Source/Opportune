@@ -21,6 +21,10 @@ interface StudentResponse extends BaseUserResponse {
   classLevel?: string;
   school?: string;
   fieldOfInterest?: string[];
+  projects?: string[];
+  hobbies?: string[];
+  skills?: string[];
+  companiesOfInterest?: string[];
 }
 
 interface AlumniResponse extends BaseUserResponse {
@@ -144,6 +148,10 @@ export const getUserById = asyncHandler(async (req, res, next) => {
       classLevel: foundUser.classLevel,
       school: foundUser.school,
       fieldOfInterest: foundUser.fieldOfInterest,
+      projects: foundUser.projects,
+      hobbies: foundUser.hobbies,
+      skills: foundUser.skills,
+      companiesOfInterest: foundUser.companiesOfInterest,
     } as StudentResponse;
   } else {
     responseData = {

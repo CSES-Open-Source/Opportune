@@ -30,32 +30,64 @@ const validateFieldOfInterest = body("fieldOfInterest")
   });
 
 const validateProjects = body("projects")
-  .isArray({ min: 1 })
-  .withMessage("projects must be an array.")
-  .trim()
-  .notEmpty()
-  .withMessage("projects is required.");
+  .optional()
+  .isArray()
+  .withMessage("Projects must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in projects must be a string.");
+        }
+      }
+    }
+    return true;
+  });
 
 const validateHobbies = body("hobbies")
-  .isArray({ min: 1 })
-  .withMessage("hobbies must be an array.")
-  .trim()
-  .notEmpty()
-  .withMessage("hobbies is required.");
+  .optional()
+  .isArray()
+  .withMessage("Hobbies must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in hobbies must be a string.");
+        }
+      }
+    }
+    return true;
+  });
 
 const validateSkills = body("skills")
-  .isArray({ min: 1 })
-  .withMessage("skills must be an array.")
-  .trim()
-  .notEmpty()
-  .withMessage("skills is required.");
+  .optional()
+  .isArray()
+  .withMessage("Skills must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in skills must be a string.");
+        }
+      }
+    }
+    return true;
+  });
 
 const validateCompaniesOfInterest = body("companiesOfInterest")
-  .isArray({ min: 1 })
-  .withMessage("companiesOfInterest must be an array.")
-  .trim()
-  .notEmpty()
-  .withMessage("companiesOfInterest is required.");
+  .optional()
+  .isArray()
+  .withMessage("Companies of Interest must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in companiesOfInterest must be a string.");
+        }
+      }
+    }
+    return true;
+  });
 
 export const createStudentValidator = [
   validateIdBody,

@@ -33,8 +33,6 @@ const Profile = () => {
   const [studentProfile, setStudentProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
   const [alumniProfile, setAlumniProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
 
-  const [fieldOfInterest, setFieldOfInterest] = useState<string[]>([]);
-
   const [isEditing, setIsEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState<UpdateUserRequest>(
     user || { type: UserType.Student },
@@ -69,15 +67,18 @@ const Profile = () => {
         });
     }
 
-    // Initialize fieldOfInterest from user data for students
-    if (user?.type === UserType.Student) {
-      if (user?.fieldOfInterest && Array.isArray(user.fieldOfInterest)) {
-        setFieldOfInterest(user.fieldOfInterest);
-      } else {
-        setFieldOfInterest([]);
-      }
-    }
 
+  //Adds student array fields to the updated user to allow for edits to these fields to be saved
+  if (user?.type === UserType.Student) {
+    setUpdatedUser(prev => ({
+      ...prev,
+      fieldOfInterest: Array.isArray(user?.fieldOfInterest) ? user.fieldOfInterest : [],
+      projects: Array.isArray(user?.projects) ? user.projects : [],
+      hobbies: Array.isArray(user?.hobbies) ? user.hobbies : [],
+      skills: Array.isArray(user?.skills) ? user.skills : [],
+      companiesOfInterest: Array.isArray(user?.companiesOfInterest) ? user.companiesOfInterest : [],
+    }));
+  }
     setCanSave(isValidLinkedIn && isValidPhoneNumber);
   }, [user, isValidLinkedIn, isValidPhoneNumber]);
 
@@ -86,7 +87,7 @@ const Profile = () => {
       return;
     }
 
-    const updates = { ...updatedUser, fieldOfInterest };
+    const updates = { ...updatedUser };
 
     // Prevent updating company when unnecessary because it triggers reupload to AWS
     if (
@@ -479,6 +480,86 @@ const Profile = () => {
                   <p className="text-gray-800">Not specified</p>
                   )}
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Projects</span>
+                    </label>
+                    {Array.isArray(user.projects) && user.projects.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.projects.map((project, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {project.charAt(0).toUpperCase() + project.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Hobbies</span>
+                    </label>
+                    {Array.isArray(user.hobbies) && user.hobbies.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.hobbies.map((hobby, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {hobby.charAt(0).toUpperCase() + hobby.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Skills</span>
+                    </label>
+                    {Array.isArray(user.skills) && user.skills.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {skill.charAt(0).toUpperCase() + skill.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Companies of Interest</span>
+                    </label>
+                    {Array.isArray(user.companiesOfInterest) && user.companiesOfInterest.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.companiesOfInterest.map((companiesOfInterest, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {companiesOfInterest.charAt(0).toUpperCase() + companiesOfInterest.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                  </div>
                 </div>
               </div>
             )}
@@ -543,14 +624,52 @@ const Profile = () => {
                   <div className="space-y-6 max-w-xl">
                     <AddableCardList
                       label="Field Of Interest"
-                      values={fieldOfInterest}
+                      values={updatedUser.fieldOfInterest || []}
                       placeholder="Add a field of interest"
                       maxItems={5}
-                      onChange={setFieldOfInterest}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, fieldOfInterest: value }))}
                     />
                   </div>
-                    
 
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Projects"
+                      values={updatedUser.projects || []}
+                      placeholder="Add a project"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, projects: value }))}
+                    />
+                  </div>
+
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Hobbies"
+                      values={updatedUser.hobbies || []}
+                      placeholder="Add a hobby"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, hobbies: value }))}
+                    />
+                  </div>
+
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Skills"
+                      values={updatedUser.skills || []}
+                      placeholder="Add a skill"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, skills: value }))}
+                    />
+                  </div>
+
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Companies of Interest"
+                      values={updatedUser.companiesOfInterest || []}
+                      placeholder="Add a company of interest"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, companiesOfInterest: value }))}
+                    />
+                  </div>
                 </div>
               </div>
             )}
