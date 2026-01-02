@@ -30,10 +30,6 @@ export interface Student extends BaseUser {
   classLevel?: ClassLevel;
   school?: string;
   fieldOfInterest?: string[];
-  projects?: string[];
-  hobbies?: string[];
-  skills?: string[];
-  companiesOfInterest?: string[];
 }
 
 export interface Alumni extends BaseUser {
@@ -57,10 +53,6 @@ export interface UserJSON {
   classLevel?: ClassLevel;
   school?: string;
   fieldOfInterest?: string[];
-  projects?: string[];
-  hobbies?: string[];
-  skills?: string[];
-  companiesOfInterest?: string[];
   company?: Company;
   shareProfile?: boolean;
   position?: string;
@@ -90,10 +82,6 @@ export interface UpdateUserRequest {
   classLevel?: ClassLevel;
   school?: string;
   fieldOfInterest?: string[];
-  projects?: string[];
-  hobbies?: string[];
-  skills?: string[];
-  companiesOfInterest?: string[];
   company?: Company;
   shareProfile?: boolean;
   position?: string;

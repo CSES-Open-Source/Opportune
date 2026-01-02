@@ -66,22 +66,6 @@ const userSchema = new Schema({
     type: [String],
     default: [],
   },
-  projects: {
-    type: [String],
-    default: [],
-  },
-  hobbies: {
-    type: [String],
-    default: [],
-  },
-  skills: {
-    type: [String],
-    default: [],
-  },
-  companiesOfInterest: {
-    type: [String],
-    default: [],
-  },
   // Only for alumni
   position: {
     type: String,

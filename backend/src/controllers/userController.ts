@@ -11,6 +11,7 @@ interface BaseUserResponse {
   email: string;
   name: string;
   type: string;
+  profilePicture?: string;
 }
 
 interface StudentResponse extends BaseUserResponse {
@@ -18,6 +19,8 @@ interface StudentResponse extends BaseUserResponse {
   phoneNumber?: string;
   major?: string;
   classLevel?: string;
+  school?: string;
+  fieldOfInterest?: string[];
 }
 
 interface AlumniResponse extends BaseUserResponse {
@@ -129,6 +132,7 @@ export const getUserById = asyncHandler(async (req, res, next) => {
     email: foundUser.email,
     name: foundUser.name,
     type: foundUser.type,
+    profilePicture: foundUser.profilePicture,
   };
 
   if (foundUser.type === UserType.Student) {
@@ -138,6 +142,8 @@ export const getUserById = asyncHandler(async (req, res, next) => {
       phoneNumber: foundUser.phoneNumber,
       major: foundUser.major,
       classLevel: foundUser.classLevel,
+      school: foundUser.school,
+      fieldOfInterest: foundUser.fieldOfInterest,
     } as StudentResponse;
   } else {
     responseData = {

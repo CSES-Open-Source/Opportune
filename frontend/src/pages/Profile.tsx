@@ -10,6 +10,7 @@ import { FaLinkedin } from "react-icons/fa";
 import { FiPhone } from "react-icons/fi";
 import { FiEdit } from "react-icons/fi";
 import { useAuth } from "../contexts/useAuth";
+import { AddableCardList } from "../components/profile/AddableCardList";
 import {
   Alumni,
   ClassLevel,
@@ -28,8 +29,11 @@ const Profile = () => {
 
   const { user, updateUser } = useAuth();
 
+
   const [studentProfile, setStudentProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
   const [alumniProfile, setAlumniProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
+
+  const [fieldOfInterest, setFieldOfInterest] = useState<string[]>([]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState<UpdateUserRequest>(
@@ -65,6 +69,15 @@ const Profile = () => {
         });
     }
 
+    // Initialize fieldOfInterest from user data for students
+    if (user?.type === UserType.Student) {
+      if (user?.fieldOfInterest && Array.isArray(user.fieldOfInterest)) {
+        setFieldOfInterest(user.fieldOfInterest);
+      } else {
+        setFieldOfInterest([]);
+      }
+    }
+
     setCanSave(isValidLinkedIn && isValidPhoneNumber);
   }, [user, isValidLinkedIn, isValidPhoneNumber]);
 
@@ -73,7 +86,7 @@ const Profile = () => {
       return;
     }
 
-    const updates = { ...updatedUser };
+    const updates = { ...updatedUser, fieldOfInterest };
 
     // Prevent updating company when unnecessary because it triggers reupload to AWS
     if (
@@ -449,19 +462,22 @@ const Profile = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">
-                      <span>Field Of Interest</span>
+                      <span>Field of Interest</span>
                     </label>
-                    <p className="text-gray-800">
-                      {user.fieldOfInterest && user.fieldOfInterest.length > 0
-                        ? user.fieldOfInterest.map((field, index, arr) => (
-                            <span key={index}>
-                              {field.charAt(0).toUpperCase() +
-                              field.slice(1).toLowerCase()}
-                              {index < arr.length - 1 ? ", " : ""}
-                            </span>
-                          ))
-                        : "Not specified"}
-                    </p>
+                    {Array.isArray(user.fieldOfInterest) && user.fieldOfInterest.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.fieldOfInterest.map((field, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {field.charAt(0).toUpperCase() + field.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
                   </div>
                 </div>
               </div>
@@ -524,20 +540,13 @@ const Profile = () => {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
-                      <div className="flex items-center gap-2">
-                        <span>Field Of Interest</span>
-                      </div>
-                    </label>
-                    <input
-                      type="text"
-                      value={updatedUser.fieldOfInterest}
-                      placeholder="Enter your field of interest"
-                      onChange={(e) =>
-                        handleInputChange("fieldOfInterest", e.target.value)
-                      }
-                      className="w-full p-2 border-2 focus:outline-none focus:border-blue-500 border-gray-300 rounded-md"
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Field Of Interest"
+                      values={fieldOfInterest}
+                      placeholder="Add a field of interest"
+                      maxItems={5}
+                      onChange={setFieldOfInterest}
                     />
                   </div>
                     

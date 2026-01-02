@@ -137,6 +137,21 @@ const validateIndustry = query("industry")
   .withMessage("industry must be a string.")
   .trim();
 
+const validateFieldOfInterest = body("fieldOfInterest")
+  .optional()
+  .isArray()
+  .withMessage("fieldOfInterest must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in fieldOfInterest must be a string.");
+        }
+      }
+    }
+    return true;
+  });
+
 export const createUserValidator = [
   validateIdBody,
   validateEmail,
@@ -167,6 +182,7 @@ export const updateUserValidator = [
   validateCompany,
   validateShareProfile,
   validatePosition,
+  validateFieldOfInterest,
 ];
 
 export const deleteUserValidator = [validateIdParam];

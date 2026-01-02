@@ -15,11 +15,19 @@ const validateSchool = body("school")
   .withMessage("school is required.");
 
 const validateFieldOfInterest = body("fieldOfInterest")
-  .isArray({ min: 1 })
+  .optional()
+  .isArray()
   .withMessage("fieldOfInterest must be an array.")
-  .trim()
-  .notEmpty()
-  .withMessage("fieldOfInterest is required.");
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in fieldOfInterest must be a string.");
+        }
+      }
+    }
+    return true;
+  });
 
 const validateProjects = body("projects")
   .isArray({ min: 1 })
