@@ -14,13 +14,6 @@ const validateOrganization = body("organizations")
   .notEmpty()
   .withMessage("fieldOfInterest is required.");
 
-const validatePreviousEmployers = body("previousEmployers")
-  .isArray({ min: 1 })
-  .withMessage("fieldOfInterest must be an array.")
-  .trim()
-  .notEmpty()
-  .withMessage("fieldOfInterest is required.");
-
 const validateSpecializations = body("specializations")
   .isArray({ min: 1 })
   .withMessage("fieldOfInterest must be an array.")
@@ -28,25 +21,16 @@ const validateSpecializations = body("specializations")
   .notEmpty()
   .withMessage("fieldOfInterest is required.");
 
-const validateHobbies = body("hobbies")
-  .isArray({ min: 1 })
-  .withMessage("fieldOfInterest must be an array.")
-  .trim()
-  .notEmpty()
-  .withMessage("fieldOfInterest is required.");
 
-const validateSkills = body("skills")
-  .isArray({ min: 1 })
-  .withMessage("fieldOfInterest must be an array.")
-  .trim()
-  .notEmpty()
-  .withMessage("fieldOfInterest is required.");
 
 export const createAlumniValidator = [
   validateIdBody,
   validateOrganization,
-  validatePreviousEmployers,
-  validateSkills,
   validateSpecializations,
-  validateHobbies,
+];
+
+export const updateAlumniValidator = [
+  validateIdBody.optional(),
+  validateOrganization.optional(),
+  validateSpecializations.optional(),
 ];

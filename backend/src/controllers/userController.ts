@@ -12,6 +12,8 @@ interface BaseUserResponse {
   name: string;
   type: string;
   profilePicture?: string;
+  hobbies?: string[];
+  skills?: string[];
 }
 
 interface StudentResponse extends BaseUserResponse {
@@ -21,9 +23,7 @@ interface StudentResponse extends BaseUserResponse {
   classLevel?: string;
   school?: string;
   fieldOfInterest?: string[];
-  projects?: string[];
-  hobbies?: string[];
-  skills?: string[];
+  projects?: string[]; 
   companiesOfInterest?: string[];
 }
 
@@ -33,6 +33,8 @@ interface AlumniResponse extends BaseUserResponse {
   company?: mongoose.Types.ObjectId;
   shareProfile?: boolean;
   position?: string;
+  organizations?: string[];
+  specializations?: string[];
 }
 
 type UserResponse = StudentResponse | AlumniResponse;
@@ -137,6 +139,8 @@ export const getUserById = asyncHandler(async (req, res, next) => {
     name: foundUser.name,
     type: foundUser.type,
     profilePicture: foundUser.profilePicture,
+    hobbies: foundUser.hobbies,
+    skills: foundUser.skills,
   };
 
   if (foundUser.type === UserType.Student) {
@@ -159,6 +163,8 @@ export const getUserById = asyncHandler(async (req, res, next) => {
       company: foundUser.company,
       shareProfile: foundUser.shareProfile,
       position: foundUser.position,
+      organizations: foundUser.organizations,
+      specializations: foundUser.specializations,
     } as AlumniResponse;
 
     if (foundUser.shareProfile) {

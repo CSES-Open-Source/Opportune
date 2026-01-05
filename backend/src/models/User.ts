@@ -46,13 +46,20 @@ const userSchema = new Schema({
     required: false,
     trim: true,
   },
+  hobbies: {
+    type: [String],
+    default: [],
+  },
+  skills: {
+    type: [String],
+    default: [],
+  },
   // Only for students
   major: {
     type: String,
     required: false,
     trim: true,
   },
-  // Only for students
   classLevel: {
     type: String,
     required: false, // also eventually an enum?
@@ -70,14 +77,7 @@ const userSchema = new Schema({
     type: [String],
     default: [],
   },
-  hobbies: {
-    type: [String],
-    default: [],
-  },
-  skills: {
-    type: [String],
-    default: [],
-  },
+  
   companiesOfInterest: {
     type: [String],
     default: [],
@@ -88,15 +88,21 @@ const userSchema = new Schema({
     required: false,
     trim: true,
   },
-  // Only for alumni
   company: {
     type: Schema.Types.ObjectId,
     required: false,
   },
-  // Only for alumni
   shareProfile: {
     type: Boolean,
     required: false,
+  },
+  organizations: {
+    type: [String],
+    required: true,
+  },
+  specializations: {
+    type: [String],
+    required: true,
   },
 });
 

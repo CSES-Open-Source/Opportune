@@ -22,6 +22,8 @@ export interface BaseUser {
   type: UserType;
   linkedIn?: string;
   phoneNumber?: string;
+  hobbies?: string[];
+  skills?: string[];
 }
 
 export interface Student extends BaseUser {
@@ -31,8 +33,6 @@ export interface Student extends BaseUser {
   school?: string;
   fieldOfInterest?: string[];
   projects?: string[];
-  hobbies?: string[];
-  skills?: string[];
   companiesOfInterest?: string[];
 }
 
@@ -41,6 +41,8 @@ export interface Alumni extends BaseUser {
   company?: Company;
   shareProfile?: boolean;
   position?: string;
+  organizations?: string[];
+  specializations?: string[];
 }
 
 export type User = Student | Alumni;
@@ -53,17 +55,19 @@ export interface UserJSON {
   profilePicture: string;
   linkedIn?: string;
   phoneNumber?: string;
+  hobbies?: string[];
+  skills?: string[];
   major?: string;
   classLevel?: ClassLevel;
   school?: string;
   fieldOfInterest?: string[];
   projects?: string[];
-  hobbies?: string[];
-  skills?: string[];
   companiesOfInterest?: string[];
   company?: Company;
   shareProfile?: boolean;
   position?: string;
+  organizations?: string[];
+  specializations?: string[];
 }
 
 export interface CreateUserRequest {
@@ -86,17 +90,19 @@ export interface UpdateUserRequest {
   type?: UserType;
   linkedIn?: string;
   phoneNumber?: string;
+  hobbies?: string[];
+  skills?: string[];
   major?: string;
   classLevel?: ClassLevel;
   school?: string;
   fieldOfInterest?: string[];
   projects?: string[];
-  hobbies?: string[];
-  skills?: string[];
   companiesOfInterest?: string[];
   company?: Company;
   shareProfile?: boolean;
   position?: string;
+  organizations?: string[];
+  specializations?: string[];
 }
 
 export interface GetAlumniQuery {
@@ -104,4 +110,6 @@ export interface GetAlumniQuery {
   perPage: number;
   query?: string;
   industry?: string[];
+  organizations?: string[];
+  specializations?: string[];
 }

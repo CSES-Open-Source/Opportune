@@ -79,6 +79,16 @@ const Profile = () => {
       companiesOfInterest: Array.isArray(user?.companiesOfInterest) ? user.companiesOfInterest : [],
     }));
   }
+
+  if (user?.type === UserType.Alumni) {
+    setUpdatedUser(prev => ({
+      ...prev,
+      organizations: Array.isArray(user?.organizations) ? user.organizations : [],
+      specializations: Array.isArray(user?.specializations) ? user.specializations : [],
+      hobbies: Array.isArray(user?.hobbies) ? user.hobbies : [],
+      skills: Array.isArray(user?.skills) ? user.skills : [],
+    }));
+  }
     setCanSave(isValidLinkedIn && isValidPhoneNumber);
   }, [user, isValidLinkedIn, isValidPhoneNumber]);
 
@@ -724,6 +734,86 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Organizations</span>
+                    </label>
+                    {Array.isArray(user.organizations) && user.organizations.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.organizations.map((organization, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {organization.charAt(0).toUpperCase() + organization.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Specializations</span>
+                    </label>
+                    {Array.isArray(user.specializations) && user.specializations.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.specializations.map((specialization, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {specialization.charAt(0).toUpperCase() + specialization.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Hobbies</span>
+                    </label>
+                    {Array.isArray(user.hobbies) && user.hobbies.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.hobbies.map((hobby, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {hobby.charAt(0).toUpperCase() + hobby.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Skills</span>
+                    </label>
+                    {Array.isArray(user.skills) && user.skills.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {skill.charAt(0).toUpperCase() + skill.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                </div>
               </div>
             )}
 
@@ -797,6 +887,46 @@ const Profile = () => {
                       </label>
                     </div>
                   </div>
+                </div>
+
+                <div className="space-y-6 max-w-xl">
+                  <AddableCardList
+                    label="Organizations"
+                    values={updatedUser.organizations || []}
+                    placeholder="Add an organization"
+                    maxItems={5}
+                    onChange={(value) => setUpdatedUser(prev => ({ ...prev, organizations: value }))}
+                    />
+                </div>
+
+                <div className="space-y-6 max-w-xl">
+                  <AddableCardList
+                    label="Specializations"
+                    values={updatedUser.specializations || []}
+                    placeholder="Add a specialization"
+                    maxItems={5}
+                    onChange={(value) => setUpdatedUser(prev => ({ ...prev, specializations: value }))}
+                    />
+                </div>
+
+                <div className="space-y-6 max-w-xl">
+                  <AddableCardList
+                    label="Hobbies"
+                    values={updatedUser.hobbies || []}
+                    placeholder="Add a hobby"
+                    maxItems={5}
+                    onChange={(value) => setUpdatedUser(prev => ({ ...prev, hobbies: value }))}
+                    />
+                </div>
+
+                <div className="space-y-6 max-w-xl">
+                  <AddableCardList
+                    label="Skills"
+                    values={updatedUser.skills || []}
+                    placeholder="Add a skill"
+                    maxItems={5}
+                    onChange={(value) => setUpdatedUser(prev => ({ ...prev, skills: value }))}
+                    />
                 </div>
               </div>
             )}

@@ -19,10 +19,6 @@ const AlumniSchema = new Schema<AlumniDocument>({
     type: [String],
     required: true,
   },
-  previousEmployers: {
-    type: [String],
-    required: true,
-  },
   specializations: {
     type: [String],
     required: true,
