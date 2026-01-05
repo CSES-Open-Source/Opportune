@@ -24,6 +24,7 @@ userRouter.patch(
   preprocessCompany,
   userValidator.updateUserValidator,
   studentValidator.updateStudentValidator,
+  alumniValidator.updateAlumniValidator,
   userController.updateUser,
 );
 

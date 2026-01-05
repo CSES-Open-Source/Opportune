@@ -152,7 +152,7 @@ const validateFieldOfInterest = body("fieldOfInterest")
     return true;
   });
 
-  const validateProjects = body("projects")
+const validateProjects = body("projects")
   .optional()
   .isArray()
   .withMessage("Projects must be an array.")
@@ -180,7 +180,6 @@ export const createUserValidator = [
   validateCompany,
   validateShareProfile,
   validatePosition,
-
 ];
 
 export const getUservalidator = [validateIdParam];

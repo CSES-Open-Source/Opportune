@@ -8,20 +8,34 @@ const validateIdBody = body("userId")
   .withMessage("userId is required.");
 
 const validateOrganization = body("organizations")
-  .isArray({ min: 1 })
-  .withMessage("fieldOfInterest must be an array.")
-  .trim()
-  .notEmpty()
-  .withMessage("fieldOfInterest is required.");
+  .optional()
+  .isArray()
+  .withMessage("Organizations must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in organizations must be a string.");
+        }
+      }
+    }
+    return true;
+  });
 
 const validateSpecializations = body("specializations")
-  .isArray({ min: 1 })
-  .withMessage("fieldOfInterest must be an array.")
-  .trim()
-  .notEmpty()
-  .withMessage("fieldOfInterest is required.");
-
-
+  .optional()
+  .isArray()
+  .withMessage("Specializations must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in specializations must be a string.");
+        }
+      }
+    }
+    return true;
+  });
 
 export const createAlumniValidator = [
   validateIdBody,

@@ -23,7 +23,7 @@ interface StudentResponse extends BaseUserResponse {
   classLevel?: string;
   school?: string;
   fieldOfInterest?: string[];
-  projects?: string[]; 
+  projects?: string[];
   companiesOfInterest?: string[];
 }
 

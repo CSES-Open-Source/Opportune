@@ -64,7 +64,7 @@ const userSchema = new Schema({
     type: String,
     required: false, // also eventually an enum?
   },
-  school:{
+  school: {
     type: String,
     required: false,
     trim: true,
@@ -77,7 +77,7 @@ const userSchema = new Schema({
     type: [String],
     default: [],
   },
-  
+
   companiesOfInterest: {
     type: [String],
     default: [],

@@ -42,6 +42,8 @@ async function seedAlumni() {
         position: "Senior Software Engineer",
         company: companies.find((c) => c.name === "Google")?._id,
         shareProfile: true,
+        organizations: ["Google"],
+        specializations: ["Backend Systems", "Distributed Computing"],
       },
       {
         _id: "alumni_002",
@@ -55,6 +57,8 @@ async function seedAlumni() {
         position: "Product Manager",
         company: companies.find((c) => c.name === "Meta")?._id,
         shareProfile: true,
+        organizations: ["Meta"],
+        specializations: ["Product Strategy", "User Experience"],
       },
       {
         _id: "alumni_003",
@@ -68,6 +72,8 @@ async function seedAlumni() {
         position: "iOS Developer",
         company: companies.find((c) => c.name === "Apple")?._id,
         shareProfile: true,
+        organizations: ["Apple"],
+        specializations: ["iOS Development", "Mobile Engineering"],
       },
       {
         _id: "alumni_004",
@@ -81,6 +87,8 @@ async function seedAlumni() {
         position: "Cloud Solutions Architect",
         company: companies.find((c) => c.name === "Microsoft")?._id,
         shareProfile: true,
+        organizations: ["Microsoft"],
+        specializations: ["Cloud Architecture", "Azure"],
       },
       {
         _id: "alumni_005",
@@ -94,6 +102,8 @@ async function seedAlumni() {
         position: "Backend Engineer",
         company: companies.find((c) => c.name === "Amazon")?._id,
         shareProfile: true,
+        organizations: ["Amazon"],
+        specializations: ["AWS", "Backend Development"],
       },
       {
         _id: "alumni_006",
@@ -107,6 +117,8 @@ async function seedAlumni() {
         position: "Data Scientist",
         company: companies.find((c) => c.name === "Netflix")?._id,
         shareProfile: true,
+        organizations: ["Netflix"],
+        specializations: ["Data Science", "Machine Learning"],
       },
       {
         _id: "alumni_007",
@@ -120,6 +132,8 @@ async function seedAlumni() {
         position: "Autopilot Engineer",
         company: companies.find((c) => c.name === "Tesla")?._id,
         shareProfile: true,
+        organizations: ["Tesla"],
+        specializations: ["Autonomous Systems", "C++"],
       },
       {
         _id: "alumni_008",
@@ -133,6 +147,8 @@ async function seedAlumni() {
         position: "Mobile Engineer",
         company: companies.find((c) => c.name === "Uber")?._id,
         shareProfile: true,
+        organizations: ["Uber"],
+        specializations: ["Mobile Development", "React Native"],
       },
       {
         _id: "alumni_009",
@@ -146,6 +162,8 @@ async function seedAlumni() {
         position: "Full Stack Developer",
         company: companies.find((c) => c.name === "Airbnb")?._id,
         shareProfile: true,
+        organizations: ["Airbnb"],
+        specializations: ["Full Stack", "JavaScript"],
       },
       {
         _id: "alumni_010",
@@ -159,6 +177,8 @@ async function seedAlumni() {
         position: "Machine Learning Engineer",
         company: companies.find((c) => c.name === "Spotify")?._id,
         shareProfile: true,
+        organizations: ["Spotify"],
+        specializations: ["Machine Learning", "Python"],
       },
       {
         _id: "alumni_011",
@@ -172,6 +192,8 @@ async function seedAlumni() {
         position: "Frontend Engineer",
         company: companies.find((c) => c.name === "Slack")?._id,
         shareProfile: true,
+        organizations: ["Slack"],
+        specializations: ["Frontend", "React"],
       },
       {
         _id: "alumni_012",
@@ -185,6 +207,8 @@ async function seedAlumni() {
         position: "Video Engineer",
         company: companies.find((c) => c.name === "Zoom")?._id,
         shareProfile: true,
+        organizations: ["Zoom"],
+        specializations: ["Video Streaming", "WebRTC"],
       },
       {
         _id: "alumni_013",
@@ -198,6 +222,8 @@ async function seedAlumni() {
         position: "Sales Engineer",
         company: companies.find((c) => c.name === "Salesforce")?._id,
         shareProfile: true,
+        organizations: ["Salesforce"],
+        specializations: ["CRM", "Salesforce Admin"],
       },
       {
         _id: "alumni_014",
@@ -211,6 +237,8 @@ async function seedAlumni() {
         position: "UX Designer",
         company: companies.find((c) => c.name === "Adobe")?._id,
         shareProfile: true,
+        organizations: ["Adobe"],
+        specializations: ["UX Design", "Design Systems"],
       },
       {
         _id: "alumni_015",
@@ -224,6 +252,8 @@ async function seedAlumni() {
         position: "Database Administrator",
         company: companies.find((c) => c.name === "Oracle")?._id,
         shareProfile: true,
+        organizations: ["Oracle"],
+        specializations: ["Oracle Database", "SQL"],
       },
       {
         _id: "alumni_016",
@@ -237,6 +267,8 @@ async function seedAlumni() {
         position: "AI Research Scientist",
         company: companies.find((c) => c.name === "IBM")?._id,
         shareProfile: true,
+        organizations: ["IBM"],
+        specializations: ["AI Research", "Deep Learning"],
       },
       {
         _id: "alumni_017",
@@ -250,6 +282,8 @@ async function seedAlumni() {
         position: "Hardware Engineer",
         company: companies.find((c) => c.name === "Intel")?._id,
         shareProfile: true,
+        organizations: ["Intel"],
+        specializations: ["Hardware Design", "Semiconductor"],
       },
       {
         _id: "alumni_018",
@@ -263,6 +297,8 @@ async function seedAlumni() {
         position: "GPU Architect",
         company: companies.find((c) => c.name === "NVIDIA")?._id,
         shareProfile: true,
+        organizations: ["NVIDIA"],
+        specializations: ["GPU Architecture", "CUDA"],
       },
       {
         _id: "alumni_019",
@@ -276,6 +312,8 @@ async function seedAlumni() {
         position: "CPU Designer",
         company: companies.find((c) => c.name === "AMD")?._id,
         shareProfile: true,
+        organizations: ["AMD"],
+        specializations: ["CPU Design", "Architecture"],
       },
       {
         _id: "alumni_020",
@@ -289,6 +327,8 @@ async function seedAlumni() {
         position: "Data Engineer",
         company: companies.find((c) => c.name === "Palantir")?._id,
         shareProfile: true,
+        organizations: ["Palantir"],
+        specializations: ["Data Engineering", "ETL"],
       },
     ];
 

@@ -13,7 +13,7 @@ export interface StudentDocument extends Document {
 const StudentSchema = new Schema<StudentDocument>({
   userId: {
     type: String,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   school: {
