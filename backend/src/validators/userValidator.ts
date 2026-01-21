@@ -57,6 +57,36 @@ const validateLinkedIn = body("linkedIn")
   .isURL({ require_valid_protocol: true })
   .withMessage("linkedIn must be a valid URL.");
 
+const validateHobbies = body("hobbies")
+  .optional()
+  .isArray()
+  .withMessage("Hobbies must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in hobbies must be a string.");
+        }
+      }
+    }
+    return true;
+  });
+
+const validateSkills = body("skills")
+  .optional()
+  .isArray()
+  .withMessage("Skills must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in skills must be a string.");
+        }
+      }
+    }
+    return true;
+  });
+
 // TODO: likely needs better parsing for international numbers (currently set to string to allow frontend format to pass)
 const validatePhoneNumber = body("phoneNumber")
   .optional()
@@ -72,7 +102,6 @@ const validateMajor = body("major")
   .isLength({ min: 2 })
   .withMessage("major must be at least 2 characters.");
 
-// Only for students
 const validateClassLevel = body("classLevel")
   .optional()
   .isString()
@@ -81,6 +110,50 @@ const validateClassLevel = body("classLevel")
   .isLength({ min: 2 })
   .withMessage("classLevel must be at least 2 characters.");
 
+const validateFieldOfInterest = body("fieldOfInterest")
+  .optional()
+  .isArray()
+  .withMessage("fieldOfInterest must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in fieldOfInterest must be a string.");
+        }
+      }
+    }
+    return true;
+  });
+
+const validateProjects = body("projects")
+  .optional()
+  .isArray()
+  .withMessage("Projects must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in projects must be a string.");
+        }
+      }
+    }
+    return true;
+  });
+
+const validateCompaniesOfInterest = body("companiesOfInterest")
+  .optional()
+  .isArray()
+  .withMessage("Companies of Interest must be an array.")
+  .custom((value) => {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (typeof item !== "string") {
+          throw new Error("Each item in companiesOfInterest must be a string.");
+        }
+      }
+    }
+    return true;
+  });
 // Only for alumni
 const validateCompany = body("company")
   .optional()
@@ -137,36 +210,37 @@ const validateIndustry = query("industry")
   .withMessage("industry must be a string.")
   .trim();
 
-const validateFieldOfInterest = body("fieldOfInterest")
+const validateOrganization = body("organizations")
   .optional()
   .isArray()
-  .withMessage("fieldOfInterest must be an array.")
+  .withMessage("Organizations must be an array.")
   .custom((value) => {
     if (Array.isArray(value)) {
       for (const item of value) {
         if (typeof item !== "string") {
-          throw new Error("Each item in fieldOfInterest must be a string.");
+          throw new Error("Each item in organizations must be a string.");
         }
       }
     }
     return true;
   });
 
-const validateProjects = body("projects")
+const validateSpecializations = body("specializations")
   .optional()
   .isArray()
-  .withMessage("Projects must be an array.")
+  .withMessage("Specializations must be an array.")
   .custom((value) => {
     if (Array.isArray(value)) {
       for (const item of value) {
         if (typeof item !== "string") {
-          throw new Error("Each item in projects must be a string.");
+          throw new Error("Each item in specializations must be a string.");
         }
       }
     }
     return true;
   });
 
+//Alumni Validators
 export const createUserValidator = [
   validateIdBody,
   validateEmail,
@@ -180,6 +254,8 @@ export const createUserValidator = [
   validateCompany,
   validateShareProfile,
   validatePosition,
+  validateSpecializations,
+  validateOrganization,
 ];
 
 export const getUservalidator = [validateIdParam];
@@ -199,6 +275,11 @@ export const updateUserValidator = [
   validatePosition,
   validateFieldOfInterest,
   validateProjects,
+  validateHobbies,
+  validateSkills,
+  validateCompaniesOfInterest,
+  validateSpecializations,
+  validateOrganization,
 ];
 
 export const deleteUserValidator = [validateIdParam];

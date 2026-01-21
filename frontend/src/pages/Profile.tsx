@@ -66,29 +66,6 @@ const Profile = () => {
           }
         });
     }
-
-
-  //Adds student array fields to the updated user to allow for edits to these fields to be saved
-  if (user?.type === UserType.Student) {
-    setUpdatedUser(prev => ({
-      ...prev,
-      fieldOfInterest: Array.isArray(user?.fieldOfInterest) ? user.fieldOfInterest : [],
-      projects: Array.isArray(user?.projects) ? user.projects : [],
-      hobbies: Array.isArray(user?.hobbies) ? user.hobbies : [],
-      skills: Array.isArray(user?.skills) ? user.skills : [],
-      companiesOfInterest: Array.isArray(user?.companiesOfInterest) ? user.companiesOfInterest : [],
-    }));
-  }
-
-  if (user?.type === UserType.Alumni) {
-    setUpdatedUser(prev => ({
-      ...prev,
-      organizations: Array.isArray(user?.organizations) ? user.organizations : [],
-      specializations: Array.isArray(user?.specializations) ? user.specializations : [],
-      hobbies: Array.isArray(user?.hobbies) ? user.hobbies : [],
-      skills: Array.isArray(user?.skills) ? user.skills : [],
-    }));
-  }
     setCanSave(isValidLinkedIn && isValidPhoneNumber);
   }, [user, isValidLinkedIn, isValidPhoneNumber]);
 
@@ -457,8 +434,8 @@ const Profile = () => {
                         : "Not specified"}
                     </p>
                   </div>
-                
 
+                  {/* School */}
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">
                       <span>School</span>
@@ -470,7 +447,7 @@ const Profile = () => {
                         : "Not specified"}
                     </p>
                   </div>
-
+                  {/* Field of Interest */}
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">
                       <span>Field of Interest</span>
@@ -490,7 +467,7 @@ const Profile = () => {
                   <p className="text-gray-800">Not specified</p>
                   )}
                   </div>
-
+                  {/* Projects */}
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">
                       <span>Projects</span>
@@ -510,7 +487,8 @@ const Profile = () => {
                   <p className="text-gray-800">Not specified</p>
                   )}
                   </div>
-
+                  {/* These next two are technically user specific but this will be dealt with during the redesign
+                  Hobbies */}
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">
                       <span>Hobbies</span>
@@ -530,7 +508,7 @@ const Profile = () => {
                   <p className="text-gray-800">Not specified</p>
                   )}
                   </div>
-
+                  {/* Skills */}
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">
                       <span>Skills</span>
@@ -550,7 +528,7 @@ const Profile = () => {
                   <p className="text-gray-800">Not specified</p>
                   )}
                   </div>
-
+                  {/* Companies of Interest */}
                   <div>
                     <label className="block text-sm font-medium text-gray-500 mb-1">
                       <span>Companies of Interest</span>
@@ -630,7 +608,7 @@ const Profile = () => {
                       className="w-full p-2 border-2 focus:outline-none focus:border-blue-500 border-gray-300 rounded-md"
                     />
                   </div>
-
+                  {/* Field Of Interest, Projects, Hobbies, Skills, Companies of Interest */}
                   <div className="space-y-6 max-w-xl">
                     <AddableCardList
                       label="Field Of Interest"
