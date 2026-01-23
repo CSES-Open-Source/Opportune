@@ -1,51 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FiTrendingUp, FiCalendar, FiTarget, FiCheckCircle } from "react-icons/fi";
 import { useAuth } from "../contexts/useAuth";
+import { ApplicationStats, MonthlyData, SankeyNode, SankeyTooltipEntry, SankeyData, ApplicationTimeline} from "../types/Application";
+import { Toast } from "primereact/toast";
 import { ResponsiveContainer, Sankey, Tooltip } from 'recharts';
 import { getApplicationDetails } from "../api/applications";
-
-interface SankeyNode {
-  name: string;
-  // optional color and value fields are provided by the Sankey layout
-  color?: string;
-  value?: number;
-}
-
-interface SankeyLink {
-  source: number;
-  target: number;
-  value: number;
-}
-
-interface SankeyData {
-  nodes: SankeyNode[];
-  links: SankeyLink[];
-}
-
-interface SankeyTooltipEntry {
-  name?: string;
-  value?: number | string;
-  [key: string]: unknown;
-}
-
-interface ApplicationStats {
-  total: number;
-  phone: number;
-  oa: number;
-  final: number;
-  offer: number;
-  rejected: number;
-  ghosted: number;
-  interviews: number;
-}
-
-interface MonthlyData {
-  month: string;
-  applications: number;
-}
-
-type TimelineEntry = { status: string; date: string | Date; note?: string | null };
-type ApplicationTimeline = { _id: string; company?: string | null; position?: string; timeline: TimelineEntry[] };
 
 function buildSankeyFromTimelines(applicationTimelines: ApplicationTimeline[]): SankeyData {
 
@@ -131,58 +90,83 @@ const Analytics: React.FC = () => {
   });
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
   const [loading, setLoading] = useState(true);
+  const toast = useRef<Toast>(null);
 
 
   useEffect(() => {
     if (isAuthenticated) {
-
-      if (!user || !user._id) {
-        console.error("User ID is not available.");
-        return;
-      }
-
-      const fetchAnalytics = async () => {
-        setLoading(true);
-        const res = await getApplicationDetails(`${user._id}`);
-        if (!res.success) {
-          console.error("Failed to fetch analytics:", res.error);
-          setLoading(false);
-          return;
+      const resolveUserId = (): string | null => {
+        if (user) {
+          return user._id ?? null;
         }
+        return null;
+      };
 
+      // Fetch analytics and monthly data for the resolved user id
+      const fetchAnalytics = async () => {
+        try {
+          const userId = resolveUserId();
+          if (!userId) {
+            console.error("UserId not found:", { isAuthenticated, user });
+            return;
+          }
 
+          const res = await getApplicationDetails(userId);
 
+          if (!res.success) {
+            throw new Error("Failed to fetch application data");
+          }
+
+          setStats({
+            total: res.data.totalApplications,
+            offer: res.data.offersReceived,
+            oa: res.data.oa,
+            phone: res.data.phone,
+            final: res.data.final,
+            rejected: res.data.rejected,
+            ghosted: res.data.ghosted,
+            interviews: res.data.interviews,
+          });
+
+          const sankey = buildSankeyFromTimelines(res.data.applicationTimelines);
+          setSankeyData(sankey);
+          const monthDataFromAPI = res.data.applicationsByMonth;
+
+          const filteredMonthlyArray = Object.entries(monthDataFromAPI)
+            .filter(([, count]) => count > 0)
+            .map(([month, count]) => ({ month, applications: count }));
+
+          setMonthlyData(filteredMonthlyArray);
+
+        } catch (err) {
+          const error = err as Error;
+          console.error("Error fetching analytics:", error.message);
+          toast.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail: `Failed to update analytics: ${error.message || "Unknown error"}`,
+          });
+        }
+      };
+
+      
+      const initialTimer = setTimeout(() => {
+        fetchAnalytics();
         setLoading(false);
+      }, 1000);
 
-        setStats({
-          total: res.data.totalApplications,
-          offer: res.data.offersReceived,
-          oa: res.data.oa,
-          phone: res.data.phone,
-          final: res.data.final,
-          rejected: res.data.rejected,
-          ghosted: res.data.ghosted,
-          interviews: res.data.interviews,
-        });
+      
+      const handleApplicationsChanged = () => {
+        fetchAnalytics();
+      };
+      window.addEventListener("applications:changed", handleApplicationsChanged);
 
-        const sankey = buildSankeyFromTimelines(res.data.applicationTimelines);
-        setSankeyData(sankey);
-
-        const monthDataFromAPI = res.data.applicationsByMonth;
-
-        const filteredMonthlyArray = Object.entries(monthDataFromAPI)
-          .filter(([, count]) => count > 0)
-          .map(([month, count]) => ({ month, applications: count }));
-
-        setMonthlyData(filteredMonthlyArray);
-
-      }
-
-      setLoading(false);
-
-      fetchAnalytics();
+      return () => {
+        clearTimeout(initialTimer);
+        window.removeEventListener("applications:changed", handleApplicationsChanged);
+      };
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   interface CustomNodeProps {
     x?: number;
@@ -529,8 +513,22 @@ const Analytics: React.FC = () => {
           <div className="space-y-4">
             <div className="p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Great progress!</strong> You&apos;ve applied to {stats.total} companies.
-                Your {interviewRate}% interview rate is above average for your field.
+                <strong>Great progress!</strong> You&apos;ve applied to {stats.total} companies.{" "}
+                  {interviewRate >= 50 && (
+                    <>Your {interviewRate}% interview rate is excellent — you&apos;re doing amazing!</>
+                  )}
+
+                  {interviewRate >= 25 && interviewRate < 50 && (
+                    <>Your {interviewRate}% interview rate is solid — keep applying strategically.</>
+                  )}
+
+                  {interviewRate > 0 && interviewRate < 25 && (
+                    <>Your {interviewRate}% interview rate is below average — consider refining your resume or targeting different roles.</>
+                  )}
+
+                  {interviewRate === 0 && (
+                    <>You haven&apos;t received interviews yet — time to adjust your resume or application strategy.</>
+                  )}
               </p>
             </div>
             <div className="p-4 bg-green-50 rounded-lg">
@@ -542,6 +540,7 @@ const Analytics: React.FC = () => {
           </div>
         </div>
       </div>
+      <Toast ref={toast} />
     </div>
   );
 };

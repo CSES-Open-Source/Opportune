@@ -6,9 +6,9 @@
   "framework": null,
   "functions": {
     "api/index.ts": {
-      "includeFiles": "backend/{dist/**,package.json,config/**}",
-      "maxDuration": 30,
-      "memory": 1052
+      "includeFiles": "backend/src/**,backend/api/**,backend/package.json,backend/package-lock.json",
+      "excludeFiles": "backend/node_modules/**,backend/dist/**,backend/seed-*.ts,backend/seed-*.js,backend/.git/**",
+      "maxDuration": 30
     }
   },
   "rewrites": [

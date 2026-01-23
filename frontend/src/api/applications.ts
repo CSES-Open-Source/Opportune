@@ -5,43 +5,11 @@ import {
   CreateApplicationRequest,
   GetApplicationsByUserIDQuery,
   UpdateApplicationRequest,
+  MonthlyData,
+  RawMonthlyItem,
+  ApplicationAnalytics,
 } from "../types/Application";
 import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
-
-// Timeline entry for an application status
-export type TimelineEntry = {
-  status: string;
-  date: string | Date;
-  note?: string | null;
-};
-
-// Application timeline (with full process history)
-export type ApplicationTimeline = {
-  _id: string;
-  company?: string | null;
-  position?: string;
-  timeline: TimelineEntry[];
-};
-
-// chetan: fetching analytics values portion from backend
-export type ApplicationAnalytics = {
-  totalApplications: number;
-  successRate: string;
-  interviewRate: string;
-  offersReceived: number;
-  applicationsThisYear: number;
-  applicationStatus: Record<string, number>;
-  oa: number;
-  final: number;
-  applicationsByMonth: Record<string, number>;
-  phone: number;
-  ghosted: number;
-  rejected: number;
-  interviews: number;
-  applicationTimelines: ApplicationTimeline[];
-  insights?: { tip?: string };
-}
-
 
 function parseApplication(application: ApplicationJSON): Application {
   return {
@@ -171,7 +139,61 @@ export async function getApplicationsByUserID(
   }
 }
 
-// chetan: api call for fetching analytics data
+
+/**
+ * Gets the month by month data of applications submitted for the analytics tab
+ * @param userId 
+ * @returns The name of the month's with applications submitted and the counts as an object
+ */
+export async function getMonthlyData(
+  userId: string,
+): Promise<APIResult<MonthlyData[]>> {
+    try {
+      const response = await get(`/api/applications/applied/analytics/${userId}`);
+      const json = await response.json();
+
+      if(!response.ok){
+        throw new Error(json.message || "Failed to fetch month by month data");
+      }
+      const monthArray = Array.isArray(json.monthlyApplications) ? json.monthlyApplications : [];
+
+      const formatMonth = (raw: string) => {
+        const match = /^(\d{4})-(\d{2})$/.exec(String(raw));
+        if (match) {
+          const year = Number(match[1]);
+          const monthIndex = Number(match[2]) - 1; 
+          const d = new Date(year, monthIndex, 1);
+          return d.toLocaleString(undefined, { month: "long" }); 
+        }
+        return String(raw); 
+      };
+
+      const result: MonthlyData[] = monthArray.map((m: RawMonthlyItem) => {
+        const raw = m.month ?? m._id ?? String(m._id ?? "");
+        return {
+          month: formatMonth(raw),
+          applications: Number(m.count ?? m.applications ?? 0),
+        };
+      });
+      return { 
+        success: true, 
+        data: result,
+      };
+    } 
+    catch (error) {
+      return handleAPIError(error);
+    }
+  
+}
+
+
+
+/**
+ * Gets the analytics data for a users application, including application count
+ * interview count and offer count
+ * @param userId 
+ * @returns Returns the application stats for the users application as an application stats object
+ */
 export async function getApplicationDetails(
   userId: string,
 ): Promise<APIResult<ApplicationAnalytics>> {

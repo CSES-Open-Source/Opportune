@@ -430,7 +430,29 @@ export const getApplicationDetails = asyncHandler(async (req, res, _next) => {
     { $group: { _id: "$process.status", count: { $sum: 1 } } },
   ]);
 
-  // chetan: creating a timeline for a more static sankey model
+  const monthlyBreakdown = await Application.aggregate([
+    { $match: { userId } },
+    {
+      $addFields: {
+        appliedDate: {
+          $ifNull: [{ $arrayElemAt: ["$process.date", 0] }, "$createdAt"],
+        },
+      },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m", date: "$appliedDate" } },
+        count: { $sum: 1 },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+
+  const monthlyApplications = monthlyBreakdown.map((m) => ({
+    month: m._id,
+    count: m.count,
+  }));
+
   const applicationsForTimelines = await Application.find({ userId }).exec();
 
   interface TimelineEntry {
@@ -480,6 +502,7 @@ export const getApplicationDetails = asyncHandler(async (req, res, _next) => {
     offersReceived: offers,
     applicationsThisYear: thisYearCount,
     applicationStatus: statusBreakdown,
+    monthlyApplications,
     ghosted: ghosted,
     applicationTimelines: applicationTimelines,
     insights: {
