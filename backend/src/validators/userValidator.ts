@@ -1,5 +1,6 @@
 import { body, param, query } from "express-validator";
 import { UserType } from "../models/User";
+import { validate } from "uuid";
 
 // Default values for page and perPage
 const DEFAULT_PAGE = 0;
@@ -254,7 +255,12 @@ export const createUserValidator = [
   validateCompany,
   validateShareProfile,
   validatePosition,
-  validateSpecializations,
+  validateProjects,
+  validateFieldOfInterest,
+
+  validateCompaniesOfInterest,
+  validateSkills,
+  validateHobbies, 
   validateOrganization,
 ];
 
