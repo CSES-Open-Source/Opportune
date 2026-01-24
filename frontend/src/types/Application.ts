@@ -7,6 +7,7 @@ export enum Status {
   Final = "FINAL",
   Offer = "OFFER",
   Rejected = "REJECTED",
+  Ghosted = "GHOSTED",
 }
 
 export interface ApplicationProcess {
@@ -67,10 +68,13 @@ export interface GetApplicationsByUserIDQuery {
 
 export interface ApplicationStats{
   total: number;
-  applied: number;
-  interview: number;
+  phone: number;
+  oa: number;
+  final: number;
   offer: number;
   rejected: number;
+  ghosted: number;
+  interviews: number;
 }
 
 export interface MonthlyData {
@@ -83,4 +87,59 @@ export interface RawMonthlyItem {
   month?: string;
   count?: number;
   applications?: number;
+}
+
+export interface SankeyNode {
+  name: string;
+  // optional color and value fields are provided by the Sankey layout
+  color?: string;
+  value?: number;
+}
+
+export interface SankeyLink {
+  source: number;
+  target: number;
+  value: number;
+}
+
+export interface SankeyData {
+  nodes: SankeyNode[];
+  links: SankeyLink[];
+}
+
+export interface SankeyTooltipEntry {
+  name?: string;
+  value?: number | string;
+  [key: string]: unknown;
+}
+
+export type TimelineEntry = { 
+  status: string; 
+  date: string | Date; 
+  note?: string | null 
+};
+
+export type ApplicationTimeline = { 
+  _id: string; 
+  company?: string | null; 
+  position?: string; 
+  timeline: TimelineEntry[] 
+};
+
+export type ApplicationAnalytics = {
+  totalApplications: number;
+  successRate: string;
+  interviewRate: string;
+  offersReceived: number;
+  applicationsThisYear: number;
+  applicationStatus: Record<string, number>;
+  oa: number;
+  final: number;
+  applicationsByMonth: Record<string, number>;
+  phone: number;
+  ghosted: number;
+  rejected: number;
+  interviews: number;
+  applicationTimelines: ApplicationTimeline[];
+  insights?: { tip?: string };
 }

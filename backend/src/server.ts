@@ -14,8 +14,16 @@ async function verifyS3Connection() {
     await s3.send(new ListBucketsCommand({}));
     console.log("AWS S3 connected!");
   } catch (error) {
-    console.error("Error connecting to AWS S3:", error);
-    throw new Error("Failed to connect to AWS S3.");
+    console.warn(
+      "⚠️  Warning: AWS S3 connection failed. S3 features (like logo uploads) will not work.",
+    );
+    console.warn(
+      "   Error details:",
+      error instanceof Error ? error.message : error,
+    );
+    console.warn("   To fix: Update your AWS credentials in the .env file");
+    // Don't throw - allow server to start without S3 for local development
+    // throw new Error("Failed to connect to AWS S3.");
   }
 }
 

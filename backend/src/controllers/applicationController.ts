@@ -353,29 +353,75 @@ export const getApplicationsByUserID = asyncHandler(async (req, res, next) => {
 //  @returns {Application[]} 200 - Array of user's applications
 //  @throws {404} - If no applications found for user
 //  @throws {400} - If user ID is invalid
-export const getApplicationDetails = asyncHandler(async (req, res, next) => {
+export const getApplicationDetails = asyncHandler(async (req, res, _next) => {
   const { userId } = matchedData(req, { locations: ["params"] }) as {
     userId: string;
   };
-
-  if (!userId || typeof userId !== "string") {
-    return next(createHttpError(400, "Missing or invalid user ID"));
-  }
 
   const total = await Application.countDocuments({ userId });
   const offers = await Application.countDocuments({
     userId,
     "process.status": "OFFER",
   });
+  const OA = await Application.countDocuments({
+    userId,
+    "process.status": "OA",
+  });
+  const phone = await Application.countDocuments({
+    userId,
+    "process.status": "PHONE",
+  });
+  const final = await Application.countDocuments({
+    userId,
+    "process.status": "FINAL",
+  });
+  const rejected = await Application.countDocuments({
+    userId,
+    "process.status": "REJECTED",
+  });
   const interviews = await Application.countDocuments({
     userId,
     "process.status": { $in: ["PHONE", "FINAL", "OFFER"] },
+  });
+
+  const ghosted = await Application.countDocuments({
+    userId,
+    "process.status": "GHOSTED",
   });
 
   const thisYear = new Date(new Date().getFullYear(), 0, 1);
   const thisYearCount = await Application.countDocuments({
     userId,
     createdAt: { $gte: thisYear },
+  });
+
+  const monthsAgg = await Application.aggregate([
+    { $match: { userId, createdAt: { $gte: thisYear } } },
+    { $group: { _id: { $month: "$createdAt" }, count: { $sum: 1 } } },
+    { $project: { month: "$_id", count: 1, _id: 0 } },
+  ]);
+
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const monthsMap: Record<string, number> = {};
+  for (let i = 0; i < 12; i++) monthsMap[monthNames[i]] = 0;
+
+  monthsAgg.forEach((m: { month: number; count: number }) => {
+    const idx = m.month - 1;
+    if (idx >= 0 && idx < 12) monthsMap[monthNames[idx]] = m.count;
   });
 
   const statusBreakdown = await Application.aggregate([
@@ -407,17 +453,58 @@ export const getApplicationDetails = asyncHandler(async (req, res, next) => {
     count: m.count,
   }));
 
+  const applicationsForTimelines = await Application.find({ userId }).exec();
+
+  interface TimelineEntry {
+    status: string;
+  }
+
+  const applicationTimelines = applicationsForTimelines.map((app) => {
+    const sortedProcess = (app.process || [])
+      .slice()
+      .sort(
+        (a: ApplicationStatus, b: ApplicationStatus) =>
+          new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+
+    const timeline: TimelineEntry[] = sortedProcess.map(
+      (p: ApplicationStatus) => ({
+        status: p.status,
+      }),
+    );
+
+    if (
+      timeline.length === 0 ||
+      timeline[0].status.toUpperCase() !== "APPLIED"
+    ) {
+      timeline.unshift({ status: "APPLIED" });
+    }
+
+    return {
+      _id: app._id,
+      timeline: timeline,
+    };
+  });
+
   const successRate = total ? ((offers / total) * 100).toFixed(2) : 0;
   const interviewRate = total ? ((interviews / total) * 100).toFixed(2) : 0;
 
   res.status(200).json({
     totalApplications: total,
+    phone: phone,
+    oa: OA,
+    final: final,
+    rejected: rejected,
     successRate: `${successRate}%`,
     interviewRate: `${interviewRate}%`,
+    applicationsByMonth: monthsMap,
+    interviews: interviews,
     offersReceived: offers,
     applicationsThisYear: thisYearCount,
     applicationStatus: statusBreakdown,
     monthlyApplications,
+    ghosted: ghosted,
+    applicationTimelines: applicationTimelines,
     insights: {
       tip:
         Number(successRate) > 50

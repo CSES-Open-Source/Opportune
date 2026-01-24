@@ -8,4 +8,5 @@ export const statusColors: Record<string, string> = {
   [Status.Final]: "bg-indigo-500 text-indigo-800",
   [Status.Offer]: "bg-green-500 text-green-800",
   [Status.Rejected]: "bg-red-500 text-red-800",
+  [Status.Ghosted]: "bg-rose-500 text-rose-800",
 };
