@@ -112,10 +112,10 @@ export const createUser = asyncHandler(async (req, res, next) => {
 
     organizations,
     specializations,
-    skills, 
+    skills,
     hobbies,
-    companiesOfInterest, 
-    projects, 
+    companiesOfInterest,
+    projects,
     fieldOfInterest,
   });
 
