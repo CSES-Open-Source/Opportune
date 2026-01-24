@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../contexts/useAuth";
 import Modal from "../public/Modal";
-import { Alumni, Student, UpdateUserRequest, ClassLevel, CreateUserRequest, UserType } from "../../types/User";
+import {ClassLevel, CreateUserRequest, UserType } from "../../types/User";
 import { ProgressBar } from "primereact/progressbar";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
@@ -168,22 +168,7 @@ const AuthModal = () => {
       !(cleanedInput.length > 0 && cleanedInput.length < 10),
     );
   };
-
-  const onFinishSignup = async () => {
-    if (!selectedType) return;
-
-    const response = await createUser(newUser);
-    if (!response?.success || !user?._id) return;
-
-    if (selectedType === UserType.Student) {
-      saveStudentProfile();
-    }
-
-    if (selectedType === UserType.Alumni) {
-      saveAlumniProfile();
-    }
-  };
-
+  
   const saveStudentProfile = () => {
     fetch("/api/profile/student", {
       method: "POST",
