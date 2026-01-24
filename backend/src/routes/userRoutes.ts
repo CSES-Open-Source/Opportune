@@ -2,6 +2,8 @@ import express from "express";
 import * as userController from "../controllers/userController";
 import preprocessCompany from "../middlewares/preprocessCompany";
 import * as userValidator from "../validators/userValidator";
+import * as studentValidator from "../validators/studentValidator";
+import * as alumniValidator from "../validators/alumniValidator";
 
 const userRouter = express.Router();
 
@@ -21,6 +23,8 @@ userRouter.patch(
   "/:id",
   preprocessCompany,
   userValidator.updateUserValidator,
+  studentValidator.updateStudentValidator,
+  alumniValidator.updateAlumniValidator,
   userController.updateUser,
 );
 

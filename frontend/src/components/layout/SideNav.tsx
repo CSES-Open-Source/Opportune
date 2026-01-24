@@ -33,7 +33,7 @@ const SideNav = () => {
 
   return (
     <div>
-      <aside className="h-screen w-[300px] bg-white flex flex-col border-2 border-solid rounded-r-lg shadow-lg items-center">
+      <aside className="sticky top-0 h-screen w-[300px] bg-white flex flex-col border-2 border-solid rounded-r-lg shadow-lg items-center">
         <div className="text-3xl font-bold h-20 w-full flex items-center p-4 gap-2">
           <img className="h-12 w-12" src={OpportuneLogo} />
           <h1 className="text-gray-700">Opportune</h1>

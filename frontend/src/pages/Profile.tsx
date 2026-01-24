@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState} from "react";
 import {
   LuGraduationCap,
   LuBriefcase,
@@ -10,6 +10,7 @@ import { FaLinkedin } from "react-icons/fa";
 import { FiPhone } from "react-icons/fi";
 import { FiEdit } from "react-icons/fi";
 import { useAuth } from "../contexts/useAuth";
+import { AddableCardList } from "../components/profile/AddableCardList";
 import {
   Alumni,
   ClassLevel,
@@ -28,6 +29,10 @@ const Profile = () => {
 
   const { user, updateUser } = useAuth();
 
+
+  const [studentProfile, setStudentProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
+  const [alumniProfile, setAlumniProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
+
   const [isEditing, setIsEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState<UpdateUserRequest>(
     user || { type: UserType.Student },
@@ -37,8 +42,32 @@ const Profile = () => {
   const [canSave, setCanSave] = useState<boolean>(true);
 
   useEffect(() => {
+    if (!user?._id) return;
+
+    if (user?.type === UserType.Student) {
+      fetch(`/api/profile/student/${user._id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data || data.error) {
+            setStudentProfile({ userId: user._id });
+          } else {
+            setStudentProfile(data);
+          }
+        });
+    }
+    if (user?.type === UserType.Alumni) {
+      fetch(`/api/profile/alumni/${user._id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data || data.error) {
+            setAlumniProfile({ userId: user._id });
+          } else {
+            setAlumniProfile(data);
+          }
+        });
+    }
     setCanSave(isValidLinkedIn && isValidPhoneNumber);
-  }, [isValidLinkedIn, isValidPhoneNumber]);
+  }, [user, isValidLinkedIn, isValidPhoneNumber]);
 
   const onSave = () => {
     if (!user) {
@@ -59,6 +88,13 @@ const Profile = () => {
       if (response.success) {
         setIsEditing(false);
       }
+
+      if (updatedUser.type === UserType.Student) {
+        saveStudentProfile();
+      } else if (updatedUser.type === UserType.Alumni) {
+        saveAlumniProfile();
+      }
+
     });
   };
 
@@ -66,6 +102,64 @@ const Profile = () => {
     if (user) {
       setUpdatedUser(user);
       setIsEditing(true);
+    }
+  };
+
+  const saveStudentProfile = () => {
+    if (!studentProfile) return;
+    if (!studentProfile._id) {
+      // No profile in db, then create profile
+      fetch(`/api/profile/student`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(studentProfile),
+      })
+        .then(r => r.json())
+        .then((data) => {
+          setStudentProfile(data);
+          console.log("created student profile", data);
+        });
+    } else {
+      // updating profile
+      fetch(`/api/profile/student/${user?._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(studentProfile),
+      })
+        .then(r => r.json())
+        .then((data) => {
+          setStudentProfile(data);
+          console.log("saved student profile", data);
+        });
+    }
+  };
+
+  const saveAlumniProfile = () => {
+    if (!alumniProfile) return;
+    if (!alumniProfile._id) {
+      // No profile in db, then create profile
+      fetch(`/api/profile/alumni`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(alumniProfile),
+      })
+        .then(r => r.json())
+        .then((data) => {
+          setAlumniProfile(data);
+          console.log("created alumni profile", data);
+        });
+    } else {
+      // updating profile
+      fetch(`/api/profile/alumni/${user?._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(alumniProfile),
+      })
+        .then(r => r.json())
+        .then((data) => {
+          setAlumniProfile(data);
+          console.log("saved alumni profile", data);
+        });
     }
   };
 
@@ -132,7 +226,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="w-full h-full items-center pt-28">
+    <div className="w-full items-center my-10">
       <div className="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto border">
         <div className="flex justify-between items-start mb-6">
           <h1 className="text-2xl font-bold text-gray-800">User Profile</h1>
@@ -264,11 +358,10 @@ const Profile = () => {
                       type="text"
                       value={updatedUser.phoneNumber}
                       placeholder="Add phone number"
-                      className={`w-full p-2 border-2 focus:border-blue-500 focus:outline-none rounded-md ${
-                        isValidPhoneNumber
-                          ? "border-gray-300"
-                          : "border-red-600"
-                      }`}
+                      className={`w-full p-2 border-2 focus:border-blue-500 focus:outline-none rounded-md ${isValidPhoneNumber
+                        ? "border-gray-300"
+                        : "border-red-600"
+                        }`}
                       onChange={onPhoneNumberChanged}
                     />
                   ) : (
@@ -293,9 +386,8 @@ const Profile = () => {
                   type="url"
                   value={updatedUser.linkedIn}
                   placeholder="Add LinkedIn profile"
-                  className={`w-full p-2 border-2 rounded-md focus:border-blue-500 focus:outline-none ${
-                    isValidLinkedIn ? "border-gray-300" : "border-red-600"
-                  }`}
+                  className={`w-full p-2 border-2 rounded-md focus:border-blue-500 focus:outline-none ${isValidLinkedIn ? "border-gray-300" : "border-red-600"
+                    }`}
                   onChange={onLinkedInChanged}
                 />
               ) : user.linkedIn ? (
@@ -338,9 +430,123 @@ const Profile = () => {
                     <p className="text-gray-800">
                       {user.classLevel
                         ? user.classLevel.charAt(0).toUpperCase() +
-                          user.classLevel.slice(1).toLowerCase()
+                        user.classLevel.slice(1).toLowerCase()
                         : "Not specified"}
                     </p>
+                  </div>
+
+                  {/* School */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>School</span>
+                    </label>
+                    <p className="text-gray-800">
+                      {user.school
+                        ? user.school.charAt(0).toUpperCase() +
+                        user.school.slice(1).toLowerCase()
+                        : "Not specified"}
+                    </p>
+                  </div>
+                  {/* Field of Interest */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Field of Interest</span>
+                    </label>
+                    {Array.isArray(user.fieldOfInterest) && user.fieldOfInterest.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.fieldOfInterest.map((field, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {field.charAt(0).toUpperCase() + field.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                  </div>
+                  {/* Projects */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Projects</span>
+                    </label>
+                    {Array.isArray(user.projects) && user.projects.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.projects.map((project, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {project.charAt(0).toUpperCase() + project.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                  </div>
+                  {/* These next two are technically user specific but this will be dealt with during the redesign
+                  Hobbies */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Hobbies</span>
+                    </label>
+                    {Array.isArray(user.hobbies) && user.hobbies.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.hobbies.map((hobby, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {hobby.charAt(0).toUpperCase() + hobby.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                  </div>
+                  {/* Skills */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Skills</span>
+                    </label>
+                    {Array.isArray(user.skills) && user.skills.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {skill.charAt(0).toUpperCase() + skill.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                  </div>
+                  {/* Companies of Interest */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Companies of Interest</span>
+                    </label>
+                    {Array.isArray(user.companiesOfInterest) && user.companiesOfInterest.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.companiesOfInterest.map((companiesOfInterest, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {companiesOfInterest.charAt(0).toUpperCase() + companiesOfInterest.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
                   </div>
                 </div>
               </div>
@@ -383,6 +589,73 @@ const Profile = () => {
                         handleInputChange("classLevel", e.target.value)
                       }
                       className="w-full border-2 text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <div className="flex items-center gap-2">
+                        <span>School</span>
+                      </div>
+                    </label>
+                    <input
+                      type="text"
+                      value={updatedUser.school}
+                      placeholder="Enter your school"
+                      onChange={(e) =>
+                        handleInputChange("school", e.target.value)
+                      }
+                      className="w-full p-2 border-2 focus:outline-none focus:border-blue-500 border-gray-300 rounded-md"
+                    />
+                  </div>
+                  {/* Field Of Interest, Projects, Hobbies, Skills, Companies of Interest */}
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Field Of Interest"
+                      values={updatedUser.fieldOfInterest || []}
+                      placeholder="Add a field of interest"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, fieldOfInterest: value }))}
+                    />
+                  </div>
+
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Projects"
+                      values={updatedUser.projects || []}
+                      placeholder="Add a project"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, projects: value }))}
+                    />
+                  </div>
+
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Hobbies"
+                      values={updatedUser.hobbies || []}
+                      placeholder="Add a hobby"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, hobbies: value }))}
+                    />
+                  </div>
+
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Skills"
+                      values={updatedUser.skills || []}
+                      placeholder="Add a skill"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, skills: value }))}
+                    />
+                  </div>
+
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Companies of Interest"
+                      values={updatedUser.companiesOfInterest || []}
+                      placeholder="Add a company of interest"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, companiesOfInterest: value }))}
                     />
                   </div>
                 </div>
@@ -438,6 +711,86 @@ const Profile = () => {
                       </p>
                     </div>
                   </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Organizations</span>
+                    </label>
+                    {Array.isArray(user.organizations) && user.organizations.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.organizations.map((organization, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {organization.charAt(0).toUpperCase() + organization.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Specializations</span>
+                    </label>
+                    {Array.isArray(user.specializations) && user.specializations.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.specializations.map((specialization, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {specialization.charAt(0).toUpperCase() + specialization.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Hobbies</span>
+                    </label>
+                    {Array.isArray(user.hobbies) && user.hobbies.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.hobbies.map((hobby, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {hobby.charAt(0).toUpperCase() + hobby.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Skills</span>
+                    </label>
+                    {Array.isArray(user.skills) && user.skills.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {skill.charAt(0).toUpperCase() + skill.slice(1).toLowerCase()}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
                 </div>
               </div>
             )}
@@ -513,6 +866,46 @@ const Profile = () => {
                     </div>
                   </div>
                 </div>
+
+                <div className="space-y-6 max-w-xl">
+                  <AddableCardList
+                    label="Organizations"
+                    values={updatedUser.organizations || []}
+                    placeholder="Add an organization"
+                    maxItems={5}
+                    onChange={(value) => setUpdatedUser(prev => ({ ...prev, organizations: value }))}
+                    />
+                </div>
+
+                <div className="space-y-6 max-w-xl">
+                  <AddableCardList
+                    label="Specializations"
+                    values={updatedUser.specializations || []}
+                    placeholder="Add a specialization"
+                    maxItems={5}
+                    onChange={(value) => setUpdatedUser(prev => ({ ...prev, specializations: value }))}
+                    />
+                </div>
+
+                <div className="space-y-6 max-w-xl">
+                  <AddableCardList
+                    label="Hobbies"
+                    values={updatedUser.hobbies || []}
+                    placeholder="Add a hobby"
+                    maxItems={5}
+                    onChange={(value) => setUpdatedUser(prev => ({ ...prev, hobbies: value }))}
+                    />
+                </div>
+
+                <div className="space-y-6 max-w-xl">
+                  <AddableCardList
+                    label="Skills"
+                    values={updatedUser.skills || []}
+                    placeholder="Add a skill"
+                    maxItems={5}
+                    onChange={(value) => setUpdatedUser(prev => ({ ...prev, skills: value }))}
+                    />
+                </div>
               </div>
             )}
 
@@ -527,9 +920,8 @@ const Profile = () => {
                 </button>
                 <button
                   onClick={onSave}
-                  className={`px-4 py-2 text-white rounded-md ${
-                    canSave ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-300"
-                  }`}
+                  className={`px-4 py-2 text-white rounded-md ${canSave ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-300"
+                    }`}
                   disabled={!canSave}
                 >
                   Save Changes
