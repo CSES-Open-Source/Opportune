@@ -226,7 +226,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="w-full h-full items-center pt-28">
+    <div className="w-full items-center my-10">
       <div className="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto border">
         <div className="flex justify-between items-start mb-6">
           <h1 className="text-2xl font-bold text-gray-800">User Profile</h1>
