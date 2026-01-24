@@ -68,6 +68,7 @@ const applicationStatusLabelMap = {
   FINAL: "Final",
   OFFER: "Offer",
   REJECTED: "Rejected",
+  GHOSTED: "Ghosted",
 };
 
 const difficultyLabelMap = {

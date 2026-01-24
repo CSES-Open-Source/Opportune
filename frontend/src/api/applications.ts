@@ -5,9 +5,9 @@ import {
   CreateApplicationRequest,
   GetApplicationsByUserIDQuery,
   UpdateApplicationRequest,
-  ApplicationStats,
   MonthlyData,
   RawMonthlyItem,
+  ApplicationAnalytics,
 } from "../types/Application";
 import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
 
@@ -141,58 +141,6 @@ export async function getApplicationsByUserID(
 
 
 /**
- * Gets the analytics data for a users application, including application count
- * interview count and offer count
- * @param userId 
- * @returns Returns the application stats for the users application as an application stats object
- */
-export async function getApplicationAnalytics(
-  userId: string,
-): Promise<APIResult<ApplicationStats>> {
-    try {
-      const response = await get(`/api/applications/applied/analytics/${userId}`);
-      const json = await response.json(); 
-    
-      if(!response.ok){
-        throw new Error(json.message || "Failed to fetch analytics data");
-      }
-      
-      const statusArray = Array.isArray(json.applicationStatus) ? json.applicationStatus : [];
-      let applied = 0;
-      let interview = 0;
-      let offer = 0;
-      let rejected = 0;
-      for (const status of statusArray) {
-        const key = status._id;
-        const count = Number(status.count || 0);
-        if(key === "APPLIED") applied = count;
-        if(key === "OFFER") offer = count;
-        if(key === "INTERVIEW") interview = count;
-        if(key === "REJECTED") rejected = count;
-        if (["PHONE", "FINAL", "OA"].includes(key)) interview += count;
-      }
-
-      const result: ApplicationStats = {
-        total: Number(json.totalApplications ?? json.total ?? applied + interview + offer + rejected),
-        applied,
-        interview,
-        offer,
-        rejected,
-      };
-
-      return { 
-        success: true, 
-        data: result 
-      };
-    } 
-    catch (error) {
-      return handleAPIError(error);
-    }
-  
-}
-
-
-/**
  * Gets the month by month data of applications submitted for the analytics tab
  * @param userId 
  * @returns The name of the month's with applications submitted and the counts as an object
@@ -236,4 +184,24 @@ export async function getMonthlyData(
       return handleAPIError(error);
     }
   
+}
+
+
+
+/**
+ * Gets the analytics data for a users application, including application count
+ * interview count and offer count
+ * @param userId 
+ * @returns Returns the application stats for the users application as an application stats object
+ */
+export async function getApplicationDetails(
+  userId: string,
+): Promise<APIResult<ApplicationAnalytics>> {
+  try {
+    const response = await get(`/api/applications/applied/analytics/${userId}`);
+    const json = (await response.json()) as ApplicationAnalytics;
+    return { success: true, data: json };
+  } catch (error) {
+    return handleAPIError(error);
+  }
 }

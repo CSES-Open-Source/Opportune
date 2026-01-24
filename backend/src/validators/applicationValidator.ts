@@ -96,7 +96,7 @@ const validateProcess = [
     .withMessage("process must be an array of application statuses."),
   body("process.*.status")
     .toUpperCase()
-    .isIn(["APPLIED", "OA", "PHONE", "FINAL", "OFFER", "REJECTED"])
+    .isIn(["APPLIED", "OA", "PHONE", "FINAL", "OFFER", "REJECTED", "GHOSTED"])
     .withMessage(
       "Status must be one of: APPLIED, OA, PHONE, FINAL, OFFER, REJECTED",
     ),
