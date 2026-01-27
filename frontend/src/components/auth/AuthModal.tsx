@@ -173,21 +173,6 @@ const AuthModal = () => {
     );
   };
 
-  const onFinishSignup = async () => {
-    if (!selectedType) return;
-
-    const response = await createUser(newUser);
-    if (!response?.success || !user?._id) return;
-
-    if (selectedType === UserType.Student) {
-      saveStudentProfile();
-    }
-
-    if (selectedType === UserType.Alumni) {
-      saveAlumniProfile();
-    }
-  };
-
   const saveStudentProfile = () => {
     fetch("/api/profile/student", {
       method: "POST",
