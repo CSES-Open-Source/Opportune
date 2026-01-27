@@ -23,7 +23,6 @@ const AuthModal = () => {
   } = useAuth();
 
   const [stage, setStage] = useState<number>(0);
-  const totalStages = 5;
   const [selectedType, setSelectedType] = useState<UserType | null>(null);
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState<boolean>(true);
   const [isValidLinkedIn, setIsValidLinkedIn] = useState<boolean>(true);
@@ -41,6 +40,9 @@ const AuthModal = () => {
   );
   const [companiesOfInterestText, setCompaniesOfInterestText] = useState(
     newUser.companiesOfInterest?.join(", ") ?? ""
+  );
+  const [alumniCompaniesText, setAlumniCompaniesText] = useState(
+    newUser.organizations?.join(", ") ?? ""
   );
   const [organizationsText, setOrganizationsText] = useState(
     newUser.organizations?.join(", ") ?? ""
@@ -78,6 +80,8 @@ const AuthModal = () => {
       setAlumniProfile({userId: user._id}); 
     }
   }, [user]);
+
+  const totalStages = 5;
 
   useEffect(() => {
     if (toast && error !== "") {
@@ -168,7 +172,22 @@ const AuthModal = () => {
       !(cleanedInput.length > 0 && cleanedInput.length < 10),
     );
   };
-  
+
+  const onFinishSignup = async () => {
+    if (!selectedType) return;
+
+    const response = await createUser(newUser);
+    if (!response?.success || !user?._id) return;
+
+    if (selectedType === UserType.Student) {
+      saveStudentProfile();
+    }
+
+    if (selectedType === UserType.Alumni) {
+      saveAlumniProfile();
+    }
+  };
+
   const saveStudentProfile = () => {
     fetch("/api/profile/student", {
       method: "POST",
@@ -678,6 +697,152 @@ const AuthModal = () => {
                       <p className="text-xs text-gray-500 mt-2">
                         If yes, students will be able to view your profile and
                         connect with you for mentorship or networking.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Professional Summary (Alumni) */}
+              {stage === 3 && newUser.type === UserType.Alumni && (
+                <div className="flex flex-col items-center w-full flex-1">
+                  <h2 className="text-xl font-semibold mb-8">
+                    Professional summary
+                  </h2>
+                  <div className="w-full space-y-6 max-w-md">
+                    {/* Work Experience Companies */}
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="alumni-companies"
+                        className="text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Companies you’ve worked at (Optional)
+                      </label>
+                      <textarea
+                        id="alumni-companies"
+                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g. Google, NVIDIA, Cisco..."
+                        rows={2}
+                        value={alumniCompaniesText}
+                        onChange={(e) => {
+                          const text = e.target.value;
+                          setAlumniCompaniesText(text);
+                          handleNewUserChange(
+                            "organizations", // or a different array field if you prefer
+                            text
+                              ? text.split(",").map(c => c.trim()).filter(Boolean)
+                              : []
+                          );
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Separate company names with commas.
+                      </p>
+                    </div>
+
+                    {/* Skills */}
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="alumni-skills"
+                        className="text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Skills (Optional)
+                      </label>
+                      <textarea
+                        id="alumni-skills"
+                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g. Backend, Kubernetes, Leadership..."
+                        rows={3}
+                        value={skillsText}
+                        onChange={(e) => {
+                          const text = e.target.value;
+                          setSkillsText(text);
+                          handleNewUserChange(
+                            "skills",
+                            text
+                              ? text.split(",").map(s => s.trim()).filter(Boolean)
+                              : []
+                          );
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Separate skills with commas.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* More about you (Alumni) */}
+              {stage === 4 && newUser.type === UserType.Alumni && (
+                <div className="flex flex-col items-center w-full flex-1">
+                  <h2 className="text-xl font-semibold mb-8">
+                    More about you
+                  </h2>
+                  <div className="w-full space-y-6 max-w-md">
+                    {/* Organizations */}
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="alumni-organizations"
+                        className="text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Organizations (Optional)
+                      </label>
+                      <textarea
+                        id="alumni-organizations"
+                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g. IEEE, ACM, ERG groups, community orgs..."
+                        rows={2}
+                        value={organizationsText}
+                        onChange={(e) => {
+                          const text = e.target.value;
+                          setOrganizationsText(text);
+                          handleNewUserChange(
+                            "organizations",
+                            text
+                              ? text
+                                  .split(",")
+                                  .map(o => o.trim())
+                                  .filter(Boolean)
+                              : []
+                          );
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Separate organization names with commas.
+                      </p>
+                    </div>
+
+                    {/* Hobbies */}
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="alumni-hobbies"
+                        className="text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Hobbies (Optional)
+                      </label>
+                      <textarea
+                        id="alumni-hobbies"
+                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g. Hiking, Guitar, Chess..."
+                        rows={2}
+                        value={hobbiesText}
+                        onChange={(e) => {
+                          const text = e.target.value;
+                          setHobbiesText(text);
+                          handleNewUserChange(
+                            "hobbies",
+                            text
+                              ? text
+                                  .split(",")
+                                  .map(h => h.trim())
+                                  .filter(Boolean)
+                              : []
+                          );
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Separate hobbies with commas.
                       </p>
                     </div>
                   </div>
