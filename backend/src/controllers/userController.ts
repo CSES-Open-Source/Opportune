@@ -58,6 +58,8 @@ export const createUser = asyncHandler(async (req, res, next) => {
   if (!reqErrors.isEmpty()) {
     return next(createHttpError(400, validationErrorParser(reqErrors)));
   }
+  const bodyData = matchedData(req, { locations: ["body"] });
+  console.log("createUser matchedData body:", bodyData);
 
   const {
     _id,
@@ -72,6 +74,14 @@ export const createUser = asyncHandler(async (req, res, next) => {
     company,
     shareProfile,
     position,
+
+    fieldOfInterest,
+    projects,
+    companiesOfInterest,
+    hobbies,
+    skills,
+    organizations,
+    specializations,
   } = matchedData(req, { locations: ["body"] });
 
   // check if the user already exists
@@ -99,6 +109,14 @@ export const createUser = asyncHandler(async (req, res, next) => {
     company,
     shareProfile,
     position,
+
+    organizations,
+    specializations,
+    skills,
+    hobbies,
+    companiesOfInterest,
+    projects,
+    fieldOfInterest,
   });
 
   await newUser.save();

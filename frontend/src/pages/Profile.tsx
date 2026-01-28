@@ -459,7 +459,7 @@ const Profile = () => {
                         key={index}
                         className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
                       >
-                        {field.charAt(0).toUpperCase() + field.slice(1).toLowerCase()}
+                        {field}
                       </span>
                     ))}
                     </div>
@@ -479,7 +479,7 @@ const Profile = () => {
                         key={index}
                         className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
                       >
-                        {project.charAt(0).toUpperCase() + project.slice(1).toLowerCase()}
+                        {project}
                       </span>
                     ))}
                     </div>
@@ -500,7 +500,7 @@ const Profile = () => {
                         key={index}
                         className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
                       >
-                        {hobby.charAt(0).toUpperCase() + hobby.slice(1).toLowerCase()}
+                        {hobby}
                       </span>
                     ))}
                     </div>
@@ -520,7 +520,7 @@ const Profile = () => {
                         key={index}
                         className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
                       >
-                        {skill.charAt(0).toUpperCase() + skill.slice(1).toLowerCase()}
+                        {skill}
                       </span>
                     ))}
                     </div>
@@ -540,7 +540,7 @@ const Profile = () => {
                         key={index}
                         className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
                       >
-                        {companiesOfInterest.charAt(0).toUpperCase() + companiesOfInterest.slice(1).toLowerCase()}
+                        {companiesOfInterest}
                       </span>
                     ))}
                     </div>
@@ -724,7 +724,7 @@ const Profile = () => {
                         key={index}
                         className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
                       >
-                        {organization.charAt(0).toUpperCase() + organization.slice(1).toLowerCase()}
+                        {organization}
                       </span>
                     ))}
                     </div>
@@ -744,7 +744,7 @@ const Profile = () => {
                         key={index}
                         className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
                       >
-                        {specialization.charAt(0).toUpperCase() + specialization.slice(1).toLowerCase()}
+                        {specialization}
                       </span>
                     ))}
                     </div>
@@ -764,7 +764,7 @@ const Profile = () => {
                         key={index}
                         className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
                       >
-                        {hobby.charAt(0).toUpperCase() + hobby.slice(1).toLowerCase()}
+                        {hobby}
                       </span>
                     ))}
                     </div>
@@ -784,7 +784,7 @@ const Profile = () => {
                         key={index}
                         className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
                       >
-                        {skill.charAt(0).toUpperCase() + skill.slice(1).toLowerCase()}
+                        {skill}
                       </span>
                     ))}
                     </div>

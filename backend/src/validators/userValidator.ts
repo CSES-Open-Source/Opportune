@@ -254,7 +254,12 @@ export const createUserValidator = [
   validateCompany,
   validateShareProfile,
   validatePosition,
-  validateSpecializations,
+  validateProjects,
+  validateFieldOfInterest,
+
+  validateCompaniesOfInterest,
+  validateSkills,
+  validateHobbies,
   validateOrganization,
 ];
 

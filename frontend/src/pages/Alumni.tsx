@@ -4,7 +4,7 @@ import {
   FaArrowLeft,
   FaLinkedin
 } from "react-icons/fa";
-import { LuMail, LuBuilding2, LuBriefcase, LuShare2 } from "react-icons/lu";
+import { LuMail, LuBuilding2, LuBriefcase } from "react-icons/lu";
 import { FiPhone } from "react-icons/fi";
 import { getAlumniById } from "../api/users";
 import { APIResult } from "../api/requests";
@@ -17,7 +17,7 @@ const AlumniProfile: React.FC = () => {
 
   const [alumni, setAlumni] = useState<Alumni | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_, setError] = useState<string | null>(null);
 
   const handleAlumniUpdate = useCallback(() => {
       if (!id) return;
