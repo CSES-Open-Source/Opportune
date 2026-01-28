@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../contexts/useAuth";
 import Modal from "../public/Modal";
-import { ClassLevel, CreateUserRequest, UserType } from "../../types/User";
+import {ClassLevel, CreateUserRequest, UserType } from "../../types/User";
 import { ProgressBar } from "primereact/progressbar";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
@@ -23,7 +23,6 @@ const AuthModal = () => {
   } = useAuth();
 
   const [stage, setStage] = useState<number>(0);
-  const totalStages = 3;
   const [selectedType, setSelectedType] = useState<UserType | null>(null);
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState<boolean>(true);
   const [isValidLinkedIn, setIsValidLinkedIn] = useState<boolean>(true);
@@ -33,15 +32,39 @@ const AuthModal = () => {
     name: "",
     profilePicture: "",
     type: UserType.Student,
+
   });
   const [canProceed, setCanProceed] = useState<boolean>(false);
+  const [skillsText, setSkillsText] = useState(
+    newUser.skills?.join(", ") ?? ""
+  );
+  const [companiesOfInterestText, setCompaniesOfInterestText] = useState(
+    newUser.companiesOfInterest?.join(", ") ?? ""
+  );
+  const [alumniCompaniesText, setAlumniCompaniesText] = useState(
+    newUser.organizations?.join(", ") ?? ""
+  );
+  const [organizationsText, setOrganizationsText] = useState(
+    newUser.organizations?.join(", ") ?? ""
+  );
+  const [hobbiesText, setHobbiesText] = useState(
+    newUser.hobbies?.join(", ") ?? ""
+  ); 
+
+  const [studentProfile, setStudentProfile] = useState<{ userId: string }>({
+    userId: "",
+  });
+
+  const [alumniProfile, setAlumniProfile] = useState<{ userId: string }>({
+    userId: "",
+  });
 
   const toast = useRef<Toast>(null);
 
   const classLevelOptions = Object.keys(ClassLevel).map((key) => ({
     label: key,
     value: ClassLevel[key as keyof typeof ClassLevel],
-  }));
+  })); 
 
   useEffect(() => {
     if (user) {
@@ -52,8 +75,13 @@ const AuthModal = () => {
         email: user.email,
         profilePicture: user.profilePicture,
       }));
+
+      setStudentProfile({userId: user._id}); 
+      setAlumniProfile({userId: user._id}); 
     }
   }, [user]);
+
+  const totalStages = 5;
 
   useEffect(() => {
     if (toast && error !== "") {
@@ -71,20 +99,25 @@ const AuthModal = () => {
     setCanProceed(
       (stage === 0 && selectedType !== null) ||
         (stage === 1 && isValidLinkedIn && isValidPhoneNumber) ||
-        stage === 2,
+        stage >= 2,
     );
   }, [stage, selectedType, isValidLinkedIn, isValidPhoneNumber]);
 
   const onSelectType = (type: UserType) => {
     setSelectedType(type);
-    if (type === UserType.Student) {
-      setNewUser({ ...newUser, type, company: undefined, shareProfile: false });
-    } else if (type === UserType.Alumni) {
-      setNewUser({ ...newUser, type, major: undefined, classLevel: undefined });
-    } else {
-      setNewUser({ ...newUser, type });
-    }
+
+    setNewUser(prev => ({
+      ...prev,
+      type,
+      ...(type === UserType.Student
+        ? { organizations: [], specializations: []}
+        : {}),
+      ...(type === UserType.Alumni
+        ? { fieldOfInterest: [], projects: [], companiesOfInterest: [] }
+        : {}),
+    }));
   };
+
 
   const onLinkedInChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
@@ -140,6 +173,44 @@ const AuthModal = () => {
     );
   };
 
+  const saveStudentProfile = () => {
+    fetch("/api/profile/student", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(studentProfile),
+    })
+      .then(res => res.json())
+      .then(data => {
+        setStudentProfile(data);
+        console.log("created student profile", data);
+      });
+  };
+
+  const saveAlumniProfile = () => {
+    fetch("/api/profile/alumni", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(alumniProfile),
+    })
+      .then(res => res.json())
+      .then(data => {
+        setAlumniProfile(data);
+        console.log("created alumni profile", data);
+      });
+  };
+
+  const handleNewUserChange = (
+    field: keyof CreateUserRequest,
+    value: unknown,
+  ) => {
+    setNewUser(prev => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+
+
   return (
     <div>
       <Modal
@@ -177,9 +248,14 @@ const AuthModal = () => {
                           : "border-gray-200 hover:border-blue-300 hover:bg-blue-50/50"
                       }`}
                     >
-                      <div className="text-3xl mb-4">📓</div>
+                      <img
+                        src="/assets/studentLogo.png"
+                        alt="Student"
+                        className="w-16 h-16 mb-4"
+                      />
                       <div className="font-medium text-lg">Student</div>
                     </button>
+
                     <button
                       onClick={() => onSelectType(UserType.Alumni)}
                       className={`flex-1 border-2 rounded-lg px-6 py-14 flex flex-col items-center justify-center transition-all ${
@@ -188,13 +264,16 @@ const AuthModal = () => {
                           : "border-gray-200 hover:border-blue-300 hover:bg-blue-50/50"
                       }`}
                     >
-                      <div className="text-3xl mb-4">🎓</div>
+                      <img
+                        src="/assets/alumniLogo.png"
+                        alt="Alumni"
+                        className="w-16 h-16 mb-4"
+                      />
                       <div className="font-medium text-lg">Alumni</div>
                     </button>
                   </div>
                 </div>
               )}
-
               {/* Contact Info */}
               {stage === 1 && (
                 <div className="flex flex-col items-center w-full flex-1">
@@ -326,9 +405,180 @@ const AuthModal = () => {
                         Select the year that best represents your current status
                       </p>
                     </div>
+
+                    {/* Specialization*/}
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="specialization"
+                        className="text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Specialization (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        id="specialization"
+                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g. AI/ML, Systems, Product..."
+                        value={newUser.fieldOfInterest?.[0] ?? ""}
+                        onChange={(e) =>
+                          handleNewUserChange(
+                            "fieldOfInterest",
+                            e.target.value ? [e.target.value] : [],
+                          )
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               )}
+
+              {/* Professional Summary (Student) */}
+              {stage === 3 && newUser.type === UserType.Student && (
+                <div className="flex flex-col items-center w-full flex-1">
+                  <h2 className="text-xl font-semibold mb-8">
+                    Professional summary
+                  </h2>
+                  <div className="w-full space-y-6 max-w-md">
+                    {/* Skills */}
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="skills"
+                        className="text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Skills (Optional)
+                      </label>
+                      <textarea
+                        id="skills"
+                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g. Python, React, Systems Design..."
+                        rows={3}
+                        value={skillsText}
+                        onChange={(e) => {
+                          const text = e.target.value;
+                          setSkillsText(text);
+                          handleNewUserChange(
+                            "skills",
+                            text
+                              ? text.split(",").map(s => s.trim()).filter(Boolean)
+                              : []
+                          )
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Separate skills with commas.
+                      </p>
+                    </div>
+
+                    {/* Companies of Interest */}
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="companiesOfInterest"
+                        className="text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Companies of interest (Optional)
+                      </label>
+                      <textarea
+                        id="companiesOfInterest"
+                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g. Google, NVIDIA, Cisco..."
+                        rows={2}
+                        value={companiesOfInterestText}
+                        onChange={(e) => {
+                          const text = e.target.value;
+                          setCompaniesOfInterestText(text);
+                          handleNewUserChange(
+                            "companiesOfInterest",
+                            e.target.value
+                              ? e.target.value.split(",").map(c => c.trim()).filter(Boolean)
+                              : []
+                          )
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Separate company names with commas.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tell us more about yourself (Student) */}
+              {stage === 4 && newUser.type === UserType.Student && (
+              <div className="flex flex-col items-center w-full flex-1">
+                <h2 className="text-xl font-semibold mb-8">
+                  Tell us more about yourself
+                </h2>
+                <div className="w-full space-y-6 max-w-md">
+                  {/* Organizations */}
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="organizations"
+                      className="text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Organizations (Optional)
+                    </label>
+                    <textarea
+                      id="organizations"
+                      className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                      placeholder="e.g. IEEE, ACM, Robotics Club..."
+                      rows={2}
+                      value={organizationsText}
+                      onChange={(e) => {
+                        const text = e.target.value;
+                        setOrganizationsText(text);
+
+                        handleNewUserChange(
+                          "organizations",
+                          text
+                            ? text
+                                .split(",")
+                                .map(o => o.trim())
+                                .filter(Boolean)
+                            : []
+                        );
+                      }}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Separate organization names with commas.
+                    </p>
+                  </div>
+
+                  {/* Hobbies */}
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="hobbies"
+                      className="text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Hobbies (Optional)
+                    </label>
+                    <textarea
+                      id="hobbies"
+                      className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                      placeholder="e.g. Hiking, Guitar, Chess..."
+                      rows={2}
+                      value={hobbiesText}
+                      onChange={(e) => {
+                        const text = e.target.value;
+                        setHobbiesText(text);
+
+                        handleNewUserChange(
+                          "hobbies",
+                          text
+                            ? text
+                                .split(",")
+                                .map(h => h.trim())
+                                .filter(Boolean)
+                            : []
+                        );
+                      }}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Separate hobbies with commas.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
               {/* Professional Info */}
               {stage === 2 && newUser.type === UserType.Alumni && (
@@ -437,6 +687,152 @@ const AuthModal = () => {
                   </div>
                 </div>
               )}
+
+              {/* Professional Summary (Alumni) */}
+              {stage === 3 && newUser.type === UserType.Alumni && (
+                <div className="flex flex-col items-center w-full flex-1">
+                  <h2 className="text-xl font-semibold mb-8">
+                    Professional summary
+                  </h2>
+                  <div className="w-full space-y-6 max-w-md">
+                    {/* Work Experience Companies */}
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="alumni-companies"
+                        className="text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Companies you’ve worked at (Optional)
+                      </label>
+                      <textarea
+                        id="alumni-companies"
+                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g. Google, NVIDIA, Cisco..."
+                        rows={2}
+                        value={alumniCompaniesText}
+                        onChange={(e) => {
+                          const text = e.target.value;
+                          setAlumniCompaniesText(text);
+                          handleNewUserChange(
+                            "organizations", // or a different array field if you prefer
+                            text
+                              ? text.split(",").map(c => c.trim()).filter(Boolean)
+                              : []
+                          );
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Separate company names with commas.
+                      </p>
+                    </div>
+
+                    {/* Skills */}
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="alumni-skills"
+                        className="text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Skills (Optional)
+                      </label>
+                      <textarea
+                        id="alumni-skills"
+                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g. Backend, Kubernetes, Leadership..."
+                        rows={3}
+                        value={skillsText}
+                        onChange={(e) => {
+                          const text = e.target.value;
+                          setSkillsText(text);
+                          handleNewUserChange(
+                            "skills",
+                            text
+                              ? text.split(",").map(s => s.trim()).filter(Boolean)
+                              : []
+                          );
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Separate skills with commas.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* More about you (Alumni) */}
+              {stage === 4 && newUser.type === UserType.Alumni && (
+                <div className="flex flex-col items-center w-full flex-1">
+                  <h2 className="text-xl font-semibold mb-8">
+                    More about you
+                  </h2>
+                  <div className="w-full space-y-6 max-w-md">
+                    {/* Organizations */}
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="alumni-organizations"
+                        className="text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Organizations (Optional)
+                      </label>
+                      <textarea
+                        id="alumni-organizations"
+                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g. IEEE, ACM, ERG groups, community orgs..."
+                        rows={2}
+                        value={organizationsText}
+                        onChange={(e) => {
+                          const text = e.target.value;
+                          setOrganizationsText(text);
+                          handleNewUserChange(
+                            "organizations",
+                            text
+                              ? text
+                                  .split(",")
+                                  .map(o => o.trim())
+                                  .filter(Boolean)
+                              : []
+                          );
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Separate organization names with commas.
+                      </p>
+                    </div>
+
+                    {/* Hobbies */}
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="alumni-hobbies"
+                        className="text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Hobbies (Optional)
+                      </label>
+                      <textarea
+                        id="alumni-hobbies"
+                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="e.g. Hiking, Guitar, Chess..."
+                        rows={2}
+                        value={hobbiesText}
+                        onChange={(e) => {
+                          const text = e.target.value;
+                          setHobbiesText(text);
+                          handleNewUserChange(
+                            "hobbies",
+                            text
+                              ? text
+                                  .split(",")
+                                  .map(h => h.trim())
+                                  .filter(Boolean)
+                              : []
+                          );
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Separate hobbies with commas.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Buttons */}
@@ -456,13 +852,21 @@ const AuthModal = () => {
                 className={`w-24 px-4 py-2 rounded-md text-white font-medium transition-colors ${
                   canProceed ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-300"
                 }`}
-                onClick={() => {
+                onClick={async () => {
                   if (stage === totalStages - 1) {
-                    createUser(newUser).then((response) => {
-                      if (response.success) {
-                        setStage(totalStages);
+                    const response = await createUser(newUser);
+                    console.log("create user response", response);  
+
+                    if (response.success && user?._id) {
+                      if (newUser.type === UserType.Student) {
+                        setStudentProfile({ ...studentProfile, userId: user._id });
+                        await saveStudentProfile();
+                      } else if (newUser.type === UserType.Alumni) {
+                        setAlumniProfile({ ...alumniProfile, userId: user._id });
+                        await saveAlumniProfile();
                       }
-                    });
+                      setStage(totalStages);
+                    }
                   } else {
                     setStage(stage + 1);
                   }
