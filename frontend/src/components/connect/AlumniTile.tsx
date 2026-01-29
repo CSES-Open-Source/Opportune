@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Alumni } from "../../types/User";
 import { LuMail, LuBuilding2, LuBriefcase } from "react-icons/lu";
 import AlumniProfileModal from "./AlumniProfileModal";
@@ -8,6 +9,7 @@ interface AlumniTileProps {
 }
 
 const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
+  const navigate = useNavigate();
   const [alumniProfileOpen, setAlumniProfileOpen] = useState(false);
 
   const onAlumniClicked = () => {
@@ -19,7 +21,8 @@ const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg overflow-visible h-auto transition border border-gray-300 shadow-sm hover:shadow-md">
+    <div onClick={() => navigate(`/alumni/${data._id}`)} 
+      className="bg-white rounded-lg overflow-visible h-auto transition border border-gray-300 shadow-sm hover:shadow-md">
       {/* Card header with avatar and name */}
       <div className="bg-gray-50 p-4 flex items-center border-b">
         <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden mr-3">
