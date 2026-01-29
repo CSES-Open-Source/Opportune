@@ -1,19 +1,22 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   FaArrowLeft,
   FaLinkedin
 } from "react-icons/fa";
-import { LuMail, LuBuilding2, LuBriefcase, LuShare2 } from "react-icons/lu";
+import { LuMail, LuBuilding2, LuBriefcase } from "react-icons/lu";
 import { FiPhone } from "react-icons/fi";
 import { getAlumniById } from "../api/users";
 import { APIResult } from "../api/requests";
 import { Alumni } from "../types/User";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { Toast } from "primereact/toast";
 
 const AlumniProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  const toast = useRef<Toast>(null);
 
   const [alumni, setAlumni] = useState<Alumni | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,6 +32,11 @@ const AlumniProfile: React.FC = () => {
             setError(null);
           } else {
             setError(result.error);
+            toast.current?.show({
+              severity: "error",
+              summary: "Error",
+              detail: "Failed to fetch alumni: " + result.error,
+            });
           }
         })
         .catch((e) => setError(e instanceof Error ? e.message : "Unknown error"))
@@ -38,6 +46,12 @@ const AlumniProfile: React.FC = () => {
   // Initial company fetch
   useEffect(() => { handleAlumniUpdate(); }, [handleAlumniUpdate]);
   
+  if (error)
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-600">
+        Error: {error}
+      </div>
+    );
   if (!alumni)
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -271,6 +285,7 @@ const AlumniProfile: React.FC = () => {
               </div>
         </div>
       )}
+      <Toast ref={toast} />
     </div>
   );
 };
