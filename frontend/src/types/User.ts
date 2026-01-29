@@ -83,6 +83,14 @@ export interface CreateUserRequest {
   company?: Company;
   shareProfile?: boolean;
   position?: string;
+
+  fieldOfInterest?: string[];
+  projects?: string[];
+  companiesOfInterest?: string[];
+  organizations?: string[]; 
+  specializations?: string[];
+  hobbies?: string[];
+  skills?: string[];
 }
 
 export interface UpdateUserRequest {
