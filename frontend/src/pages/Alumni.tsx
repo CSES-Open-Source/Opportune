@@ -35,7 +35,7 @@ const AlumniProfile: React.FC = () => {
             toast.current?.show({
               severity: "error",
               summary: "Error",
-              detail: "Failed to fetch alumni: " + result.error,
+              detail: "Failed to fetch alumni profile: " + result.error,
             });
           }
         })
