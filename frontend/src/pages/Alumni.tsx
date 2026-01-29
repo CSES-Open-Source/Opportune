@@ -17,7 +17,7 @@ const AlumniProfile: React.FC = () => {
 
   const [alumni, setAlumni] = useState<Alumni | null>(null);
   const [loading, setLoading] = useState(true);
-  const [_, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleAlumniUpdate = useCallback(() => {
       if (!id) return;
