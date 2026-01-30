@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   FaArrowLeft,
@@ -6,10 +6,12 @@ import {
 } from "react-icons/fa";
 import { LuMail, LuBuilding2, LuBriefcase } from "react-icons/lu";
 import { FiPhone } from "react-icons/fi";
-import { getAlumniById } from "../api/users";
+import { getAlumniById, getSimilarities } from "../api/users";
 import { APIResult } from "../api/requests";
 import { Alumni } from "../types/User";
 import { ProgressSpinner } from "primereact/progressspinner";
+import { useAuth } from "../contexts/useAuth";
+import { Toast } from "primereact/toast";
 
 const AlumniProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +20,8 @@ const AlumniProfile: React.FC = () => {
   const [alumni, setAlumni] = useState<Alumni | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user, isAuthenticated } = useAuth();
+  const toast = useRef<Toast>(null);
 
   const handleAlumniUpdate = useCallback(() => {
       if (!id) return;
@@ -37,7 +41,38 @@ const AlumniProfile: React.FC = () => {
 
   // Initial company fetch
   useEffect(() => { 
-    handleAlumniUpdate(); 
+    handleAlumniUpdate();
+    
+    const resolveUserId = (): string | null => {
+        if (user) {
+          return user._id ?? null;
+        }
+        return null;
+    };
+
+    const fetchSimilarities = async () => {
+      try{
+        const userId = resolveUserId();
+        if(!userId){
+          console.error("User not found:", {isAuthenticated, user });
+          return;
+        }
+
+        const res = await getSimilarities(userId);
+
+        if(!res.success){
+          throw new Error ("Failed to fetch application data");
+        }
+      } catch(err){
+      const error = err as Error;
+      console.error("Error fetching alumni similarities:", error.message);
+      toast.current?.show({
+            severity: "error",
+            summary: "Error",
+            detail: `Failed to update similarities: ${error.message || "Unknown error"}`,
+          });
+      }
+    } 
   }, [handleAlumniUpdate]);
   
   if (!alumni)
