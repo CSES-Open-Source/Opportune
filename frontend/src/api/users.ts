@@ -10,6 +10,7 @@ import {
   UserType,
 } from "../types/User";
 import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
+import { SimilarityResponse } from "../types/Similarity";
 
 function parseUser(user: UserJSON): User {
   if (user.type === UserType.Student) {
@@ -141,10 +142,31 @@ export async function getAlumni(
     const response = await get(`/api/users/alumni`, {
       ...queries,
       industry: queries.industry?.join(",") || "",
+      organizations: queries.organizations?.join(",") || "",
+      specializations: queries.specializations?.join(",") || "",
     });
     const json = (await response.json()) as PaginatedData<UserJSON>;
     const result = { ...json, data: json.data.map(parseAlumni) };
     return { success: true, data: result };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+
+/**
+ * Fetch similarities between a student and an alumni from the backend
+ *
+ * @param id The ID of the alumni to compare with
+ * @returns SimilarityResponse containing similarities and summary
+ */
+export async function getSimilarities(
+  id: string,
+): Promise<APIResult<SimilarityResponse>> {
+  try {
+    const response = await get(`/api/users/similarities/${id}`);
+    const json = (await response.json()) as SimilarityResponse;
+    return { success: true, data: json };
   } catch (error) {
     return handleAPIError(error);
   }

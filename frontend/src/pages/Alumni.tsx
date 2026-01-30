@@ -36,7 +36,9 @@ const AlumniProfile: React.FC = () => {
     }, [id]);
 
   // Initial company fetch
-  useEffect(() => { handleAlumniUpdate(); }, [handleAlumniUpdate]);
+  useEffect(() => { 
+    handleAlumniUpdate(); 
+  }, [handleAlumniUpdate]);
   
   if (!alumni)
     return (
