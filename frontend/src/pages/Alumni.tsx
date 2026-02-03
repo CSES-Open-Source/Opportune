@@ -275,6 +275,37 @@ const AlumniProfile: React.FC = () => {
                             </div>
                           </div>
                       </div>
+                      <div className="flex">
+                        <div className="bg-white rounded-lg shadow-sm p-3 mx-auto border">
+                          {/* Left Column - Profile Image */}
+                          <div className="flex flex-col items-center">
+                            <div className = "p-3">
+                              <button 
+                                type="submit"
+                                className="px-4 py-3 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-base font-medium"
+                              >
+                                Generate Email
+                              </button>
+                            </div>
+                            <div className="overflow-visible p-3">
+                              <div className="flex flex-col h-[60vh] w-[30vh]">
+                                <div className={"bg-gray-100 flex-1 overflow-y-auto p-3 mx-auto border"}>
+                                  Generated Email Generated Email Generated Email Generated Email Generated Email 
+                                  Generated Email Generated Email Generated Email Generated Email Generated Email 
+                                  Generated Email Generated Email Generated Email Generated Email Generated Email 
+                                  Generated Email Generated Email Generated Email Generated Email Generated Email 
+                                  Generated Email Generated Email Generated Email Generated Email Generated Email 
+                                  Generated Email Generated Email Generated Email Generated Email Generated Email 
+                                  Generated Email Generated Email Generated Email Generated Email Generated Email 
+                                  Generated Email Generated Email Generated Email Generated Email Generated Email 
+                                  Generated Email Generated Email Generated Email Generated Email Generated Email 
+                                  Generated Email Generated Email Generated Email Generated Email Generated Email 
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
