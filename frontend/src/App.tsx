@@ -7,6 +7,7 @@ import Applications from "./pages/Applications";
 import SavedApplications from "./pages/SavedApplications";
 import Companies from "./pages/Companies";
 import CompanyProfile from "./pages/Company";
+import AlumniProfile from "./pages/Alumni";
 import Connect from "./pages/Connect";
 import Sandbox from "./pages/Sandbox";
 import Profile from "./pages/Profile";
@@ -22,6 +23,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="companies" element={<Companies />} />
             <Route path="/companies/:id" element={<CompanyProfile />} />
+            <Route path="/alumni/:id" element={<AlumniProfile />} />
             <Route path="connect" element={<Connect />} />
             <Route path="applications">
               <Route path="applied" element={<Applications />} />

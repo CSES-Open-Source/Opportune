@@ -60,6 +60,22 @@ export async function getUserById(id: string): Promise<APIResult<User>> {
 }
 
 /**
+ * Fetch a single alumni by ID from the backend.
+ *
+ * @param id The ID of the alumni to fetch
+ * @returns The alumni object
+ */
+export async function getAlumniById(id: string): Promise<APIResult<Alumni>> {
+  try {
+    const response = await get(`/api/users/${id}`);
+    const json = (await response.json()) as UserJSON;
+    return { success: true, data: parseAlumni(json) };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+/**
  * Create a new user in the backend.
  *
  * @param user new user to create
