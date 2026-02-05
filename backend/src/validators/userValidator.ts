@@ -297,3 +297,18 @@ export const getOpenAlumniValidator = [
   validatePositionQuery,
   validateIndustry,
 ];
+
+export const getSimilaritiesValidator = [
+  param("studentId")
+    .isString()
+    .withMessage("studentId must be a string.")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("studentId is required."),
+  param("id")
+    .isString()
+    .withMessage("alumni id must be a string.")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("alumni id is required."),
+];

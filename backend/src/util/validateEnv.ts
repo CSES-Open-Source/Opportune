@@ -13,4 +13,5 @@ export default cleanEnv(process.env, {
   AWS_SECRET_ACCESS_KEY: str(),
   AWS_REGION: str(),
   AWS_BUCKET_NAME: str(), // Required for S3 uploads and presigned URLs
+  GROQ_API_KEY: str(),
 });
