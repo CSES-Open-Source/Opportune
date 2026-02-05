@@ -23,8 +23,7 @@ userRouter.get(
   "/similarities/:studentId/:id",
   userValidator.getSimilaritiesValidator,
   userController.getAlumniSimilarities,
-
-)
+);
 
 userRouter.patch(
   "/:id",

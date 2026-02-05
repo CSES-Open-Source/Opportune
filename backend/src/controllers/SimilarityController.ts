@@ -33,7 +33,6 @@ interface SimilarityResponse {
   summary: string;
 }
 
-
 export async function analyzeSimilarities(
   student: StudentData,
   alumni: AlumniData,
@@ -93,7 +92,7 @@ export async function analyzeSimilarities(
     const message = await groq.chat.completions.create({
       model: "llama-3.1-8b-instant",
       max_tokens: 1024,
-      response_format: {type: "json_object"},
+      response_format: { type: "json_object" },
       messages: [
         {
           role: "user",

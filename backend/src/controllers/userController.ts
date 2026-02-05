@@ -326,26 +326,24 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
 
 export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req);
-  if(!errors.isEmpty()){
+  if (!errors.isEmpty()) {
     return next(createHttpError(400, validationErrorParser(errors)));
   }
 
-  const { studentId } = matchedData(req, {locations: ["params"]});
+  const { studentId } = matchedData(req, { locations: ["params"] });
   const { id: alumniId } = matchedData(req, { locations: ["params"] });
-  if(!studentId){
-    return next(
-      createHttpError(400, "StudentId is required"),
-    );
+  if (!studentId) {
+    return next(createHttpError(400, "StudentId is required"));
   }
 
   const [alumniUser, studentUser] = await Promise.all([
     User.findById(alumniId)
-    .populate({
-      path: "company",
-      model: Company,
-    }).exec(),
+      .populate({
+        path: "company",
+        model: Company,
+      })
+      .exec(),
     User.findById(studentId).exec(),
-  
   ]);
 
   if (!alumniUser) {
@@ -356,7 +354,6 @@ export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
     return next(createHttpError(404, "Student user not found."));
   }
 
-  
   if (alumniUser.type !== UserType.Alumni) {
     return next(createHttpError(400, "User is not an alumni."));
   }
@@ -364,7 +361,6 @@ export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
   if (studentUser.type !== UserType.Student) {
     return next(createHttpError(400, "User is not a student."));
   }
-
 
   //Prepare data student and alumni for groq
   const StudentData = {
@@ -377,7 +373,7 @@ export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
     companiesOfInterest: studentUser.companiesOfInterest,
     major: studentUser.major,
     classLevel: studentUser.classLevel,
-  }
+  };
 
   const AlumniData = {
     name: alumniUser.name,
@@ -387,9 +383,8 @@ export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
     specializations: alumniUser.specializations,
     hobbies: alumniUser.hobbies,
     skills: alumniUser.skills,
-  }
-  
-  
+  };
+
   const similarities = await analyzeSimilarities(StudentData, AlumniData);
   res.status(200).json({
     student: {
@@ -406,6 +401,5 @@ export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
     },
     similarities: similarities.similarities,
     summary: similarities.summary,
-  })
+  });
 });
-
