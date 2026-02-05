@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   FaArrowLeft,
@@ -14,15 +14,18 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { useAuth } from "../contexts/useAuth";
 import { Similarity } from "../types/Similarity";
 import "../styles/Animations.css";
+import { Toast } from "primereact/toast";
 
 const AlumniProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   console.log("route param id: ", id); 
   const navigate = useNavigate();
 
+  const toast = useRef<Toast>(null);
+
   const [alumni, setAlumni] = useState<Alumni | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const { user} = useAuth();
 
   const [similarities, setSimilarities] = useState<Similarity[] | null>(null);
@@ -37,13 +40,21 @@ const AlumniProfile: React.FC = () => {
         .then((result: APIResult<Alumni>) => {
           if (result.success) {
             setAlumni(result.data);
-            setError(null);
           } else {
-            setError(result.error);
+            toast.current?.clear();
+            toast.current?.show({
+              severity: "error",
+              summary: "Error",
+              detail: "Failed to fetch alumni profile: " + result.error,
+            });
             console.log(error);
           }
         })
-        .catch((e) => setError(e instanceof Error ? e.message : "Unknown error"))
+        .catch(() => toast.current?.show({
+              severity: "error",
+              summary: "Error",
+              detail: "Unexpected error occurred.",
+            }))
         .finally(() => setLoading(false));
     }, [id]);
 
