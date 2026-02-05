@@ -4,7 +4,6 @@ import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import validationErrorParser from "../util/validationErrorParser";
 import Company from "../models/Company";
-import mongoose from "mongoose";
 import { analyzeSimilarities } from "../controllers/SimilarityController";
 
 interface BaseUserResponse {
@@ -31,7 +30,7 @@ interface StudentResponse extends BaseUserResponse {
 interface AlumniResponse extends BaseUserResponse {
   linkedIn?: string;
   phoneNumber?: string;
-  company?: mongoose.Types.ObjectId;
+  company?: string;
   shareProfile?: boolean;
   position?: string;
   organizations?: string[];
@@ -383,7 +382,7 @@ export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
   const AlumniData = {
     name: alumniUser.name,
     position: alumniUser.position,
-    company: (alumniUser.company as any)?.name || "",
+    company: alumniUser.company,
     organizations: alumniUser.organizations,
     specializations: alumniUser.specializations,
     hobbies: alumniUser.hobbies,
