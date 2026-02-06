@@ -367,7 +367,6 @@ export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
   }
 
 
-  //Prepare data student and alumni for groq
   const StudentData = {
     name: studentUser.name,
     school: studentUser.school,
