@@ -20,11 +20,10 @@ userRouter.get(
 );
 
 userRouter.get(
-  "/similarities/:id",
-  userValidator.getUservalidator,
+  "/similarities/:studentId/:id",
+  userValidator.getSimilaritiesValidator,
   userController.getAlumniSimilarities,
-
-)
+);
 
 userRouter.patch(
   "/:id",

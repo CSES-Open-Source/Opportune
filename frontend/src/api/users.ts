@@ -161,10 +161,11 @@ export async function getAlumni(
  * @returns SimilarityResponse containing similarities and summary
  */
 export async function getSimilarities(
-  id: string,
+  studentId: string, 
+  alumniId: string,
 ): Promise<APIResult<SimilarityResponse>> {
   try {
-    const response = await get(`/api/users/similarities/${id}`);
+    const response = await get(`/api/users/similarities/${studentId}/${alumniId}`);
     const json = (await response.json()) as SimilarityResponse;
     return { success: true, data: json };
   } catch (error) {

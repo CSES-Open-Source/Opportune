@@ -89,8 +89,9 @@ const userSchema = new Schema({
     trim: true,
   },
   company: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: false,
+    trim: true,
   },
   shareProfile: {
     type: Boolean,
@@ -108,7 +109,7 @@ const userSchema = new Schema({
 
 // Add indexes for better performance
 userSchema.index({ type: 1, shareProfile: 1 }); // Alumni search
-userSchema.index({ company: 1 }); // Company filtering
+userSchema.index({ company: "text" }); // Company filtering
 userSchema.index({ name: "text" }); // Name search
 userSchema.index({ position: "text" }); // Position search
 
