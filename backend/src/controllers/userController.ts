@@ -4,7 +4,10 @@ import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import validationErrorParser from "../util/validationErrorParser";
 import Company from "../models/Company";
-import { analyzeSimilarities } from "../controllers/SimilarityController";
+import {
+  analyzeSimilarities,
+  generateSimilarityScore,
+} from "../controllers/SimilarityController";
 
 interface BaseUserResponse {
   _id?: string;
@@ -400,5 +403,101 @@ export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
     },
     similarities: similarities.similarities,
     summary: similarities.summary,
+  });
+});
+
+export const getSimilarityScores = asyncHandler(async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(createHttpError(400, validationErrorParser(errors)));
+  }
+
+  const { studentId } = matchedData(req, { locations: ["params"] });
+  const { id: alumniId } = matchedData(req, { locations: ["params"] });
+  if (!studentId) {
+    return next(createHttpError(400, "StudentId is required"));
+  }
+
+  const [alumniUser, studentUser] = await Promise.all([
+    User.findById(alumniId)
+      .populate({
+        path: "company",
+        model: Company,
+      })
+      .exec(),
+    User.findById(studentId).exec(),
+  ]);
+
+  if (!alumniUser) {
+    return next(createHttpError(404, "Alumni user not found."));
+  }
+
+  if (!studentUser) {
+    return next(createHttpError(404, "Student user not found."));
+  }
+
+  if (alumniUser.type !== UserType.Alumni) {
+    return next(createHttpError(400, "User is not an alumni."));
+  }
+
+  if (studentUser.type !== UserType.Student) {
+    return next(createHttpError(400, "User is not a student."));
+  }
+
+  const StudentData = {
+    name: studentUser.name,
+    school: studentUser.school,
+    fieldOfInterest: studentUser.fieldOfInterest,
+    projects: studentUser.projects,
+    hobbies: studentUser.hobbies,
+    skills: studentUser.skills,
+    companiesOfInterest: studentUser.companiesOfInterest,
+    major: studentUser.major,
+    classLevel: studentUser.classLevel,
+  };
+
+  const AlumniData = {
+    name: alumniUser.name,
+    position: alumniUser.position,
+    company: alumniUser.company,
+    organizations: alumniUser.organizations,
+    specializations: alumniUser.specializations,
+    hobbies: alumniUser.hobbies,
+    skills: alumniUser.skills,
+  };
+
+  const similarityScore = await generateSimilarityScore(
+    StudentData,
+    AlumniData,
+  );
+  const career = similarityScore.careerScore;
+  const skill = similarityScore.skillScore;
+  const project = similarityScore.projectScore;
+  const organization = similarityScore.organizationScore;
+  const personal = similarityScore.personalScore;
+  const school = similarityScore.schoolScore;
+
+  const finalScore =
+    0.3 * career +
+    0.25 * skill +
+    0.15 * project +
+    0.1 * organization +
+    0.1 * personal +
+    0.1 * school;
+
+  res.status(200).json({
+    student: {
+      _id: studentUser._id,
+      name: studentUser.name,
+      email: studentUser.email,
+    },
+    alumni: {
+      _id: alumniUser._id,
+      name: alumniUser.name,
+      email: alumniUser.email,
+      position: alumniUser.position,
+      company: alumniUser.company,
+    },
+    similarityScore: finalScore,
   });
 });
