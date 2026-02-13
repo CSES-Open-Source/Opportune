@@ -13,6 +13,7 @@ import errorHandler from "../src/middlewares/errorHandler";
 import { logger } from "../src/middlewares/logger";
 import tipRouter from "../src/routes/tipRoutes";
 import profileRoutes from "../src/routes/profileRoutes";
+import groqRoutes from "../src/routes/groqRoutes";
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use("/api/questions/leetcode", leetcodeQuestionRouter);
 app.use("/api/questions/interview", interviewQuestionRouter);
 app.use("/api/tips", tipRouter);
 app.use("/api/articles", articleRouter);
+app.use("/api/email", groqRoutes);
 
 /**
  * Error handler; all errors thrown by server are handled here.
