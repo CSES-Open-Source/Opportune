@@ -18,7 +18,6 @@ const Connect = () => {
     industry: [],
   });
 
-  // fetch paginated alumni whenever search options change
   const getPaginatedOpenAlumni = useCallback(
     async (page: number, perPage: number) => {
       const res = await getAlumni({
