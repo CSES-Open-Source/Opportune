@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   FaArrowLeft,
@@ -11,7 +11,6 @@ import { APIResult } from "../api/requests";
 import { Alumni } from "../types/User";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { useAuth } from "../contexts/useAuth";
-import { Toast } from "primereact/toast";
 import { Similarity } from "../types/Similarity";
 
 const AlumniProfile: React.FC = () => {
@@ -22,8 +21,7 @@ const AlumniProfile: React.FC = () => {
   const [alumni, setAlumni] = useState<Alumni | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user, isAuthenticated } = useAuth();
-  const toast = useRef<Toast>(null);
+  const { user} = useAuth();
 
   const [similarities, setSimilarities] = useState<Similarity[] | null>(null);
   const [similaritySummary, setSimilaritySummary] = useState<string | null>(null);
@@ -39,6 +37,7 @@ const AlumniProfile: React.FC = () => {
             setError(null);
           } else {
             setError(result.error);
+            console.log(error);
           }
         })
         .catch((e) => setError(e instanceof Error ? e.message : "Unknown error"))
@@ -75,7 +74,6 @@ const AlumniProfile: React.FC = () => {
 
         setSimilarities(res.data.similarities);
         setSimilaritySummary(res.data.summary);
-      } catch (err) {
       } finally {
         setSimilarityLoading(false);
       }
