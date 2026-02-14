@@ -21,25 +21,11 @@ const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
   };
 
   return (
-    <div
-      onClick={() => navigate(`/alumni/${data._id}`)}
-      className="
-        bg-zinc-900/80
-        backdrop-blur
-        rounded-xl
-        overflow-visible
-        h-auto
-        border
-        border-zinc-800
-        shadow-lg
-        transition
-        hover:shadow-indigo-500/10
-        hover:border-zinc-700
-      "
-    >
-      {/* Card header */}
-      <div className="bg-zinc-900 p-4 flex items-center border-b border-zinc-800">
-        <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden mr-3">
+    <div onClick={() => navigate(`/alumni/${data._id}`)} 
+      className="bg-white rounded-lg overflow-visible h-auto transition border border-gray-300 shadow-sm hover:shadow-md">
+      {/* Card header with avatar and name */}
+      <div className="bg-gray-50 p-4 flex items-center border-b">
+        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden mr-3">
           {data.profilePicture ? (
             <img
               src={data.profilePicture}
@@ -47,26 +33,22 @@ const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <span className="text-xl text-zinc-300">
-              {data.name.charAt(0)}
-            </span>
+            <span className="text-xl">{data.name.charAt(0)}</span>
           )}
         </div>
         <div>
-          <h3 className="font-semibold text-lg text-zinc-100">
-            {data.name}
-          </h3>
+          <h3 className="font-bold text-lg text-gray-900">{data.name}</h3>
         </div>
       </div>
 
-      {/* Card body */}
+      {/* Card body with user details */}
       <div className="p-4">
         <div className="mb-3 flex items-start">
-          <LuMail className="w-5 h-5 text-zinc-500 mr-2 mt-0.5" />
-          <div className="text-sm text-zinc-300 break-words flex-1">
+          <LuMail className="w-5 h-5 text-gray-500 mr-2 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-gray-700 break-words flex-1">
             <a
               href={`mailto:${data.email}`}
-              className="text-cyan-400 hover:text-cyan-300 underline"
+              className="text-blue-500 underline hover:text-blue-600"
             >
               {data.email}
             </a>
@@ -74,60 +56,37 @@ const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
         </div>
 
         <div className="mb-3 flex items-start">
-          <LuBuilding2 className="w-5 h-5 text-zinc-500 mr-2 mt-0.5" />
-          <div className="text-sm text-zinc-300 break-words flex-1">
+          <LuBuilding2 className="w-5 h-5 text-gray-500 mr-2 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-gray-700 break-words flex-1">
             {data.company ? (
               <a
                 href={`/companies/${data.company._id}`}
-                className="text-cyan-400 hover:text-cyan-300 underline"
+                className="text-blue-500 underline hover:text-blue-600"
               >
                 {data.company.name}
               </a>
             ) : (
-              <span className="text-zinc-500">Not specified</span>
+              <span className="text-gray-500">Not specified</span>
             )}
           </div>
         </div>
 
         <div className="mb-2 flex items-start">
-          <LuBriefcase className="w-5 h-5 text-zinc-500 mr-2 mt-0.5" />
-          <div className="text-sm text-zinc-300 break-words flex-1">
-            {data.position ? (
-              data.position
-            ) : (
-              <span className="text-zinc-500">Not specified</span>
-            )}
+          <LuBriefcase className="w-5 h-5 text-gray-500 mr-2 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-gray-700 break-words flex-1">
+            {data.position ? data.position : <span className="text-gray-500">Not specified</span>}
           </div>
         </div>
 
-        {/* Animated button */}
         <div className="mt-4">
           <button
+            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm transition"
             onClick={onAlumniClicked}
-            className="
-              relative
-              px-4
-              py-1.5
-              text-sm
-              font-medium
-              text-white
-              rounded-md
-              bg-gradient-to-r
-              from-indigo-500
-              to-cyan-500
-              transition
-              duration-300
-              hover:-translate-y-0.5
-              hover:shadow-lg
-              hover:shadow-cyan-500/30
-              active:translate-y-0
-            "
           >
             View Profile
           </button>
         </div>
       </div>
-
       <AlumniProfileModal
         isOpen={alumniProfileOpen}
         onClose={onAlumniProfileClose}
