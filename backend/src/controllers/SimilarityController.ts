@@ -49,7 +49,6 @@ export async function analyzeSimilarities(
     You are an expert career mentor analyzing similarities between a student and an alumni.
 
     STUDENT PROFILE:
-    - Name: ${student.name}
     - School: ${student.school || "Not provided"}
     - Major: ${student.major || "Not provided"}
     - Class Level: ${student.classLevel || "Not provided"}
@@ -60,7 +59,6 @@ export async function analyzeSimilarities(
     - Companies of Interest: ${student.companiesOfInterest?.join(", ") || "Not provided"}
 
     ALUMNI PROFILE:
-    - Name: ${alumni.name}
     - Position: ${alumni.position || "Not provided"}
     - Company: ${alumni.company || "Not provided"}
     - Specializations: ${alumni.specializations?.join(", ") || "Not provided"}
