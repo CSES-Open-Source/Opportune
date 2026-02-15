@@ -49,7 +49,6 @@ export async function analyzeSimilarities(
     You are an expert career mentor analyzing similarities between a student and an alumni.
 
     STUDENT PROFILE:
-    - Name: ${student.name}
     - School: ${student.school || "Not provided"}
     - Major: ${student.major || "Not provided"}
     - Class Level: ${student.classLevel || "Not provided"}
@@ -60,7 +59,6 @@ export async function analyzeSimilarities(
     - Companies of Interest: ${student.companiesOfInterest?.join(", ") || "Not provided"}
 
     ALUMNI PROFILE:
-    - Name: ${alumni.name}
     - Position: ${alumni.position || "Not provided"}
     - Company: ${alumni.company || "Not provided"}
     - Specializations: ${alumni.specializations?.join(", ") || "Not provided"}
@@ -68,9 +66,10 @@ export async function analyzeSimilarities(
     - Hobbies: ${alumni.hobbies?.join(", ") || "Not provided"}
     - Organizations: ${alumni.organizations?.join(", ") || "Not provided"}
 
-    List the key similarities between the students and alumni in a single line. Don't use 
-    complete sentences and no need to focus on grammer. If the two don't have similarities
-    on a specific topic, then don't mention it. Focus on: 
+    Provide info for the user about the key similarities between the student and alumni in one single 
+    bullet point for each similarity. Be sure to reference the user/student as "you" and the alumni
+    as "this alumni". KEEP EACH DESCRIPTION SPECIFIC TO THE STUDEN AND AT MAX 20 WORDS. 
+    Focus on the following categories of similarity:
     1. Shared skills
     2. Overlapping interests
     3. Similar career goals
@@ -85,7 +84,7 @@ export async function analyzeSimilarities(
           "description": "Brief description of the similarity"
         }
       ],
-      "summary": "A brief 1-2 sentence summary of overall similarity and potential mentorship value"
+      "summary": "A brief summary of overall similarity and potential mentorship value"
     }`;
 
   try {
