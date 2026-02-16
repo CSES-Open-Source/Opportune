@@ -19,6 +19,12 @@ userRouter.get(
   userController.getUserById,
 );
 
+userRouter.get(
+  "/similarities/:studentId/:id",
+  userValidator.getSimilaritiesValidator,
+  userController.getAlumniSimilarities,
+);
+
 userRouter.patch(
   "/:id",
   preprocessCompany,
