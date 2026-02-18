@@ -7,26 +7,31 @@ import {
 import { LuMail, LuBuilding2, LuBriefcase, LuWand } from "react-icons/lu";
 import { FiPhone } from "react-icons/fi";
 import { FaRegCopy } from "react-icons/fa";
-import { getAlumniById } from "../api/users";
 import { generateEmail } from "../api/email";
 import { useAuth } from "../contexts/useAuth";
 import Modal from "../components/public/Modal";
+import { getAlumniById, getSimilarities } from "../api/users";
 import { APIResult } from "../api/requests";
 import { Alumni } from "../types/User";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { Toast } from "primereact/toast";
+import { Similarity } from "../types/Similarity";
+import {Toast} from "primereact/toast";
 
 const AlumniProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-
   const toast = useRef<Toast>(null);
+  console.log("route param id: ", id); 
+  const navigate = useNavigate();
 
   const [alumni, setAlumni] = useState<Alumni | null>(null);
   const [loading, setLoading] = useState(true);
+  const { user} = useAuth();
+
+  const [similarities, setSimilarities] = useState<Similarity[] | null>(null);
+  const [similaritySummary, setSimilaritySummary] = useState<string | null>(null);
+  const [similarityLoading, setSimilarityLoading] = useState(false);
 
   // Email Generation State
-  const { user } = useAuth();
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [tone, setTone] = useState("Professional");
   const [purpose, setPurpose] = useState("");
@@ -93,7 +98,47 @@ const AlumniProfile: React.FC = () => {
   }, [id]);
 
   // Initial company fetch
-  useEffect(() => { handleAlumniUpdate(); }, [handleAlumniUpdate]);
+  useEffect(() => { 
+    handleAlumniUpdate();
+  }, [handleAlumniUpdate]);
+
+  const resolveUserId = (): string | null => {
+        if (user) {
+          return user._id ?? null;
+        }
+        return null;
+    };
+
+    const fetchSimilarities = async () => {
+      if (!id) return;
+
+      const userId = resolveUserId(); 
+      if (!userId) {
+        return;
+      }
+
+      try {
+        setSimilarityLoading(true);
+        const res = await getSimilarities(userId, id);
+
+        if (!res.success) {
+          throw new Error("Failed to fetch similarities");
+        }
+
+        setSimilarities(res.data.similarities);
+        setSimilaritySummary(res.data.summary);
+      } finally {
+        setSimilarityLoading(false);
+      }
+    };
+
+  
+  if (!alumni)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Alumni not found.
+      </div>
+    );
 
   return (
     <div>
@@ -323,12 +368,43 @@ const AlumniProfile: React.FC = () => {
                                   {skill.charAt(0).toUpperCase() + skill.slice(1).toLowerCase()}
                                 </span>
                               ))}
-                            </div>
-                          ) : (
+                              </div>
+                            ) : (
                             <p className="text-gray-800">Not specified</p>
-                          )}
+                            )}
+                          </div>
+
+                          {/* Similarities section */}
+                          <div className="mt-6 flex flex-col gap-3">
+                            <button
+                              onClick={fetchSimilarities}
+                              disabled={similarityLoading}
+                              className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition"
+                            >
+                              {similarityLoading ? "Finding similarities..." : "Find similarities"}
+                            </button>
+
+                            {similarities && (
+                              <div className="mt-4">
+                                <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                                  Similarities
+                                </h2>
+                                <ul className="list-disc list-inside space-y-1">
+                                  {similarities.map((sim, idx) => (
+                                    <li key={idx}>
+                                      <span className="font-medium">{sim.category}:</span>{" "}
+                                      {sim.description}
+                                    </li>
+                                  ))}
+                                </ul>
+
+                                {similaritySummary && (
+                                  <p className="mt-3 text-gray-700">{similaritySummary}</p>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
                     </div>
 
 
@@ -367,7 +443,6 @@ const AlumniProfile: React.FC = () => {
                 <option value="Professional">Professional</option>
                 <option value="Friendly">Friendly</option>
                 <option value="Enthusiastic">Enthusiastic</option>
-                <option value="Coffee Chat">Coffee Chat</option>
               </select>
             </div>
             <div>

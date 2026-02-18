@@ -14,7 +14,7 @@ export const generateEmailValidator = [
   body("tone")
     .optional()
     .isString()
-    .isIn(["Professional", "Friendly", "Enthusiastic", "Coffee Chat"])
+    .isIn(["Professional", "Friendly", "Enthusiastic"])
     .withMessage("Invalid tone."),
   body("purpose")
     .optional()

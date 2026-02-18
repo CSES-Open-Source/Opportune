@@ -4,6 +4,10 @@ import { generateEmailValidator } from "../validators/groqValidator";
 
 const router = express.Router();
 
-router.post("/generate-email", generateEmailValidator, GroqController.generateEmail);
+router.post(
+  "/generate-email",
+  generateEmailValidator,
+  GroqController.generateEmail,
+);
 
 export default router;
