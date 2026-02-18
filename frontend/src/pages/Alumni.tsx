@@ -197,9 +197,18 @@ const AlumniProfile: React.FC = () => {
                     <div className="flex-1">
                       {/* Basic Information */}
                       <div className="mb-6">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                          Basic Information
-                        </h2>
+                        <div className="flex items-center justify-between mb-4">
+                          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                            Basic Information
+                          </h2>
+                          <button
+                            onClick={() => setIsEmailModalOpen(true)}
+                            className="mt-2 flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md text-sm font-medium hover:bg-blue-200 transition"
+                          >
+                            <LuWand className="w-3.5 h-3.5" />
+                            <span>Personalize Email</span>
+                          </button>
+                        </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
                             <label className="block text-sm font-medium text-gray-500 mb-1">
@@ -283,14 +292,6 @@ const AlumniProfile: React.FC = () => {
                               <p className="text-gray-800">
                                 {alumni.position || "Not specified"}
                               </p>
-
-                              <button
-                                onClick={() => setIsEmailModalOpen(true)}
-                                className="mt-2 flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md text-sm font-medium hover:bg-blue-200 transition"
-                              >
-                                <LuWand className="w-3.5 h-3.5" />
-                                <span>Personalize Email</span>
-                              </button>
                             </div>
                           </div>
                         </div>
