@@ -1,9 +1,8 @@
-/* eslint-disable */
-const mongoose = require("mongoose");
-require("dotenv").config();
+import mongoose from "mongoose";
+import Company from "../src/models/Company";
+import dotenv from "dotenv";
 
-// Import the Company model from source
-const Company = require("./src/models/Company").default;
+dotenv.config();
 
 const sampleCompanies = [
   {
@@ -168,21 +167,22 @@ const sampleCompanies = [
   },
 ];
 
-async function seedCompanies() {
+async function seed() {
+  const mongoUri = process.env.MONGODB_URI;
+  if (!mongoUri) {
+    throw new Error("MONGODB_URI not found");
+  }
+
   try {
-    // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(mongoUri);
     console.log("Connected to MongoDB");
 
-    // Clear existing companies
     await Company.deleteMany({});
     console.log("Cleared existing companies");
 
-    // Insert sample companies
-    const insertedCompanies = await Company.insertMany(sampleCompanies);
-    console.log(`Successfully inserted ${insertedCompanies.length} companies`);
+    await Company.insertMany(sampleCompanies);
+    console.log(`Added ${sampleCompanies.length} companies`);
 
-    // Close connection
     await mongoose.connection.close();
     console.log("Database connection closed");
   } catch (error) {
@@ -191,4 +191,4 @@ async function seedCompanies() {
   }
 }
 
-seedCompanies();
+seed();

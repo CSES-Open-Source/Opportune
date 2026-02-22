@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import User, { UserType } from "./src/models/User";
-import Company from "./src/models/Company";
+import User, { UserType } from "../src/models/User";
+import Company from "../src/models/Company";
 import dotenv from "dotenv";
 
 dotenv.config();
