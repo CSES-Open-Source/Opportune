@@ -4,7 +4,7 @@ import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import validationErrorParser from "../util/validationErrorParser";
 import Company from "../models/Company";
-import { analyzeSimilarities } from "../controllers/SimilarityController";
+import { analyzeSimilarities } from "../controllers/groqController";
 
 interface BaseUserResponse {
   _id?: string;
