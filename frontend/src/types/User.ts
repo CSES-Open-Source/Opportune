@@ -14,6 +14,30 @@ export enum ClassLevel {
   Other = "OTHER",
 }
 
+export enum MajorType {
+  AEROSPACEDEFENSE = "AERO_DEF",
+  AUTOMOTIVE = "AUTO",
+  BANKFINANCIALSERVICES = "BANK_FINANCESERV",
+  BIOTECHPHARMACEUTICALS = "BIOTECH_PHARM",
+  CONSUMERGOODS = "CONSGOODS",
+  CYBERSECURITY = "CYBERSEC",
+  ECOMMERCE = "ECOMM",
+  ENERGYUTILITIES = "ENERGY_UTIL",
+  ENTERTAINMENTMEDIA = "ENT_MEDIA",
+  HEALTHMEDICALDEVICES = "HEALTH_MEDDEVICES",
+  ITSERVCONSULTING = "ITSERV_CONSULT",
+  MANUFACTURINGINDUSTRIAL = "MANUF_INDUST",
+  NETWORKINGTELECOMM = "NET_TELECOMM",
+  REALESTTATECONSTUCTION = "REALEST_CONSTRUCT",
+  RETAIL = "RETAIL",
+  SOFTWAREDEVELOPMENT = "SOFTDEV",
+  TECHHARDWARE = "TECH_HARDWARE",
+  TRANSPORTATIONLOGISTICS = "TRANSPORT_LOGISTIC",
+  VENTURECAPITALPRIVATEEQUITY = "VENCAP_PRIVEQUITY",
+  WEBDIGITALSERVICES = "WEB_DIGITALSERV",
+  OTHERS = "OTHER",
+}
+
 export interface BaseUser {
   _id: string;
   email: string;
@@ -87,7 +111,7 @@ export interface CreateUserRequest {
   fieldOfInterest?: string[];
   projects?: string[];
   companiesOfInterest?: string[];
-  organizations?: string[]; 
+  organizations?: string[];
   specializations?: string[];
   hobbies?: string[];
   skills?: string[];
@@ -120,4 +144,11 @@ export interface GetAlumniQuery {
   industry?: string[];
   organizations?: string[];
   specializations?: string[];
+}
+
+export interface GetStudentsQuery {
+  page: number;
+  perPage: number;
+  query?: string;
+  major?: string[];
 }

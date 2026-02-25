@@ -119,8 +119,8 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
         </div> :
         <div className="text-center">
           <br></br>
-          <p>No alumni currently fit your query.</p>
-          <p>Edit your <b>Industry</b> type to find alumni in a different category.</p>
+          <p>No users currently fit your query.</p>
+          <p>Edit your <b>filters</b> to find users in a different category.</p>
           <p></p>
         </div>
       }

@@ -3,6 +3,7 @@ import {
   Alumni,
   CreateUserRequest,
   GetAlumniQuery,
+  GetStudentsQuery,
   Student,
   UpdateUserRequest,
   User,
@@ -21,11 +22,20 @@ function parseUser(user: UserJSON): User {
   throw new Error("Invalid user type");
 }
 
+// Use for when type explicitly calls for Alumni
 function parseAlumni(user: UserJSON): Alumni {
   if (user.type === UserType.Alumni) {
     return { ...user } as Alumni; // Safely return as Alumni
   }
   throw new Error("User is not an Alumni");
+}
+
+// Use for when type explicitly calls for Student
+function parseStudent(user: UserJSON): Student {
+  if (user.type === UserType.Student) {
+    return { ...user } as Student; // Safely return as Student
+  }
+  throw new Error("User is not an Student");
 }
 
 /**
@@ -71,6 +81,22 @@ export async function getAlumniById(id: string): Promise<APIResult<Alumni>> {
     const response = await get(`/api/users/${id}`);
     const json = (await response.json()) as UserJSON;
     return { success: true, data: parseAlumni(json) };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+/**
+ * Fetch a single alumni by ID from the backend.
+ *
+ * @param id The ID of the alumni to fetch
+ * @returns The alumni object
+ */
+export async function getStudentById(id: string): Promise<APIResult<Student>> {
+  try {
+    const response = await get(`/api/users/${id}`);
+    const json = (await response.json()) as UserJSON;
+    return { success: true, data: parseStudent(json) };
   } catch (error) {
     return handleAPIError(error);
   }
@@ -155,13 +181,36 @@ export async function getAlumni(
 
 
 /**
+ * Fetch students that are willing to share profile from the backend
+ *
+ * @param queries
+ * @returns PaginatedData object containing student profiles
+ */
+export async function getStudents(
+  queries: GetStudentsQuery = { page: 0, perPage: 10 },
+): Promise<APIResult<PaginatedData<Student>>> {
+  try {
+    const response = await get(`/api/users/student`, {
+      ...queries,
+      major: queries.major?.join(",") || "",
+    });
+    const json = (await response.json()) as PaginatedData<UserJSON>;
+    const result = { ...json, data: json.data.map(parseStudent) };
+    return { success: true, data: result };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+
+/**
  * Fetch similarities between a student and an alumni from the backend
  *
  * @param id The ID of the alumni to compare with
  * @returns SimilarityResponse containing similarities and summary
  */
 export async function getSimilarities(
-  studentId: string, 
+  studentId: string,
   alumniId: string,
 ): Promise<APIResult<SimilarityResponse>> {
   try {

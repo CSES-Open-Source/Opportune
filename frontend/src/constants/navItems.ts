@@ -28,6 +28,11 @@ export const navItems: NavItem[] = [
     icon: FiLink,
   },
   {
+    label: "Student Network",
+    path: "/students",
+    icon: FiLink,
+  },
+  {
     label: "Applications",
     path: "/applications/applied",
     icon: FiCheckSquare,

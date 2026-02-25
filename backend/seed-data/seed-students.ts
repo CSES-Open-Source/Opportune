@@ -22,6 +22,7 @@ const preservedUserIds: string[] = [];
 
 const sampleStudents = [
   {
+    _id: "student_001",
     email: "alex.chen@university.edu",
     name: "Alex Chen",
     profilePicture:
@@ -40,6 +41,7 @@ const sampleStudents = [
     school: "Tech University",
   },
   {
+    _id: "student_002",
     email: "maya.patel@state.edu",
     name: "Maya Patel",
     profilePicture:
@@ -58,6 +60,7 @@ const sampleStudents = [
     school: "State University",
   },
   {
+    _id: "student_003",
     email: "jordan.smith@college.edu",
     name: "Jordan Smith",
     profilePicture:
@@ -76,6 +79,7 @@ const sampleStudents = [
     school: "Institute of Technology",
   },
   {
+    _id: "student_004",
     email: "liam.nguyen@uni.edu",
     name: "Liam Nguyen",
     profilePicture:
@@ -94,6 +98,7 @@ const sampleStudents = [
     school: "Academy of Arts",
   },
   {
+    _id: "student_005",
     email: "sarah.kim@global.edu",
     name: "Sarah Kim",
     profilePicture:
@@ -112,6 +117,7 @@ const sampleStudents = [
     school: "Global Business School",
   },
   {
+    _id: "student_006",
     email: "oscar.rodriguez@tech.edu",
     name: "Oscar Rodriguez",
     profilePicture:
@@ -130,6 +136,7 @@ const sampleStudents = [
     school: "Design Institute",
   },
   {
+    _id: "student_007",
     email: "chloe.wilson@state.edu",
     name: "Chloe Wilson",
     profilePicture: "https://images.unsplash.com/photo-1544005313-94ddf0286df2",
@@ -147,6 +154,7 @@ const sampleStudents = [
     school: "Western University",
   },
   {
+    _id: "student_008",
     email: "ethan.brown@poly.edu",
     name: "Ethan Brown",
     profilePicture:
@@ -165,6 +173,7 @@ const sampleStudents = [
     school: "Polytechnic University",
   },
   {
+    _id: "student_009",
     email: "isabella.white@uni.edu",
     name: "Isabella White",
     profilePicture: "https://images.unsplash.com/photo-1554151228-14d9def656e4",
@@ -182,6 +191,7 @@ const sampleStudents = [
     school: "Central University",
   },
   {
+    _id: "student_10",
     email: "noah.davis@college.edu",
     name: "Noah Davis",
     profilePicture: "https://images.unsplash.com/photo-1552058544-f2b08422138a",
