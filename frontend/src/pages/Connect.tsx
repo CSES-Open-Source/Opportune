@@ -32,7 +32,7 @@ const Connect = () => {
     async (alumni: Alumni[]) => {
       if (!user?.type || user.type !== "STUDENT") return;
       if (!user._id) return;
-
+      loadingScores || alumni.length === 0 || hasFetchedScores; 
       setLoadingScores(true); //Load the state for the scores allow for skeleton page at a later date
       const scores: Record<string, number> = {};
 
@@ -111,9 +111,14 @@ const Connect = () => {
           return a.name.localeCompare(b.name); 
         });
 
+        const sortedAlumniWithScores = sortedAlumni.map(alumnus => ({
+          ...alumnus,
+          similarityScore: similarityScores[alumnus._id] ?? 0,
+        }));
+
         return {
           ...res,
-          data: sortedAlumni,
+          data: sortedAlumniWithScores,
         };
       }
 
@@ -199,12 +204,7 @@ const Connect = () => {
               "
               paginatorContent={{ setPerPage: true, goToPage: true }}
               TileComponent={(props) => (
-                <div className="transition-smooth hover-lift hover-glow animate-scaleIn relative">
-                  {props.data.similarityScore !== undefined && (
-                    <div className="absolute top-2 right-2 bg-gradient-to-r from-[#5b8ef4] to-[#7c3aed] rounded-lg px-3 py-1 text-white text-xs font-semibold z-20">
-                      {(props.data.similarityScore * 100).toFixed(0)}% match
-                    </div>
-                  )}
+                <div className="transition-smooth hover-lift hover-glow animate-scaleIn">
                   <AlumniTile {...props} />
                 </div>
               )}

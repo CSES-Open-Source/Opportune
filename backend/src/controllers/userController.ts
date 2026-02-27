@@ -477,20 +477,15 @@ export const getBatchSimilarityScores = asyncHandler(async (req, res, next) => {
           StudentData,
           AlumniData,
         );
-        const career = similarityScore.careerScore;
-        const skill = similarityScore.skillScore;
-        const project = similarityScore.projectScore;
-        const organization = similarityScore.organizationScore;
-        const personal = similarityScore.personalScore;
-        const school = similarityScore.schoolScore;
+        
+        const career = similarityScore.careerScore / 100;
+        const skill = similarityScore.skillScore / 100;
+        const project = similarityScore.projectScore / 100;
+        const organization = similarityScore.organizationScore / 100;
+        const personal = similarityScore.personalScore / 100;
+        const school = similarityScore.schoolScore / 100;
 
-        const finalScore =
-          0.3 * career +
-          0.25 * skill +
-          0.15 * project +
-          0.1 * organization +
-          0.1 * personal +
-          0.1 * school;
+        const finalScore = (career + skill + project + organization + personal + school) / 6;
 
         return {
           alumniId: alumniUser._id,

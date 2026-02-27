@@ -174,21 +174,21 @@ export async function generateSimilarityScore(
 
     Compute a similarity score between a student and an alumni using the following weighted components:
 
-    - Career alignment: semantic similarity between student major, interests, and alumni role/specializations
-    - Skills overlap: Jaccard similarity of skill sets
-    - Project relevance: semantic similarity between student projects and alumni expertise
-    - Organization alignment: company match and organizational overlap
-    - Personal fit: hobby overlap
-    - School affinity: same school bonus
+    - Career alignment: semantic similarity between student major, interests, and alumni role/specializations (0-100)
+    - Skills overlap: Jaccard similarity of skill sets (0-100)
+    - Project relevance: semantic similarity between student projects and alumni expertise (0-100)
+    - Organization alignment: company match and organizational overlap (0-100)
+    - Personal fit: hobby overlap (0-100)
+    - School affinity: same school bonus (0-100)
 
-    Respond in the following JSON format (no markdown, pure JSON):
+    Respond in the following JSON format (no markdown, pure JSON) with numeric values between 0 and 100:
     {
-      "careerScore" : "Similarity Score for career",
-      "skillScore" : "Similarity Score for skills",
-      "projectScore" : "Similarity Score for projects",
-      "organizationScore" : "Similarity Score for organization",
-      "personalScore" : "Similarity Score for personal",
-      "schoolScore" : "Similarity Score for school"
+      "careerScore": 80,
+      "skillScore": 70,
+      "projectScore": 60,
+      "organizationScore": 50,
+      "personalScore": 40,
+      "schoolScore": 90
     }`;
 
   try {

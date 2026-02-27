@@ -312,3 +312,24 @@ export const getSimilaritiesValidator = [
     .isLength({ min: 1 })
     .withMessage("alumni id is required."),
 ];
+
+export const getBatchSimilarityScoresValidator = [
+  param("studentId")
+    .isString()
+    .withMessage("studentId must be a string.")
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("studentId is required."),
+  body("alumniIds")
+    .isArray({ min: 1 })
+    .withMessage("alumniIds must be a non-empty array.")
+    .custom((value) => {
+      if (!Array.isArray(value) || value.length === 0) {
+        throw new Error("alumniIds must be a non-empty array.");
+      }
+      if (!value.every((id) => typeof id === "string")) {
+        throw new Error("All alumni IDs must be strings.");
+      }
+      return true;
+    }),
+];

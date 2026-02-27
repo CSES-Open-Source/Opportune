@@ -27,7 +27,7 @@ userRouter.get(
 
 userRouter.post(
   "/batch-similarity-scores/:studentId",
-  userValidator.getSimilaritiesValidator,
+  userValidator.getBatchSimilarityScoresValidator,
   userController.getBatchSimilarityScores,
 );
 

@@ -5,7 +5,7 @@ import { LuMail, LuBuilding2, LuBriefcase } from "react-icons/lu";
 import AlumniProfileModal from "./AlumniProfileModal";
 
 interface AlumniTileProps {
-  data: Alumni;
+  data: Alumni & { similarityScore?: number };
 }
 
 const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
@@ -38,25 +38,32 @@ const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
       "
     >
       {/* Card header */}
-      <div className="bg-zinc-900 p-4 flex items-center border-b border-zinc-800">
-        <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden mr-3">
-          {data.profilePicture ? (
-            <img
-              src={data.profilePicture}
-              alt={data.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-xl text-zinc-300">
-              {data.name.charAt(0)}
-            </span>
-          )}
+      <div className="bg-zinc-900 p-4 flex items-center justify-between border-b border-zinc-800">
+        <div className="flex items-center flex-1">
+          <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden mr-3">
+            {data.profilePicture ? (
+              <img
+                src={data.profilePicture}
+                alt={data.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-xl text-zinc-300">
+                {data.name.charAt(0)}
+              </span>
+            )}
+          </div>
+          <div>
+            <h3 className="font-semibold text-lg text-zinc-100">
+              {data.name}
+            </h3>
+          </div>
         </div>
-        <div>
-          <h3 className="font-semibold text-lg text-zinc-100">
-            {data.name}
-          </h3>
-        </div>
+        {data.similarityScore !== undefined && (
+          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 font-bold text-white text-sm">
+            {(data.similarityScore * 100).toFixed(0)}
+          </div>
+        )}
       </div>
 
       {/* Card body */}
