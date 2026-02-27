@@ -1,12 +1,17 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import SearchBar from "../components/public/SearchBar";
 import DataList from "../components/public/DataList";
 import AlumniTile from "../components/connect/AlumniTile";
-import { getAlumni } from "../api/users";
+import { getAlumni, getBatchSimilarityScores } from "../api/users";
 import { Alumni } from "../types/User";
 import { IndustryType } from "../types/Company";
 import { LuUsers, LuSearch } from "react-icons/lu";
+import { useAuth } from "../contexts/useAuth";
 import "../styles/Animations.css";
+
+interface AlumniWithScore extends Alumni {
+  similarityScore?: number;
+}
 
 interface SearchBarData extends Record<string, string | string[]> {
   query: string;
@@ -14,10 +19,43 @@ interface SearchBarData extends Record<string, string | string[]> {
 }
 
 const Connect = () => {
+  const { user } = useAuth();
   const [search, setSearch] = useState<SearchBarData>({
     query: "",
     industry: [],
   });
+  const [similarityScores, setSimilarityScores] = useState<Record<string, number>>({});
+  const [loadingScores, setLoadingScores] = useState(false);
+  const [hasFetchedScores, setHasFetchedScores] = useState(false);
+
+  const fetchSimilarityScores = useCallback(
+    async (alumni: Alumni[]) => {
+      if (!user?.type || user.type !== "STUDENT") return;
+      if (!user._id) return;
+
+      setLoadingScores(true); //Load the state for the scores allow for skeleton page at a later date
+      const scores: Record<string, number> = {};
+
+      try {
+        const alumniToScore = alumni.slice(0, 20);
+        const alumniIds = alumniToScore.map(a => a._id);
+        
+        const res = await getBatchSimilarityScores(user._id!, alumniIds);
+        if (res.success) {
+          res.data.scores.forEach(score => {
+            scores[score.alumniId] = score.similarityScore;
+          });
+        }
+        setSimilarityScores(scores);
+        setHasFetchedScores(true);
+      } catch (error) {
+        console.error("Error fetching similarity scores:", error);
+      } finally {
+        setLoadingScores(false);
+      }
+    },
+    [user]
+  );
 
   const getPaginatedOpenAlumni = useCallback(
     async (page: number, perPage: number) => {
@@ -28,11 +66,60 @@ const Connect = () => {
         industry: search.industry,
       });
 
-      return res.success
-        ? res.data
-        : { page: 0, perPage: 0, total: 0, data: [] };
+      return res.success ? res.data : { page: 0, perPage: 0, total: 0, data: [] };
     },
     [search]
+  );
+
+
+  useEffect(() => {
+    const loadFirstPageWithScores = async () => {
+      if (hasFetchedScores || !user?.type || user.type !== "STUDENT" || !user._id) {
+        return;
+      }
+
+      try {
+        const res = await getAlumni({
+          page: 0,
+          perPage: 20,
+          query: search.query || undefined,
+          industry: search.industry,
+        });
+
+        if (res.success && res.data.data.length > 0) {
+          await fetchSimilarityScores(res.data.data);
+        }
+      } catch (error) {
+        console.error("Error loading first page with scores:", error);
+      }
+    };
+
+    loadFirstPageWithScores();
+  }, [user, hasFetchedScores, search, fetchSimilarityScores]);
+
+  const fetchAndSortAlumni = useCallback(
+    async (page: number, perPage: number) => {
+      const res = await getPaginatedOpenAlumni(page, perPage);
+
+      if (res.data && res.data.length > 0 && similarityScores) {
+        const sortedAlumni = [...res.data].sort((a, b) => {
+          const scoreA = similarityScores[a._id] ?? -Infinity;
+          const scoreB = similarityScores[b._id] ?? -Infinity;
+          if (scoreB !== scoreA) {
+            return scoreB - scoreA; 
+          }
+          return a.name.localeCompare(b.name); 
+        });
+
+        return {
+          ...res,
+          data: sortedAlumni,
+        };
+      }
+
+      return res;
+    },
+    [getPaginatedOpenAlumni, similarityScores]
   );
 
   return (
@@ -95,10 +182,10 @@ const Connect = () => {
           <div className="relative">
             <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#5b8ef4]/5 to-[#7c3aed]/5 blur-2xl"></div>
 
-            <DataList<Alumni>
+            <DataList<AlumniWithScore>
               pageType="connect"
               key={`${search.query}_${search.industry.join(",")}`}
-              fetchData={getPaginatedOpenAlumni}
+              fetchData={fetchAndSortAlumni}
               useServerPagination
               listClassName="
                 relative z-10
@@ -112,7 +199,12 @@ const Connect = () => {
               "
               paginatorContent={{ setPerPage: true, goToPage: true }}
               TileComponent={(props) => (
-                <div className="transition-smooth hover-lift hover-glow animate-scaleIn">
+                <div className="transition-smooth hover-lift hover-glow animate-scaleIn relative">
+                  {props.data.similarityScore !== undefined && (
+                    <div className="absolute top-2 right-2 bg-gradient-to-r from-[#5b8ef4] to-[#7c3aed] rounded-lg px-3 py-1 text-white text-xs font-semibold z-20">
+                      {(props.data.similarityScore * 100).toFixed(0)}% match
+                    </div>
+                  )}
                   <AlumniTile {...props} />
                 </div>
               )}

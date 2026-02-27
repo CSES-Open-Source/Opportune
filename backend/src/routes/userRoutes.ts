@@ -25,6 +25,12 @@ userRouter.get(
   userController.getAlumniSimilarities,
 );
 
+userRouter.post(
+  "/batch-similarity-scores/:studentId",
+  userValidator.getSimilaritiesValidator,
+  userController.getBatchSimilarityScores,
+);
+
 userRouter.patch(
   "/:id",
   preprocessCompany,
