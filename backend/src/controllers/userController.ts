@@ -324,6 +324,81 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
   });
 });
 
+
+// @desc Get students willing to share profile
+// @route GET /api/users/student
+// @access Private
+export const getOpenStudents = asyncHandler(async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(createHttpError(400, validationErrorParser(errors)));
+  }
+
+  const { page, perPage, query, industry } = matchedData(req, {
+    locations: ["query"],
+  });
+
+  const dbQuery = User.find({
+    type: UserType.Student,
+    shareProfile: true,
+  });
+
+  /*
+  // combine company, position, and name filters
+  if (query) {
+    const companyDocs = await Company.find({
+      $or: [
+        { name: { $regex: new RegExp(query, "i") } },
+        { industry: { $regex: new RegExp(query, "i") } },
+      ],
+    }).exec();
+
+    const companyIds = companyDocs.map((company) => company._id);
+
+    dbQuery.or([
+      { name: { $regex: new RegExp(query, "i") } },
+      { position: { $regex: new RegExp(query, "i") } },
+      { company: { $in: companyIds } },
+    ]);
+  }
+
+  // industry filter
+  if (industry) {
+    const industryArray = industry
+      .split(",")
+      .map((item: string) => new RegExp(item.trim(), "i"));
+
+    const industryDocs = await Company.find({
+      industry: { $in: industryArray },
+    }).exec();
+
+    const industryCompanyIds = industryDocs.map((company) => company._id);
+
+    dbQuery.where("company").in(industryCompanyIds);
+  }
+  */
+
+  // ensure count and paginate do not conflict
+  const countQuery = dbQuery.clone();
+
+  // count total results, populate company, and paginate in parallel
+  const [total, users] = await Promise.all([
+    countQuery.countDocuments(),
+    dbQuery
+      .skip(page * perPage)
+      .limit(perPage)
+      .exec(),
+  ]);
+  
+
+  res.status(200).json({
+    page,
+    perPage,
+    total,
+    data: users,
+  });
+});
+
 export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
