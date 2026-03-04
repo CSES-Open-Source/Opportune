@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Student } from "../../types/User";
-import { LuMail, LuGraduationCap } from "react-icons/lu";
+import { LuMail, LuBriefcase, LuGraduationCap } from "react-icons/lu";
 import StudentProfileModal from "./StudentProfileModal";
 
 interface StudentTileProps {
@@ -56,7 +56,7 @@ const StudentTile: React.FC<StudentTileProps> = ({ data }) => {
         </div>
 
         <div className="mb-3 flex items-start">
-          <LuGraduationCap className="w-5 h-5 text-gray-500 mr-2 flex-shrink-0 mt-0.5" />
+          <LuBriefcase className="w-5 h-5 text-gray-500 mr-2 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-gray-700 break-words flex-1">
             {data.major ? (
               data.major
@@ -67,6 +67,7 @@ const StudentTile: React.FC<StudentTileProps> = ({ data }) => {
         </div>
 
         <div className="mb-2 flex items-start">
+          <LuGraduationCap className="w-5 h-5 text-gray-500 mr-2 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-gray-700 break-words flex-1">
             {data.classLevel ? (
               data.classLevel.charAt(0).toUpperCase() +

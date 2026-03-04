@@ -15,7 +15,7 @@ userRouter.get(
 
 userRouter.get(
   "/student",
-  //userValidator.getOpenAlumniValidator,
+  userValidator.getOpenStudentsValidator,
   userController.getOpenStudents,
 );
 

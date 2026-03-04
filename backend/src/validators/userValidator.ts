@@ -298,6 +298,14 @@ export const getOpenAlumniValidator = [
   validateIndustry,
 ];
 
+export const getOpenStudentsValidator = [
+  validatePage,
+  validatePerPage,
+  validateQuery,
+  validateMajor,
+  validateClassLevel,
+];
+
 export const getSimilaritiesValidator = [
   param("studentId")
     .isString()

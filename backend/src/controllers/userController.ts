@@ -324,7 +324,6 @@ export const getOpenAlumni = asyncHandler(async (req, res, next) => {
   });
 });
 
-
 // @desc Get students willing to share profile
 // @route GET /api/users/student
 // @access Private
@@ -334,49 +333,13 @@ export const getOpenStudents = asyncHandler(async (req, res, next) => {
     return next(createHttpError(400, validationErrorParser(errors)));
   }
 
-  const { page, perPage, query, industry } = matchedData(req, {
+  const { page, perPage } = matchedData(req, {
     locations: ["query"],
   });
 
   const dbQuery = User.find({
     type: UserType.Student,
-    shareProfile: true,
   });
-
-  /*
-  // combine company, position, and name filters
-  if (query) {
-    const companyDocs = await Company.find({
-      $or: [
-        { name: { $regex: new RegExp(query, "i") } },
-        { industry: { $regex: new RegExp(query, "i") } },
-      ],
-    }).exec();
-
-    const companyIds = companyDocs.map((company) => company._id);
-
-    dbQuery.or([
-      { name: { $regex: new RegExp(query, "i") } },
-      { position: { $regex: new RegExp(query, "i") } },
-      { company: { $in: companyIds } },
-    ]);
-  }
-
-  // industry filter
-  if (industry) {
-    const industryArray = industry
-      .split(",")
-      .map((item: string) => new RegExp(item.trim(), "i"));
-
-    const industryDocs = await Company.find({
-      industry: { $in: industryArray },
-    }).exec();
-
-    const industryCompanyIds = industryDocs.map((company) => company._id);
-
-    dbQuery.where("company").in(industryCompanyIds);
-  }
-  */
 
   // ensure count and paginate do not conflict
   const countQuery = dbQuery.clone();
@@ -389,7 +352,6 @@ export const getOpenStudents = asyncHandler(async (req, res, next) => {
       .limit(perPage)
       .exec(),
   ]);
-  
 
   res.status(200).json({
     page,

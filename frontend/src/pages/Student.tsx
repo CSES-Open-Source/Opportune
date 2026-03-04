@@ -4,7 +4,7 @@ import {
   FaArrowLeft,
   FaLinkedin
 } from "react-icons/fa";
-import { LuMail, LuWand, LuGraduationCap } from "react-icons/lu";
+import { LuMail, LuWand, LuGraduationCap, LuShare2 } from "react-icons/lu";
 import { FiPhone } from "react-icons/fi";
 import { FaRegCopy } from "react-icons/fa";
 import { generateEmail } from "../api/email";
@@ -160,13 +160,13 @@ const StudentProfile: React.FC = () => {
               <div className="flex items-center justify-between px-4 pt-4">
                 {/* Back Button to Exit Profile */}
                 <button
-                  onClick={() => navigate("/connect")}
+                  onClick={() => navigate("/students")}
                   className="inline-flex items-center text-blue-700 hover:bg-blue-50 px-2 py-1 rounded-lg transition"
-                  aria-label="Back to Connect"
-                  title="Back to Connect"
+                  aria-label="Back to Student Directory"
+                  title="Back to Student Directory"
                 >
                   <FaArrowLeft className="mr-1" />
-                  <span className="hidden sm:inline">Back to Connect</span>
+                  <span className="hidden sm:inline">Back to Student Directory</span>
                 </button>
               </div>
               <div className="w-full items-center my-10">
@@ -292,6 +292,23 @@ const StudentProfile: React.FC = () => {
                                   student.classLevel.slice(1).toLowerCase()
                                   : "Not specified"}
                               </p>
+                            </div>
+                            <div className="mb-6">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                                    <div className="flex items-center gap-2">
+                                      <LuShare2 size={16} />
+                                      <span>Share Profile</span>
+                                    </div>
+                                  </label>
+                                  <p className="text-gray-800">
+                                    {student.shareProfile
+                                      ? "Visible to students"
+                                      : "Not shared with students"}
+                                  </p>
+                                </div>
+                              </div>
                             </div>
 
                             {/* School */}

@@ -53,6 +53,7 @@ export interface BaseUser {
 export interface Student extends BaseUser {
   type: UserType.Student;
   major?: string;
+  shareProfile?: boolean;
   classLevel?: ClassLevel;
   school?: string;
   fieldOfInterest?: string[];
