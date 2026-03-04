@@ -39,6 +39,7 @@ const sampleStudents = [
     organizations: ["Computer Science Society"],
     specializations: ["Web Systems"],
     school: "Tech University",
+    shareProfile: true,
   },
   {
     _id: "student_002",
@@ -58,6 +59,7 @@ const sampleStudents = [
     organizations: ["Women in STEM"],
     specializations: ["Artificial Intelligence"],
     school: "State University",
+    shareProfile: true,
   },
   {
     _id: "student_003",
@@ -77,6 +79,7 @@ const sampleStudents = [
     organizations: ["Cyber Defense Club"],
     specializations: ["Infrastructure"],
     school: "Institute of Technology",
+    shareProfile: false,
   },
   {
     _id: "student_004",
@@ -96,6 +99,7 @@ const sampleStudents = [
     organizations: ["Game Dev Guild"],
     specializations: ["Interactive Media"],
     school: "Academy of Arts",
+    shareProfile: true,
   },
   {
     _id: "student_005",
@@ -115,6 +119,7 @@ const sampleStudents = [
     organizations: ["Finance Association"],
     specializations: ["Econometrics"],
     school: "Global Business School",
+    shareProfile: false,
   },
   {
     _id: "student_006",
@@ -134,6 +139,7 @@ const sampleStudents = [
     organizations: ["Design Collective"],
     specializations: ["User Experience"],
     school: "Design Institute",
+    shareProfile: true,
   },
   {
     _id: "student_007",
@@ -152,6 +158,7 @@ const sampleStudents = [
     organizations: ["Cloud Computing Group"],
     specializations: ["Distrubuted Systems"],
     school: "Western University",
+    shareProfile: true,
   },
   {
     _id: "student_008",
@@ -171,6 +178,7 @@ const sampleStudents = [
     organizations: ["IEEE Student Branch"],
     specializations: ["Microprocessors"],
     school: "Polytechnic University",
+    shareProfile: false,
   },
   {
     _id: "student_009",
@@ -189,6 +197,7 @@ const sampleStudents = [
     organizations: ["App Developers Club"],
     specializations: ["Interface Design"],
     school: "Central University",
+    shareProfile: true,
   },
   {
     _id: "student_10",
@@ -207,6 +216,7 @@ const sampleStudents = [
     organizations: ["MIS Society"],
     specializations: ["Information Security"],
     school: "Business College",
+    shareProfile: false,
   },
 ];
 
