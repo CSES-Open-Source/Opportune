@@ -406,8 +406,6 @@ export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
   });
 });
 
-
-
 export const getBatchSimilarityScores = asyncHandler(async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -422,7 +420,9 @@ export const getBatchSimilarityScores = asyncHandler(async (req, res, next) => {
   }
 
   if (!Array.isArray(alumniIds) || alumniIds.length === 0) {
-    return next(createHttpError(400, "alumniIds array is required and must not be empty"));
+    return next(
+      createHttpError(400, "alumniIds array is required and must not be empty"),
+    );
   }
 
   const studentUser = await User.findById(studentId).exec();
@@ -477,28 +477,31 @@ export const getBatchSimilarityScores = asyncHandler(async (req, res, next) => {
           StudentData,
           AlumniData,
         );
-        
+
         const career = similarityScore.careerScore / 100;
         const skill = similarityScore.skillScore / 100;
         const project = similarityScore.projectScore / 100;
         const organization = similarityScore.organizationScore / 100;
         const personal = similarityScore.personalScore / 100;
-        const school = similarityScore.schoolScore / 100;
 
-        const finalScore = (career + skill + project + organization + personal + school) / 6;
+        const finalScore =
+          (career + skill + project + organization + personal) / 6;
 
         return {
           alumniId: alumniUser._id,
           similarityScore: finalScore,
         };
       } catch (error) {
-        console.error(`Error computing similarity score for alumni ${alumniUser._id}:`, error);
+        console.error(
+          `Error computing similarity score for alumni ${alumniUser._id}:`,
+          error,
+        );
         return {
           alumniId: alumniUser._id,
           similarityScore: 0,
         };
       }
-    })
+    }),
   );
 
   res.status(200).json({

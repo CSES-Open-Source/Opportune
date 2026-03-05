@@ -32,12 +32,12 @@ const Connect = () => {
     async (alumni: Alumni[]) => {
       if (!user?.type || user.type !== "STUDENT") return;
       if (!user._id) return;
-      loadingScores || alumni.length === 0 || hasFetchedScores; 
+      
       setLoadingScores(true); //Load the state for the scores allow for skeleton page at a later date
       const scores: Record<string, number> = {};
 
       try {
-        const alumniToScore = alumni.slice(0, 20);
+        const alumniToScore = alumni.slice(0, 10);
         const alumniIds = alumniToScore.map(a => a._id);
         
         const res = await getBatchSimilarityScores(user._id!, alumniIds);
@@ -78,10 +78,13 @@ const Connect = () => {
         return;
       }
 
+      setHasFetchedScores(false); 
+      setLoadingScores(true);
+
       try {
         const res = await getAlumni({
           page: 0,
-          perPage: 20,
+          perPage: 10,
           query: search.query || undefined,
           industry: search.industry,
         });
@@ -95,7 +98,7 @@ const Connect = () => {
     };
 
     loadFirstPageWithScores();
-  }, [user, hasFetchedScores, search, fetchSimilarityScores]);
+  }, [user?._id, search.query, search.industry.join(",")]); 
 
   const fetchAndSortAlumni = useCallback(
     async (page: number, perPage: number) => {

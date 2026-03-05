@@ -153,10 +153,9 @@ export async function generateSimilarityScore(
     You are an expert career mentor analyzing similarities between a student and an alumni.
 
     STUDENT PROFILE:
-    - Name: ${student.name}
-    - School: ${student.school || "Not provided"}
+
+
     - Major: ${student.major || "Not provided"}
-    - Class Level: ${student.classLevel || "Not provided"}
     - Field of Interest: ${student.fieldOfInterest?.join(", ") || "Not provided"}
     - Skills: ${student.skills?.join(", ") || "Not provided"}
     - Hobbies: ${student.hobbies?.join(", ") || "Not provided"}
@@ -164,7 +163,7 @@ export async function generateSimilarityScore(
     - Companies of Interest: ${student.companiesOfInterest?.join(", ") || "Not provided"}
 
     ALUMNI PROFILE:
-    - Name: ${alumni.name}
+
     - Position: ${alumni.position || "Not provided"}
     - Company: ${alumni.company || "Not provided"}
     - Specializations: ${alumni.specializations?.join(", ") || "Not provided"}
@@ -174,27 +173,27 @@ export async function generateSimilarityScore(
 
     Compute a similarity score between a student and an alumni using the following weighted components:
 
-    - Career alignment: semantic similarity between student major, interests, and alumni role/specializations (0-100)
-    - Skills overlap: Jaccard similarity of skill sets (0-100)
-    - Project relevance: semantic similarity between student projects and alumni expertise (0-100)
-    - Organization alignment: company match and organizational overlap (0-100)
-    - Personal fit: hobby overlap (0-100)
-    - School affinity: same school bonus (0-100)
+    - Career alignment: (0-100)
+    - Skills overlap: (0-100)
+    - Project relevance: (0-100)
+    - Organization alignment: (0-100)
+    - Personal fit: (0-100)
+    - School affinity: (0-100)
 
-    Respond in the following JSON format (no markdown, pure JSON) with numeric values between 0 and 100:
-    {
-      "careerScore": 80,
-      "skillScore": 70,
-      "projectScore": 60,
-      "organizationScore": 50,
-      "personalScore": 40,
-      "schoolScore": 90
-    }`;
+    Return ONLY this JSON format (no functions, no code):
+  {
+  "careerScore": <number 0-100>,
+  "skillScore": <number 0-100>,
+  "projectScore": <number 0-100>,
+  "organizationScore": <number 0-100>,
+  "personalScore": <number 0-100>,
+
+  }`;
 
   try {
     const message = await groq.chat.completions.create({
       model: "llama-3.1-8b-instant",
-      max_tokens: 1024,
+      max_tokens: 512,
       response_format: { type: "json_object" },
       messages: [
         {

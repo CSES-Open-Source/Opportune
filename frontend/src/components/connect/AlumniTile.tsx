@@ -5,7 +5,7 @@ import { LuMail, LuBuilding2, LuBriefcase } from "react-icons/lu";
 import AlumniProfileModal from "./AlumniProfileModal";
 
 interface AlumniTileProps {
-  data: Alumni & { similarityScore?: number };
+  data: Alumni;
 }
 
 const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
@@ -59,11 +59,7 @@ const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
             </h3>
           </div>
         </div>
-        {data.similarityScore !== undefined && (
-          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 font-bold text-white text-sm">
-            {(data.similarityScore * 100).toFixed(0)}
-          </div>
-        )}
+        
       </div>
 
       {/* Card body */}
