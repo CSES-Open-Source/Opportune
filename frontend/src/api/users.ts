@@ -172,3 +172,25 @@ export async function getSimilarities(
     return handleAPIError(error);
   }
 }
+
+/**
+ * Fetch similarity scores for multiple alumni in a single batch call
+ *
+ * @param studentId The ID of the student
+ * @param alumniIds Array of alumni IDs to compare with
+ * @returns Object containing an array of similarity scores
+ */
+export async function getBatchSimilarityScores(
+  studentId: string,
+  alumniIds: string[],
+): Promise<APIResult<{ studentId: string; scores: Array<{ alumniId: string; similarityScore: number }> }>> {
+  try {
+    const response = await post(`/api/users/batch-similarity-scores/${studentId}`, {
+      alumniIds,
+    });
+    const json = (await response.json()) as { studentId: string; scores: Array<{ alumniId: string; similarityScore: number }> };
+    return { success: true, data: json };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}

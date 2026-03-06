@@ -21,24 +21,45 @@ const AlumniTile: React.FC<AlumniTileProps> = ({ data }) => {
   };
 
   return (
-    <div onClick={() => navigate(`/alumni/${data._id}`)} 
-      className="bg-white rounded-lg overflow-visible h-auto transition border border-gray-300 shadow-sm hover:shadow-md">
-      {/* Card header with avatar and name */}
-      <div className="bg-gray-50 p-4 flex items-center border-b">
-        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden mr-3">
-          {data.profilePicture ? (
-            <img
-              src={data.profilePicture}
-              alt={data.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-xl">{data.name.charAt(0)}</span>
-          )}
+    <div
+      onClick={() => navigate(`/alumni/${data._id}`)}
+      className="
+        bg-zinc-900/80
+        backdrop-blur
+        rounded-xl
+        overflow-visible
+        h-auto
+        border
+        border-zinc-800
+        shadow-lg
+        transition
+        hover:shadow-indigo-500/10
+        hover:border-zinc-700
+      "
+    >
+      {/* Card header */}
+      <div className="bg-zinc-900 p-4 flex items-center justify-between border-b border-zinc-800">
+        <div className="flex items-center flex-1">
+          <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center overflow-hidden mr-3">
+            {data.profilePicture ? (
+              <img
+                src={data.profilePicture}
+                alt={data.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-xl text-zinc-300">
+                {data.name.charAt(0)}
+              </span>
+            )}
+          </div>
+          <div>
+            <h3 className="font-semibold text-lg text-zinc-100">
+              {data.name}
+            </h3>
+          </div>
         </div>
-        <div>
-          <h3 className="font-bold text-lg text-gray-900">{data.name}</h3>
-        </div>
+        
       </div>
 
       {/* Card body with user details */}

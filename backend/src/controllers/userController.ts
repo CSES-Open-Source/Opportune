@@ -4,7 +4,10 @@ import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import validationErrorParser from "../util/validationErrorParser";
 import Company from "../models/Company";
-import { analyzeSimilarities } from "../controllers/groqController";
+import {
+  analyzeSimilarities,
+  generateSimilarityScore,
+} from "../controllers/SimilarityController";
 
 interface BaseUserResponse {
   _id?: string;
@@ -362,7 +365,6 @@ export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
     return next(createHttpError(400, "User is not a student."));
   }
 
-  //Prepare data student and alumni for groq
   const StudentData = {
     name: studentUser.name,
     school: studentUser.school,
@@ -401,5 +403,109 @@ export const getAlumniSimilarities = asyncHandler(async (req, res, next) => {
     },
     similarities: similarities.similarities,
     summary: similarities.summary,
+  });
+});
+
+export const getBatchSimilarityScores = asyncHandler(async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(createHttpError(400, validationErrorParser(errors)));
+  }
+
+  const { studentId } = matchedData(req, { locations: ["params"] });
+  const { alumniIds } = matchedData(req, { locations: ["body"] });
+
+  if (!studentId) {
+    return next(createHttpError(400, "StudentId is required"));
+  }
+
+  if (!Array.isArray(alumniIds) || alumniIds.length === 0) {
+    return next(
+      createHttpError(400, "alumniIds array is required and must not be empty"),
+    );
+  }
+
+  const studentUser = await User.findById(studentId).exec();
+
+  if (!studentUser) {
+    return next(createHttpError(404, "Student user not found."));
+  }
+
+  if (studentUser.type !== UserType.Student) {
+    return next(createHttpError(400, "User is not a student."));
+  }
+
+  const StudentData = {
+    name: studentUser.name,
+    school: studentUser.school,
+    fieldOfInterest: studentUser.fieldOfInterest,
+    projects: studentUser.projects,
+    hobbies: studentUser.hobbies,
+    skills: studentUser.skills,
+    companiesOfInterest: studentUser.companiesOfInterest,
+    major: studentUser.major,
+    classLevel: studentUser.classLevel,
+  };
+  const alumniUsers = await User.find({ _id: { $in: alumniIds } })
+    .populate({
+      path: "company",
+      model: Company,
+    })
+    .exec();
+
+  const scores = await Promise.all(
+    alumniUsers.map(async (alumniUser) => {
+      if (alumniUser.type !== UserType.Alumni) {
+        return {
+          alumniId: alumniUser._id,
+          similarityScore: 0,
+        };
+      }
+
+      const AlumniData = {
+        name: alumniUser.name,
+        position: alumniUser.position,
+        company: alumniUser.company,
+        organizations: alumniUser.organizations,
+        specializations: alumniUser.specializations,
+        hobbies: alumniUser.hobbies,
+        skills: alumniUser.skills,
+      };
+
+      try {
+        const similarityScore = await generateSimilarityScore(
+          StudentData,
+          AlumniData,
+        );
+
+        const career = similarityScore.careerScore / 100;
+        const skill = similarityScore.skillScore / 100;
+        const project = similarityScore.projectScore / 100;
+        const organization = similarityScore.organizationScore / 100;
+        const personal = similarityScore.personalScore / 100;
+
+        const finalScore =
+          (career + skill + project + organization + personal) / 6;
+
+        return {
+          alumniId: alumniUser._id,
+          similarityScore: finalScore,
+        };
+      } catch (error) {
+        console.error(
+          `Error computing similarity score for alumni ${alumniUser._id}:`,
+          error,
+        );
+        return {
+          alumniId: alumniUser._id,
+          similarityScore: 0,
+        };
+      }
+    }),
+  );
+
+  res.status(200).json({
+    studentId: studentUser._id,
+    scores,
   });
 });

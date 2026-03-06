@@ -33,6 +33,15 @@ interface SimilarityResponse {
   summary: string;
 }
 
+interface SimilarityScoreResponse {
+  careerScore: number;
+  skillScore: number;
+  projectScore: number;
+  organizationScore: number;
+  personalScore: number;
+  schoolScore: number;
+}
+
 export async function analyzeSimilarities(
   student: StudentData,
   alumni: AlumniData,
@@ -108,6 +117,101 @@ export async function analyzeSimilarities(
     }
 
     let similarities: SimilarityResponse;
+    try {
+      similarities = JSON.parse(responseText);
+    } catch (e) {
+      console.error("JSON.parse failed on Groq content:", responseText);
+      throw createHttpError(500, "Groq returned invalid JSON");
+    }
+    return similarities;
+  } catch (error) {
+    console.error("error in analyze similarities: ", error);
+    if (error instanceof createHttpError.HttpError) {
+      throw error;
+    }
+    throw createHttpError(
+      500,
+      `Error calling Groq API: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+  }
+}
+
+export async function generateSimilarityScore(
+  student: StudentData,
+  alumni: AlumniData,
+): Promise<SimilarityScoreResponse> {
+  const groqApiKey = process.env.GROQ_API_KEY;
+
+  if (!groqApiKey) {
+    throw createHttpError(500, "Groq API key not configured");
+  }
+
+  const groq = new Groq({ apiKey: groqApiKey });
+
+  const prompt = `
+    You are an expert career mentor analyzing similarities between a student and an alumni.
+
+    STUDENT PROFILE:
+
+
+    - Major: ${student.major || "Not provided"}
+    - Field of Interest: ${student.fieldOfInterest?.join(", ") || "Not provided"}
+    - Skills: ${student.skills?.join(", ") || "Not provided"}
+    - Hobbies: ${student.hobbies?.join(", ") || "Not provided"}
+    - Projects: ${student.projects?.join(", ") || "Not provided"}
+    - Companies of Interest: ${student.companiesOfInterest?.join(", ") || "Not provided"}
+
+    ALUMNI PROFILE:
+
+    - Position: ${alumni.position || "Not provided"}
+    - Company: ${alumni.company || "Not provided"}
+    - Specializations: ${alumni.specializations?.join(", ") || "Not provided"}
+    - Skills: ${alumni.skills?.join(", ") || "Not provided"}
+    - Hobbies: ${alumni.hobbies?.join(", ") || "Not provided"}
+    - Organizations: ${alumni.organizations?.join(", ") || "Not provided"}
+
+    Compute a similarity score between a student and an alumni using the following weighted components:
+
+    - Career alignment: (0-100)
+    - Skills overlap: (0-100)
+    - Project relevance: (0-100)
+    - Organization alignment: (0-100)
+    - Personal fit: (0-100)
+    - School affinity: (0-100)
+
+    Return ONLY this JSON format (no functions, no code):
+  {
+  "careerScore": <number 0-100>,
+  "skillScore": <number 0-100>,
+  "projectScore": <number 0-100>,
+  "organizationScore": <number 0-100>,
+  "personalScore": <number 0-100>,
+
+  }`;
+
+  try {
+    const message = await groq.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      max_tokens: 512,
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
+
+    const responseText = message.choices[0].message.content || "";
+
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+
+    if (!jsonMatch) {
+      throw createHttpError(500, "Failed to parse Groq response");
+    }
+
+    let similarities: SimilarityScoreResponse;
+
     try {
       similarities = JSON.parse(responseText);
     } catch (e) {
