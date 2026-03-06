@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState} from "react";
 import {
   LuGraduationCap,
   LuBriefcase,
@@ -20,7 +20,6 @@ import {
 } from "../types/User";
 import { Dropdown } from "primereact/dropdown";
 import CompanyDropdown from "../components/company/CompanyDropdown";
-import "../styles/Animations.css";
 
 const Profile = () => {
   const classLevelOptions = Object.keys(ClassLevel).map((key) => ({
@@ -29,6 +28,7 @@ const Profile = () => {
   }));
 
   const { user, updateUser } = useAuth();
+
 
   const [studentProfile, setStudentProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
   const [alumniProfile, setAlumniProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
@@ -94,6 +94,7 @@ const Profile = () => {
       } else if (updatedUser.type === UserType.Alumni) {
         saveAlumniProfile();
       }
+
     });
   };
 
@@ -107,6 +108,7 @@ const Profile = () => {
   const saveStudentProfile = () => {
     if (!studentProfile) return;
     if (!studentProfile._id) {
+      // No profile in db, then create profile
       fetch(`/api/profile/student`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -118,6 +120,7 @@ const Profile = () => {
           console.log("created student profile", data);
         });
     } else {
+      // updating profile
       fetch(`/api/profile/student/${user?._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -134,6 +137,7 @@ const Profile = () => {
   const saveAlumniProfile = () => {
     if (!alumniProfile) return;
     if (!alumniProfile._id) {
+      // No profile in db, then create profile
       fetch(`/api/profile/alumni`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -145,6 +149,7 @@ const Profile = () => {
           console.log("created alumni profile", data);
         });
     } else {
+      // updating profile
       fetch(`/api/profile/alumni/${user?._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -189,7 +194,7 @@ const Profile = () => {
 
   const onPhoneNumberChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
-    const cleanedInput = input.replace(/\D/g, "");
+    const cleanedInput = input.replace(/\D/g, ""); // Remove non-digits
 
     let formattedNumber = "";
 
@@ -197,9 +202,14 @@ const Profile = () => {
       if (cleanedInput.length < 4) {
         formattedNumber = `(${cleanedInput}`;
       } else if (cleanedInput.length < 7) {
-        formattedNumber = `(${cleanedInput.slice(0, 3)}) ${cleanedInput.slice(3)}`;
+        formattedNumber = `(${cleanedInput.slice(0, 3)}) ${cleanedInput.slice(
+          3,
+        )}`;
       } else {
-        formattedNumber = `(${cleanedInput.slice(0, 3)}) ${cleanedInput.slice(3, 6)}-${cleanedInput.slice(6, 10)}`;
+        formattedNumber = `(${cleanedInput.slice(0, 3)}) ${cleanedInput.slice(
+          3,
+          6,
+        )}-${cleanedInput.slice(6, 10)}`;
       }
       handleInputChange("phoneNumber", formattedNumber);
     } else {
@@ -216,20 +226,14 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen py-8 px-4" style={{ background: 'linear-gradient(135deg, #0f1419 0%, #1a1d2e 100%)' }}>
-      <div className="max-w-7xl mx-auto animate-fadeIn">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-12 pb-6 border-b border-[#2d3748]">
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#5b8ef4] to-[#7c3aed] bg-clip-text text-transparent mb-1">
-              Profile
-            </h1>
-            <p className="text-[#9ca3af] text-sm">Manage your academic and professional presence</p>
-          </div>
+    <div className="w-full items-center my-10">
+      <div className="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto border">
+        <div className="flex justify-between items-start mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">User Profile</h1>
           {!isEditing && (
             <button
               onClick={onEdit}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#5b8ef4] to-[#7c3aed] text-white rounded-lg font-semibold hover:-translate-y-0.5 transition-all shadow-lg hover:shadow-[#5b8ef4]/40"
+              className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
             >
               <FiEdit size={18} />
               <span>Edit Profile</span>
@@ -238,9 +242,7 @@ const Profile = () => {
           {isEditing && (
             <button
               onClick={onSave}
-              className={`flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#5b8ef4] to-[#7c3aed] text-white rounded-lg font-semibold hover:-translate-y-0.5 transition-all shadow-lg ${
-                canSave ? 'hover:shadow-[#5b8ef4]/40' : 'opacity-50 cursor-not-allowed'
-              }`}
+              className="flex items-center gap-2 text-blue-600 hover:text-blue-700"
               disabled={!canSave}
             >
               <FiEdit size={18} />
@@ -249,23 +251,18 @@ const Profile = () => {
           )}
         </div>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-8 animate-slideUp">
-          {/* Left Sidebar - Profile Card */}
-          <div className="bg-[#1e2433] rounded-2xl p-10 shadow-2xl border border-[#2d3748] relative overflow-hidden">
-            {/* Top gradient border */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#5b8ef4] to-[#7c3aed]"></div>
-            
-            {/* Profile Image */}
-            <div className="relative w-36 h-36 mx-auto mb-8">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Left Column - Profile Image */}
+          <div className="flex flex-col items-center">
+            <div className="w-32 h-32 rounded-full bg-gray-200 overflow-hidden mb-4">
               {user.profilePicture ? (
                 <img
                   src={user.profilePicture}
                   alt={user.name}
-                  className="w-full h-full rounded-full object-cover border-4 border-[#5b8ef4] shadow-[0_0_30px_rgba(91,142,244,0.3)] hover:scale-105 transition-transform"
+                  className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full rounded-full flex items-center justify-center bg-gradient-to-br from-[#5b8ef4] to-[#7c3aed] text-white text-4xl font-bold shadow-[0_0_30px_rgba(91,142,244,0.3)] hover:scale-105 transition-transform">
+                <div className="w-full h-full flex items-center justify-center bg-blue-100 text-blue-600 text-3xl font-semibold">
                   {user.name
                     .split(" ")
                     .map((n) => n[0])
@@ -273,557 +270,544 @@ const Profile = () => {
                     .toUpperCase()}
                 </div>
               )}
-              <div className="absolute bottom-2.5 right-2.5 w-5 h-5 bg-[#10b981] rounded-full border-3 border-[#1e2433] shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
-            </div>
-
-            {/* Profile Fields */}
-            <div className="space-y-8">
-              <div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                  <span>👤</span> Full Name
-                </div>
-                <div className="text-lg text-[#e8eaed] font-medium px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748] hover:bg-[#252d3f] hover:border-[#5b8ef4] transition-all">
-                  {user.name || <span className="text-[#6b7280] italic">Not provided</span>}
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                  <LuMail size={14} /> Email
-                </div>
-                <div className="text-lg text-[#e8eaed] font-medium px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748] hover:bg-[#252d3f] hover:border-[#5b8ef4] transition-all break-all">
-                  {user.email || <span className="text-[#6b7280] italic">Not provided</span>}
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                  <FiPhone size={14} /> Phone Number
-                </div>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={updatedUser.phoneNumber}
-                    placeholder="Add phone number"
-                    className={`w-full px-3 py-3 bg-[#1a1f2e] rounded-lg border-2 text-[#e8eaed] focus:outline-none transition-all ${
-                      isValidPhoneNumber
-                        ? "border-[#2d3748] focus:border-[#5b8ef4]"
-                        : "border-red-500"
-                    }`}
-                    onChange={onPhoneNumberChanged}
-                  />
-                ) : (
-                  <div className="text-lg text-[#e8eaed] font-medium px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748] hover:bg-[#252d3f] hover:border-[#5b8ef4] transition-all">
-                    {user.phoneNumber || <span className="text-[#6b7280] italic">Not provided</span>}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                  <span>👔</span> User Type
-                </div>
-                {isEditing ? (
-                  <div className="flex gap-4 px-3 py-3">
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="userType"
-                        checked={updatedUser.type === UserType.Student}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "type",
-                            e.target.checked ? UserType.Student : UserType.Alumni,
-                          )
-                        }
-                        className="w-4 h-4 text-[#5b8ef4] border-[#2d3748] focus:ring-[#5b8ef4] focus:ring-2"
-                      />
-                      <span className="ml-2 text-[#e8eaed]">Student</span>
-                    </label>
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="userType"
-                        checked={updatedUser.type === UserType.Alumni}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "type",
-                            e.target.checked ? UserType.Alumni : UserType.Student,
-                          )
-                        }
-                        className="w-4 h-4 text-[#5b8ef4] border-[#2d3748] focus:ring-[#5b8ef4] focus:ring-2"
-                      />
-                      <span className="ml-2 text-[#e8eaed]">Alumni</span>
-                    </label>
-                  </div>
-                ) : (
-                  <div className="text-lg text-[#e8eaed] font-medium px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748] hover:bg-[#252d3f] hover:border-[#5b8ef4] transition-all">
-                    {user.type === UserType.Student ? "Student" : "Alumni"}
-                  </div>
-                )}
-              </div>
-
-              <div className="pt-8 border-t border-[#2d3748]">
-                <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                  <FaLinkedin size={14} /> LinkedIn
-                </div>
-                {isEditing ? (
-                  <input
-                    type="url"
-                    value={updatedUser.linkedIn}
-                    placeholder="Add LinkedIn profile"
-                    className={`w-full px-3 py-3 bg-[#1a1f2e] rounded-lg border-2 text-[#e8eaed] focus:outline-none transition-all ${
-                      isValidLinkedIn
-                        ? "border-[#2d3748] focus:border-[#5b8ef4]"
-                        : "border-red-500"
-                    }`}
-                    onChange={onLinkedInChanged}
-                  />
-                ) : user.linkedIn ? (
-                  <a
-                    href={user.linkedIn}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-[#5b8ef4] hover:text-[#7c3aed] font-semibold transition-all hover:gap-3"
-                  >
-                    View Profile →
-                  </a>
-                ) : (
-                  <span className="text-[#6b7280] italic">Not provided</span>
-                )}
-              </div>
             </div>
           </div>
 
-          {/* Right Content Area */}
-          <div className="space-y-8">
+          {/* Right Column - User Information */}
+          <div className="flex-1">
+            {/* Basic Information */}
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Basic Information
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    Full Name
+                  </label>
+                  <p className="text-gray-800">{user.name}</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    User Type
+                  </label>
+                  {isEditing ? (
+                    <div className="flex gap-3">
+                      <label className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          name="userType"
+                          checked={updatedUser.type === UserType.Student}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "type",
+                              e.target.checked
+                                ? UserType.Student
+                                : UserType.Alumni,
+                            )
+                          }
+                          className="form-radio h-4 w-4 text-blue-600"
+                        />
+                        <span className="ml-2">Student</span>
+                      </label>
+                      <label className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          name="userType"
+                          checked={updatedUser.type === UserType.Alumni}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "type",
+                              e.target.checked
+                                ? UserType.Alumni
+                                : UserType.Student,
+                            )
+                          }
+                          className="form-radio h-4 w-4 text-blue-600"
+                        />
+                        <span className="ml-2">Alumni</span>
+                      </label>
+                    </div>
+                  ) : (
+                    <p className="text-gray-800">
+                      {user.type === UserType.Student ? "Student" : "Alumni"}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    <div className="flex items-center gap-2">
+                      <LuMail size={16} />
+                      <span>Email</span>
+                    </div>
+                  </label>
+                  <p className="text-gray-800">{user.email}</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">
+                    <div className="flex items-center gap-2">
+                      <FiPhone size={16} />
+                      <span>Phone Number</span>
+                    </div>
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={updatedUser.phoneNumber}
+                      placeholder="Add phone number"
+                      className={`w-full p-2 border-2 focus:border-blue-500 focus:outline-none rounded-md ${isValidPhoneNumber
+                        ? "border-gray-300"
+                        : "border-red-600"
+                        }`}
+                      onChange={onPhoneNumberChanged}
+                    />
+                  ) : (
+                    <p className="text-gray-800">
+                      {user.phoneNumber || "Not provided"}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* LinkedIn */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-500 mb-1">
+                <div className="flex items-center gap-2">
+                  <FaLinkedin size={16} />
+                  <span>LinkedIn</span>
+                </div>
+              </label>
+              {isEditing ? (
+                <input
+                  type="url"
+                  value={updatedUser.linkedIn}
+                  placeholder="Add LinkedIn profile"
+                  className={`w-full p-2 border-2 rounded-md focus:border-blue-500 focus:outline-none ${isValidLinkedIn ? "border-gray-300" : "border-red-600"
+                    }`}
+                  onChange={onLinkedInChanged}
+                />
+              ) : user.linkedIn ? (
+                <a
+                  href={user.linkedIn}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  {user.linkedIn}
+                </a>
+              ) : (
+                <p className="text-gray-600">Not provided</p>
+              )}
+            </div>
+
             {/* Student-specific Information */}
             {user.type === UserType.Student && !isEditing && (
-              <>
-                {/* Academic Information */}
-                <div className="bg-[#1e2433] rounded-2xl p-8 shadow-2xl border border-[#2d3748] hover:-translate-y-0.5 transition-all hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]">
-                  <h2 className="text-2xl font-bold text-[#e8eaed] mb-6 flex items-center gap-3">
-                    <div className="w-1 h-6 bg-gradient-to-b from-[#5b8ef4] to-[#7c3aed] rounded"></div>
-                    Academic Information
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <LuGraduationCap size={14} /> Major
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                  Academic Information
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <div className="flex items-center gap-2">
+                        <LuGraduationCap size={16} />
+                        <span>Major</span>
                       </div>
-                      <div className="text-lg text-[#e8eaed] font-medium px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748] hover:bg-[#252d3f] hover:border-[#5b8ef4] transition-all">
-                        {user.major || <span className="text-[#6b7280] italic">Not specified</span>}
-                      </div>
-                    </div>
+                    </label>
+                    <p className="text-gray-800">
+                      {user.major || "Not specified"}
+                    </p>
+                  </div>
 
-                    <div>
-                      <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <span>📅</span> Year
-                      </div>
-                      <div className="text-lg text-[#e8eaed] font-medium px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748] hover:bg-[#252d3f] hover:border-[#5b8ef4] transition-all">
-                        {user.classLevel
-                          ? user.classLevel.charAt(0).toUpperCase() + user.classLevel.slice(1).toLowerCase()
-                          : <span className="text-[#6b7280] italic">Not specified</span>}
-                      </div>
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Year</span>
+                    </label>
+                    <p className="text-gray-800">
+                      {user.classLevel
+                        ? user.classLevel.charAt(0).toUpperCase() +
+                        user.classLevel.slice(1).toLowerCase()
+                        : "Not specified"}
+                    </p>
+                  </div>
 
-                    <div>
-                      <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <span>🏫</span> School
-                      </div>
-                      <div className="text-lg text-[#e8eaed] font-medium px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748] hover:bg-[#252d3f] hover:border-[#5b8ef4] transition-all">
-                        {user.school
-                          ? user.school.charAt(0).toUpperCase() + user.school.slice(1).toLowerCase()
-                          : <span className="text-[#6b7280] italic">Not specified</span>}
-                      </div>
+                  {/* School */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>School</span>
+                    </label>
+                    <p className="text-gray-800">
+                      {user.school
+                        ? user.school.charAt(0).toUpperCase() +
+                        user.school.slice(1).toLowerCase()
+                        : "Not specified"}
+                    </p>
+                  </div>
+                  {/* Field of Interest */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Field of Interest</span>
+                    </label>
+                    {Array.isArray(user.fieldOfInterest) && user.fieldOfInterest.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.fieldOfInterest.map((field, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {field}
+                      </span>
+                    ))}
                     </div>
-
-                    <div>
-                      <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <span>🔬</span> Field of Interest
-                      </div>
-                      {Array.isArray(user.fieldOfInterest) && user.fieldOfInterest.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {user.fieldOfInterest.map((field, index) => (
-                            <span
-                              key={index}
-                              className="px-4 py-2 text-sm font-semibold bg-[#1a1f2e] border border-[#5b8ef4] rounded-full text-[#e8eaed] hover:bg-[#5b8ef4] hover:text-white hover:-translate-y-0.5 transition-all cursor-default"
-                              style={{ background: 'linear-gradient(135deg, rgba(91, 142, 244, 0.1), rgba(124, 58, 237, 0.1))' }}
-                            >
-                              {field}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-lg text-[#6b7280] italic px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748]">
-                          Not specified
-                        </div>
-                      )}
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                  </div>
+                  {/* Projects */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Projects</span>
+                    </label>
+                    {Array.isArray(user.projects) && user.projects.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.projects.map((project, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {project}
+                      </span>
+                    ))}
                     </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                  </div>
+                  {/* These next two are technically user specific but this will be dealt with during the redesign
+                  Hobbies */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Hobbies</span>
+                    </label>
+                    {Array.isArray(user.hobbies) && user.hobbies.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.hobbies.map((hobby, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {hobby}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                  </div>
+                  {/* Skills */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Skills</span>
+                    </label>
+                    {Array.isArray(user.skills) && user.skills.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                  </div>
+                  {/* Companies of Interest */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Companies of Interest</span>
+                    </label>
+                    {Array.isArray(user.companiesOfInterest) && user.companiesOfInterest.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.companiesOfInterest.map((companiesOfInterest, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {companiesOfInterest}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
                   </div>
                 </div>
-
-                {/* Projects */}
-                <div className="bg-[#1e2433] rounded-2xl p-8 shadow-2xl border border-[#2d3748] hover:-translate-y-0.5 transition-all hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]">
-                  <h2 className="text-2xl font-bold text-[#e8eaed] mb-6 flex items-center gap-3">
-                    <div className="w-1 h-6 bg-gradient-to-b from-[#5b8ef4] to-[#7c3aed] rounded"></div>
-                    Projects
-                  </h2>
-                  {Array.isArray(user.projects) && user.projects.length > 0 ? (
-                    <div className="flex flex-wrap gap-3">
-                      {user.projects.map((project, index) => (
-                        <span
-                          key={index}
-                          className="px-4 py-2 text-sm font-semibold bg-[#1a1f2e] border border-[#5b8ef4] rounded-full text-[#e8eaed] hover:bg-[#5b8ef4] hover:text-white hover:-translate-y-0.5 transition-all cursor-default"
-                          style={{ background: 'linear-gradient(135deg, rgba(91, 142, 244, 0.1), rgba(124, 58, 237, 0.1))' }}
-                        >
-                          {project}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-lg text-[#6b7280] italic px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748]">
-                      No projects listed
-                    </div>
-                  )}
-                </div>
-
-                {/* Skills */}
-                <div className="bg-[#1e2433] rounded-2xl p-8 shadow-2xl border border-[#2d3748] hover:-translate-y-0.5 transition-all hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]">
-                  <h2 className="text-2xl font-bold text-[#e8eaed] mb-6 flex items-center gap-3">
-                    <div className="w-1 h-6 bg-gradient-to-b from-[#5b8ef4] to-[#7c3aed] rounded"></div>
-                    Technical Skills
-                  </h2>
-                  {Array.isArray(user.skills) && user.skills.length > 0 ? (
-                    <div className="flex flex-wrap gap-3">
-                      {user.skills.map((skill, index) => (
-                        <span
-                          key={index}
-                          className="px-4 py-2 text-sm font-semibold font-mono bg-[#1a1f2e] border border-[#5b8ef4] rounded-full text-[#e8eaed] hover:bg-[#5b8ef4] hover:text-white hover:-translate-y-0.5 transition-all cursor-default shadow-[0_4px_12px_rgba(91,142,244,0.3)]"
-                          style={{ background: 'linear-gradient(135deg, rgba(91, 142, 244, 0.1), rgba(124, 58, 237, 0.1))' }}
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-lg text-[#6b7280] italic px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748]">
-                      Not specified
-                    </div>
-                  )}
-                </div>
-
-                {/* Hobbies */}
-                <div className="bg-[#1e2433] rounded-2xl p-8 shadow-2xl border border-[#2d3748] hover:-translate-y-0.5 transition-all hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]">
-                  <h2 className="text-2xl font-bold text-[#e8eaed] mb-6 flex items-center gap-3">
-                    <div className="w-1 h-6 bg-gradient-to-b from-[#5b8ef4] to-[#7c3aed] rounded"></div>
-                    Hobbies & Interests
-                  </h2>
-                  {Array.isArray(user.hobbies) && user.hobbies.length > 0 ? (
-                    <div className="flex flex-wrap gap-3">
-                      {user.hobbies.map((hobby, index) => (
-                        <span
-                          key={index}
-                          className="px-4 py-2 text-sm font-semibold bg-[#1a1f2e] border border-[#10b981] rounded-full text-[#e8eaed] hover:bg-[#10b981] hover:text-white hover:-translate-y-0.5 transition-all cursor-default"
-                          style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.1))' }}
-                        >
-                          {hobby}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-lg text-[#6b7280] italic px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748]">
-                      Not specified
-                    </div>
-                  )}
-                </div>
-
-                {/* Companies of Interest */}
-                <div className="bg-[#1e2433] rounded-2xl p-8 shadow-2xl border border-[#2d3748] hover:-translate-y-0.5 transition-all hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]">
-                  <h2 className="text-2xl font-bold text-[#e8eaed] mb-6 flex items-center gap-3">
-                    <div className="w-1 h-6 bg-gradient-to-b from-[#5b8ef4] to-[#7c3aed] rounded"></div>
-                    Companies of Interest
-                  </h2>
-                  {Array.isArray(user.companiesOfInterest) && user.companiesOfInterest.length > 0 ? (
-                    <div className="flex flex-wrap gap-3">
-                      {user.companiesOfInterest.map((company, index) => (
-                        <span
-                          key={index}
-                          className="px-4 py-2 text-sm font-semibold bg-[#1a1f2e] border border-[#f59e0b] rounded-full text-[#e8eaed] hover:bg-[#f59e0b] hover:text-white hover:-translate-y-0.5 transition-all cursor-default"
-                          style={{ background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(239, 68, 68, 0.1))' }}
-                        >
-                          {company}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-lg text-[#6b7280] italic px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748]">
-                      Not specified
-                    </div>
-                  )}
-                </div>
-              </>
+              </div>
             )}
 
-            {/* Student Editing Mode */}
             {updatedUser.type === UserType.Student && isEditing && (
-              <>
-                {/* Academic Information - Edit Mode */}
-                <div className="bg-[#1e2433] rounded-2xl p-8 shadow-2xl border border-[#2d3748]">
-                  <h2 className="text-2xl font-bold text-[#e8eaed] mb-6 flex items-center gap-3">
-                    <div className="w-1 h-6 bg-gradient-to-b from-[#5b8ef4] to-[#7c3aed] rounded"></div>
-                    Academic Information
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <LuGraduationCap size={14} /> Major
-                      </label>
-                      <input
-                        type="text"
-                        value={updatedUser.major}
-                        placeholder="Enter your major"
-                        onChange={(e) => handleInputChange("major", e.target.value)}
-                        className="w-full px-3 py-3 bg-[#1a1f2e] rounded-lg border-2 border-[#2d3748] text-[#e8eaed] focus:outline-none focus:border-[#5b8ef4] transition-all"
-                      />
-                    </div>
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                  Academic Information
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <div className="flex items-center gap-2">
+                        <LuGraduationCap size={16} />
+                        <span>Major</span>
+                      </div>
+                    </label>
+                    <input
+                      type="text"
+                      value={updatedUser.major}
+                      placeholder="Enter your major"
+                      onChange={(e) =>
+                        handleInputChange("major", e.target.value)
+                      }
+                      className="w-full p-2 border-2 focus:outline-none focus:border-blue-500 border-gray-300 rounded-md"
+                    />
+                  </div>
 
-                    <div>
-                      <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <span>📅</span> Year
-                      </label>
-                      <Dropdown
-                        id="year"
-                        value={updatedUser.classLevel}
-                        options={classLevelOptions}
-                        placeholder="Select a year"
-                        onChange={(e) => handleInputChange("classLevel", e.target.value)}
-                        className="w-full border-2 border-[#2d3748] rounded-lg bg-[#1a1f2e] text-[#e8eaed] focus:border-[#5b8ef4]"
-                        panelClassName="bg-[#1a1f2e] border-[#2d3748]"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Year</span>
+                    </label>
+                    <Dropdown
+                      id="year"
+                      value={updatedUser.classLevel}
+                      options={classLevelOptions}
+                      placeholder="Select a year"
+                      onChange={(e) =>
+                        handleInputChange("classLevel", e.target.value)
+                      }
+                      className="w-full border-2 text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
 
-                    <div>
-                      <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <span>🏫</span> School
-                      </label>
-                      <input
-                        type="text"
-                        value={updatedUser.school}
-                        placeholder="Enter your school"
-                        onChange={(e) => handleInputChange("school", e.target.value)}
-                        className="w-full px-3 py-3 bg-[#1a1f2e] rounded-lg border-2 border-[#2d3748] text-[#e8eaed] focus:outline-none focus:border-[#5b8ef4] transition-all"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <div className="flex items-center gap-2">
+                        <span>School</span>
+                      </div>
+                    </label>
+                    <input
+                      type="text"
+                      value={updatedUser.school}
+                      placeholder="Enter your school"
+                      onChange={(e) =>
+                        handleInputChange("school", e.target.value)
+                      }
+                      className="w-full p-2 border-2 focus:outline-none focus:border-blue-500 border-gray-300 rounded-md"
+                    />
+                  </div>
+                  {/* Field Of Interest, Projects, Hobbies, Skills, Companies of Interest */}
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Field Of Interest"
+                      values={updatedUser.fieldOfInterest || []}
+                      placeholder="Add a field of interest"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, fieldOfInterest: value }))}
+                    />
+                  </div>
 
-                    <div className="col-span-full">
-                      <AddableCardList
-                        label="Field Of Interest"
-                        values={updatedUser.fieldOfInterest || []}
-                        placeholder="Add a field of interest"
-                        maxItems={5}
-                        onChange={(value) => setUpdatedUser(prev => ({ ...prev, fieldOfInterest: value }))}
-                      />
-                    </div>
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Projects"
+                      values={updatedUser.projects || []}
+                      placeholder="Add a project"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, projects: value }))}
+                    />
+                  </div>
 
-                    <div className="col-span-full">
-                      <AddableCardList
-                        label="Projects"
-                        values={updatedUser.projects || []}
-                        placeholder="Add a project"
-                        maxItems={5}
-                        onChange={(value) => setUpdatedUser(prev => ({ ...prev, projects: value }))}
-                      />
-                    </div>
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Hobbies"
+                      values={updatedUser.hobbies || []}
+                      placeholder="Add a hobby"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, hobbies: value }))}
+                    />
+                  </div>
 
-                    <div className="col-span-full">
-                      <AddableCardList
-                        label="Skills"
-                        values={updatedUser.skills || []}
-                        placeholder="Add a skill"
-                        maxItems={5}
-                        onChange={(value) => setUpdatedUser(prev => ({ ...prev, skills: value }))}
-                      />
-                    </div>
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Skills"
+                      values={updatedUser.skills || []}
+                      placeholder="Add a skill"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, skills: value }))}
+                    />
+                  </div>
 
-                    <div className="col-span-full">
-                      <AddableCardList
-                        label="Hobbies"
-                        values={updatedUser.hobbies || []}
-                        placeholder="Add a hobby"
-                        maxItems={5}
-                        onChange={(value) => setUpdatedUser(prev => ({ ...prev, hobbies: value }))}
-                      />
-                    </div>
-
-                    <div className="col-span-full">
-                      <AddableCardList
-                        label="Companies of Interest"
-                        values={updatedUser.companiesOfInterest || []}
-                        placeholder="Add a company of interest"
-                        maxItems={5}
-                        onChange={(value) => setUpdatedUser(prev => ({ ...prev, companiesOfInterest: value }))}
-                      />
-                    </div>
+                  <div className="space-y-6 max-w-xl">
+                    <AddableCardList
+                      label="Companies of Interest"
+                      values={updatedUser.companiesOfInterest || []}
+                      placeholder="Add a company of interest"
+                      maxItems={5}
+                      onChange={(value) => setUpdatedUser(prev => ({ ...prev, companiesOfInterest: value }))}
+                    />
                   </div>
                 </div>
-              </>
+              </div>
             )}
 
             {/* Alumni-specific Information */}
             {user.type === UserType.Alumni && !isEditing && (
-              <>
-                {/* Professional Information */}
-                <div className="bg-[#1e2433] rounded-2xl p-8 shadow-2xl border border-[#2d3748] hover:-translate-y-0.5 transition-all hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]">
-                  <h2 className="text-2xl font-bold text-[#e8eaed] mb-6 flex items-center gap-3">
-                    <div className="w-1 h-6 bg-gradient-to-b from-[#5b8ef4] to-[#7c3aed] rounded"></div>
+              <div>
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-4">
                     Professional Information
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <LuBuilding2 size={14} /> Company
-                      </div>
-                      <div className="text-lg text-[#e8eaed] font-medium px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748] hover:bg-[#252d3f] hover:border-[#5b8ef4] transition-all">
-                        {user.company?.name || <span className="text-[#6b7280] italic">Not specified</span>}
-                      </div>
+                      <label className="block text-sm font-medium text-gray-500 mb-1">
+                        <div className="flex items-center gap-2">
+                          <LuBuilding2 size={16} />
+                          <span>Company</span>
+                        </div>
+                      </label>
+                      <p className="text-gray-800">
+                        {user.company?.name || "Not specified"}
+                      </p>
                     </div>
 
                     <div>
-                      <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <LuBriefcase size={14} /> Position
-                      </div>
-                      <div className="text-lg text-[#e8eaed] font-medium px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748] hover:bg-[#252d3f] hover:border-[#5b8ef4] transition-all">
-                        {user.position || <span className="text-[#6b7280] italic">Not specified</span>}
-                      </div>
+                      <label className="block text-sm font-medium text-gray-500 mb-1">
+                        <div className="flex items-center gap-2">
+                          <LuBriefcase size={16} />
+                          <span>Position</span>
+                        </div>
+                      </label>
+                      <p className="text-gray-800">
+                        {user.position || "Not specified"}
+                      </p>
                     </div>
-
+                  </div>
+                </div>
+                <div className="mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <LuShare2 size={14} /> Share Profile
-                      </div>
-                      <div className="text-lg text-[#e8eaed] font-medium px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748] hover:bg-[#252d3f] hover:border-[#5b8ef4] transition-all">
-                        {user.shareProfile ? "Visible to students" : "Not shared with students"}
-                      </div>
+                      <label className="block text-sm font-medium text-gray-500 mb-1">
+                        <div className="flex items-center gap-2">
+                          <LuShare2 size={16} />
+                          <span>Share Profile</span>
+                        </div>
+                      </label>
+                      <p className="text-gray-800">
+                        {user.shareProfile
+                          ? "Visible to students"
+                          : "Not shared with students"}
+                      </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Organizations */}
-                <div className="bg-[#1e2433] rounded-2xl p-8 shadow-2xl border border-[#2d3748] hover:-translate-y-0.5 transition-all hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]">
-                  <h2 className="text-2xl font-bold text-[#e8eaed] mb-6 flex items-center gap-3">
-                    <div className="w-1 h-6 bg-gradient-to-b from-[#5b8ef4] to-[#7c3aed] rounded"></div>
-                    Organizations
-                  </h2>
-                  {Array.isArray(user.organizations) && user.organizations.length > 0 ? (
-                    <div className="flex flex-wrap gap-3">
+                <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Organizations</span>
+                    </label>
+                    {Array.isArray(user.organizations) && user.organizations.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
                       {user.organizations.map((organization, index) => (
-                        <span
-                          key={index}
-                          className="px-4 py-2 text-sm font-semibold bg-[#1a1f2e] border border-[#f59e0b] rounded-full text-[#e8eaed] hover:bg-[#f59e0b] hover:text-white hover:-translate-y-0.5 transition-all cursor-default"
-                          style={{ background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(239, 68, 68, 0.1))' }}
-                        >
-                          {organization}
-                        </span>
-                      ))}
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {organization}
+                      </span>
+                    ))}
                     </div>
                   ) : (
-                    <div className="text-lg text-[#6b7280] italic px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748]">
-                      Not specified
-                    </div>
+                  <p className="text-gray-800">Not specified</p>
                   )}
                 </div>
 
-                {/* Specializations */}
-                <div className="bg-[#1e2433] rounded-2xl p-8 shadow-2xl border border-[#2d3748] hover:-translate-y-0.5 transition-all hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]">
-                  <h2 className="text-2xl font-bold text-[#e8eaed] mb-6 flex items-center gap-3">
-                    <div className="w-1 h-6 bg-gradient-to-b from-[#5b8ef4] to-[#7c3aed] rounded"></div>
-                    Specializations
-                  </h2>
-                  {Array.isArray(user.specializations) && user.specializations.length > 0 ? (
-                    <div className="flex flex-wrap gap-3">
+                <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Specializations</span>
+                    </label>
+                    {Array.isArray(user.specializations) && user.specializations.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
                       {user.specializations.map((specialization, index) => (
-                        <span
-                          key={index}
-                          className="px-4 py-2 text-sm font-semibold bg-[#1a1f2e] border border-[#7c3aed] rounded-full text-[#e8eaed] hover:bg-[#7c3aed] hover:text-white hover:-translate-y-0.5 transition-all cursor-default"
-                          style={{ background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(167, 139, 250, 0.1))' }}
-                        >
-                          {specialization}
-                        </span>
-                      ))}
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {specialization}
+                      </span>
+                    ))}
                     </div>
                   ) : (
-                    <div className="text-lg text-[#6b7280] italic px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748]">
-                      Not specified
-                    </div>
+                  <p className="text-gray-800">Not specified</p>
                   )}
                 </div>
 
-                {/* Skills */}
-                <div className="bg-[#1e2433] rounded-2xl p-8 shadow-2xl border border-[#2d3748] hover:-translate-y-0.5 transition-all hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]">
-                  <h2 className="text-2xl font-bold text-[#e8eaed] mb-6 flex items-center gap-3">
-                    <div className="w-1 h-6 bg-gradient-to-b from-[#5b8ef4] to-[#7c3aed] rounded"></div>
-                    Technical Skills
-                  </h2>
-                  {Array.isArray(user.skills) && user.skills.length > 0 ? (
-                    <div className="flex flex-wrap gap-3">
-                      {user.skills.map((skill, index) => (
-                        <span
-                          key={index}
-                          className="px-4 py-2 text-sm font-semibold font-mono bg-[#1a1f2e] border border-[#5b8ef4] rounded-full text-[#e8eaed] hover:bg-[#5b8ef4] hover:text-white hover:-translate-y-0.5 transition-all cursor-default shadow-[0_4px_12px_rgba(91,142,244,0.3)]"
-                          style={{ background: 'linear-gradient(135deg, rgba(91, 142, 244, 0.1), rgba(124, 58, 237, 0.1))' }}
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-lg text-[#6b7280] italic px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748]">
-                      Not specified
-                    </div>
-                  )}
-                </div>
-
-                {/* Hobbies */}
-                <div className="bg-[#1e2433] rounded-2xl p-8 shadow-2xl border border-[#2d3748] hover:-translate-y-0.5 transition-all hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]">
-                  <h2 className="text-2xl font-bold text-[#e8eaed] mb-6 flex items-center gap-3">
-                    <div className="w-1 h-6 bg-gradient-to-b from-[#5b8ef4] to-[#7c3aed] rounded"></div>
-                    Hobbies & Interests
-                  </h2>
-                  {Array.isArray(user.hobbies) && user.hobbies.length > 0 ? (
-                    <div className="flex flex-wrap gap-3">
+                <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Hobbies</span>
+                    </label>
+                    {Array.isArray(user.hobbies) && user.hobbies.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
                       {user.hobbies.map((hobby, index) => (
-                        <span
-                          key={index}
-                          className="px-4 py-2 text-sm font-semibold bg-[#1a1f2e] border border-[#10b981] rounded-full text-[#e8eaed] hover:bg-[#10b981] hover:text-white hover:-translate-y-0.5 transition-all cursor-default"
-                          style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(52, 211, 153, 0.1))' }}
-                        >
-                          {hobby}
-                        </span>
-                      ))}
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {hobby}
+                      </span>
+                    ))}
                     </div>
                   ) : (
-                    <div className="text-lg text-[#6b7280] italic px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748]">
-                      Not specified
-                    </div>
+                  <p className="text-gray-800">Not specified</p>
                   )}
                 </div>
-              </>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <span>Skills</span>
+                    </label>
+                    {Array.isArray(user.skills) && user.skills.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 text-sm bg-gray-100 text-gray-800 rounded-md"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                    </div>
+                  ) : (
+                  <p className="text-gray-800">Not specified</p>
+                  )}
+                </div>
+              </div>
             )}
 
-            {/* Alumni Editing Mode */}
             {updatedUser.type === UserType.Alumni && isEditing && (
-              <>
-                {/* Professional Information - Edit Mode */}
-                <div className="bg-[#1e2433] rounded-2xl p-8 shadow-2xl border border-[#2d3748]">
-                  <h2 className="text-2xl font-bold text-[#e8eaed] mb-6 flex items-center gap-3">
-                    <div className="w-1 h-6 bg-gradient-to-b from-[#5b8ef4] to-[#7c3aed] rounded"></div>
+              <div>
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-4">
                     Professional Information
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <LuBuilding2 size={14} /> Company
+                      <label className="block text-sm font-medium text-gray-500 mb-1">
+                        <div className="flex items-center gap-2">
+                          <LuBuilding2 size={16} />
+                          <span>Company</span>
+                        </div>
                       </label>
                       <CompanyDropdown
                         value={updatedUser.company}
@@ -832,87 +816,97 @@ const Profile = () => {
                             return { ...prev, company: e.target.value };
                           })
                         }
-                        className="w-full"
-                        dropdownClassName="border-2 border-[#2d3748] rounded-lg bg-[#1a1f2e] text-[#e8eaed] focus:border-[#5b8ef4]"
+                        className="w-full px-1"
+                        dropdownClassName="border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                       />
                     </div>
 
                     <div>
-                      <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <LuBriefcase size={14} /> Position
+                      <label className="block text-sm font-medium text-gray-500 mb-1">
+                        <div className="flex items-center gap-2">
+                          <LuBriefcase size={16} />
+                          <span>Position</span>
+                        </div>
                       </label>
                       <input
                         type="text"
                         value={updatedUser.position}
                         placeholder="Enter your position"
-                        onChange={(e) => handleInputChange("position", e.target.value)}
-                        className="w-full px-3 py-3 bg-[#1a1f2e] rounded-lg border-2 border-[#2d3748] text-[#e8eaed] focus:outline-none focus:border-[#5b8ef4] transition-all"
-                      />
-                    </div>
-
-                    <div className="col-span-full">
-                      <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
-                        <LuShare2 size={14} /> Share Profile
-                      </label>
-                      <div className="flex items-center mt-2">
-                        <label className="inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={updatedUser.shareProfile}
-                            className="w-5 h-5 text-[#5b8ef4] border-[#2d3748] rounded focus:ring-[#5b8ef4] focus:ring-2"
-                            onChange={(e) =>
-                              handleInputChange("shareProfile", e.target.checked)
-                            }
-                          />
-                          <span className="ml-3 text-[#e8eaed]">
-                            Make my profile visible to students
-                          </span>
-                        </label>
-                      </div>
-                    </div>
-
-                    <div className="col-span-full">
-                      <AddableCardList
-                        label="Organizations"
-                        values={updatedUser.organizations || []}
-                        placeholder="Add an organization"
-                        maxItems={5}
-                        onChange={(value) => setUpdatedUser(prev => ({ ...prev, organizations: value }))}
-                      />
-                    </div>
-
-                    <div className="col-span-full">
-                      <AddableCardList
-                        label="Specializations"
-                        values={updatedUser.specializations || []}
-                        placeholder="Add a specialization"
-                        maxItems={5}
-                        onChange={(value) => setUpdatedUser(prev => ({ ...prev, specializations: value }))}
-                      />
-                    </div>
-
-                    <div className="col-span-full">
-                      <AddableCardList
-                        label="Skills"
-                        values={updatedUser.skills || []}
-                        placeholder="Add a skill"
-                        maxItems={5}
-                        onChange={(value) => setUpdatedUser(prev => ({ ...prev, skills: value }))}
-                      />
-                    </div>
-
-                    <div className="col-span-full">
-                      <AddableCardList
-                        label="Hobbies"
-                        values={updatedUser.hobbies || []}
-                        placeholder="Add a hobby"
-                        maxItems={5}
-                        onChange={(value) => setUpdatedUser(prev => ({ ...prev, hobbies: value }))}
+                        onChange={(e) =>
+                          handleInputChange("position", e.target.value)
+                        }
+                        className="w-full p-2 border-2 focus:outline-none focus:border-blue-500 border-gray-300 rounded-md"
                       />
                     </div>
                   </div>
                 </div>
-              </>
+
+                <div className="mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-1">
+                      <div className="flex items-center gap-2">
+                        <LuShare2 size={16} />
+                        <span>Share Profile</span>
+                      </div>
+                    </label>
+                    <div className="flex items-center mt-2">
+                      <label className="inline-flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={updatedUser.shareProfile}
+                          className="form-checkbox h-5 w-5 text-blue-600"
+                          onChange={(e) =>
+                            handleInputChange("shareProfile", e.target.checked)
+                          }
+                        />
+                        <span className="ml-2 text-gray-700">
+                          Make my profile visible to students
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-6 max-w-xl">
+                  <AddableCardList
+                    label="Organizations"
+                    values={updatedUser.organizations || []}
+                    placeholder="Add an organization"
+                    maxItems={5}
+                    onChange={(value) => setUpdatedUser(prev => ({ ...prev, organizations: value }))}
+                    />
+                </div>
+
+                <div className="space-y-6 max-w-xl">
+                  <AddableCardList
+                    label="Specializations"
+                    values={updatedUser.specializations || []}
+                    placeholder="Add a specialization"
+                    maxItems={5}
+                    onChange={(value) => setUpdatedUser(prev => ({ ...prev, specializations: value }))}
+                    />
+                </div>
+
+                <div className="space-y-6 max-w-xl">
+                  <AddableCardList
+                    label="Hobbies"
+                    values={updatedUser.hobbies || []}
+                    placeholder="Add a hobby"
+                    maxItems={5}
+                    onChange={(value) => setUpdatedUser(prev => ({ ...prev, hobbies: value }))}
+                    />
+                </div>
+
+                <div className="space-y-6 max-w-xl">
+                  <AddableCardList
+                    label="Skills"
+                    values={updatedUser.skills || []}
+                    placeholder="Add a skill"
+                    maxItems={5}
+                    onChange={(value) => setUpdatedUser(prev => ({ ...prev, skills: value }))}
+                    />
+                </div>
+              </div>
             )}
 
             {/* Action Buttons */}
@@ -920,17 +914,14 @@ const Profile = () => {
               <div className="flex justify-end gap-4 mt-8">
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="px-6 py-3 border-2 border-[#2d3748] text-[#e8eaed] rounded-lg hover:bg-[#252d3f] transition-all font-semibold"
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={onSave}
-                  className={`px-6 py-3 bg-gradient-to-r from-[#5b8ef4] to-[#7c3aed] text-white rounded-lg font-semibold transition-all ${
-                    canSave
-                      ? "hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(91,142,244,0.4)]"
-                      : "opacity-50 cursor-not-allowed"
-                  }`}
+                  className={`px-4 py-2 text-white rounded-md ${canSave ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-300"
+                    }`}
                   disabled={!canSave}
                 >
                   Save Changes

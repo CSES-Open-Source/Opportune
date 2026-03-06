@@ -4,6 +4,7 @@ import DataList from "../components/public/DataList";
 import AlumniTile from "../components/connect/AlumniTile";
 import { getAlumni, getBatchSimilarityScores } from "../api/users";
 import { Alumni } from "../types/User";
+import { PaginatedData } from "../types/PaginatedData";
 import { IndustryType } from "../types/Company";
 import { LuUsers, LuSearch } from "react-icons/lu";
 import { useAuth } from "../contexts/useAuth";
@@ -60,15 +61,15 @@ const Connect = () => {
   const getPaginatedOpenAlumni = useCallback(
     async (page: number, perPage: number) => {
       const res = await getAlumni({
-        page,
-        perPage,
-        query: search.query || undefined,
+        page: page,
+        perPage: perPage,
+        query: search.query.length >= 1 ? search.query : undefined,
         industry: search.industry,
       });
 
       return res.success ? res.data : { page: 0, perPage: 0, total: 0, data: [] };
     },
-    [search]
+    [search],
   );
 
 
@@ -131,46 +132,24 @@ const Connect = () => {
   );
 
   return (
-    <div className="min-h-screen px-4 py-10 md:px-8 gradient-bg-animated particles-bg">
-      <div className="max-w-7xl mx-auto relative z-10">
-
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-12 animate-fadeIn">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-[#5b8ef4] to-[#7c3aed] shadow-neon-blue">
-              <LuUsers className="text-white text-2xl" />
-            </div>
-            <div>
-              <h1 className="text-4xl font-bold text-[#e8eaed]">
-                Alumni Directory
-              </h1>
-              <p className="text-[#9ca3af] mt-1">
-                Connect with UCSD alumni at your dream companies
-              </p>
-            </div>
-          </div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Alumni Directory</h1>
+          <p className="text-gray-600">Connect with UCSD alumni working at your dream companies</p>
         </div>
-
-        {/* Search Card */}
-        <div className="mb-10 animate-slideUp">
-          <div className="glass-effect rounded-2xl p-8 shadow-depth hover-lift transition-smooth relative z-30">
-            <div className="flex items-center gap-3 mb-6">
-              <LuSearch className="text-[#5b8ef4]" />
-              <h2 className="text-xl font-semibold text-[#e8eaed]">
-                Find Your Connection
-              </h2>
-            </div>
-
-            <div className="bg-white rounded-xl p-4 border border-[#e5e7eb]">
-              <SearchBar<SearchBarData>
-                selections={[
-                  { label: "Industry", options: Object.values(IndustryType) },
-                ]}
-                placeholder="Search by name, company, or position"
-                onSubmitForm={setSearch}
-              />
-            </div>
-          </div>
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <SearchBar<SearchBarData>
+            selections={[
+              {
+                label: "Industry",
+                options: [...Object.values(IndustryType)],
+              },
+            ]}
+            placeholder="Search by name, company, or position"
+            onSubmitForm={setSearch}
+          />
         </div>
 
         {/* Alumni Grid */}
@@ -195,22 +174,10 @@ const Connect = () => {
               key={`${search.query}_${search.industry.join(",")}`}
               fetchData={fetchAndSortAlumni}
               useServerPagination
-              listClassName="
-                relative z-10
-                grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3
-                gap-8
-
-                [&_.pagination]:text-white
-                [&_.pagination_*]:text-white
-                [&_select]:text-white
-                [&_option]:text-black
-              "
+              listStyle={{}}
+              listClassName="grid grid-cols-3 gap-4"
               paginatorContent={{ setPerPage: true, goToPage: true }}
-              TileComponent={(props) => (
-                <div className="transition-smooth hover-lift hover-glow animate-scaleIn">
-                  <AlumniTile {...props} />
-                </div>
-              )}
+              TileComponent={AlumniTile}
             />
           </div>
         </div>
