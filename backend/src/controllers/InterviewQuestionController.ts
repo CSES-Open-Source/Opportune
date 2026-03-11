@@ -5,13 +5,13 @@ import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import Company from "../models/Company";
 import mongoose from "mongoose";
-import User from "../models/User";
 
 // Interface for creating/updating an interview question
 interface InterviewQuestionCreate {
   company: mongoose.Types.ObjectId;
+  userId: string;
   question: string;
-  date: Date;
+  date?: Date;
 }
 
 interface InterviewQuestionUpdate extends Partial<InterviewQuestionCreate> {}
@@ -25,7 +25,6 @@ export const getAllInterviewQuestions = asyncHandler(async (req, res, _) => {
   // TODO: Implement with paginated date, for now it will just return all interview questions for testing
   const interviewQuestions = await InterviewQuestion.find()
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
     .lean()
     .exec();
 
@@ -63,7 +62,6 @@ export const createInterviewQuestion = asyncHandler(async (req, res, next) => {
     question: interviewQuestionData.question,
   })
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
     .lean()
     .exec();
 
@@ -93,7 +91,6 @@ export const getInterviewQuestionById = asyncHandler(async (req, res, next) => {
   // Find interview question by ID
   const interviewQuestion = await InterviewQuestion.findById(id)
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
     .lean()
     .exec();
 
@@ -125,7 +122,6 @@ export const getInterviewQuestionsByCompanyId = asyncHandler(
       company: companyId,
     })
       .populate({ path: "company", model: Company })
-      .populate({ path: "user", model: User })
       .lean()
       .exec();
 
@@ -176,7 +172,6 @@ export const updateInterviewQuestion = asyncHandler(async (req, res, next) => {
     { new: true, runValidators: true },
   )
     .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
     .lean()
     .exec();
 

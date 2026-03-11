@@ -9,12 +9,12 @@ const validateId = param("id")
   .withMessage("Invalid tip id. (Must be a Mongo ObjectID.)")
   .trim();
 
-const validateUser = body("user")
+const validateUserId = body("userId")
   .isString()
-  .withMessage("user must be a string.")
+  .withMessage("userId must be a string.")
   .trim()
   .notEmpty()
-  .withMessage("user must be a non-empty string.");
+  .withMessage("userId must be a non-empty string.");
 
 const validateCompany = body("company")
   .isMongoId()
@@ -45,13 +45,17 @@ const validateCompanyId = param("id")
 //   .toInt()
 //   .withMessage("per page must be an integer greater than 1");
 
-export const createTipValidator = [validateUser, validateCompany, validateText];
+export const createTipValidator = [
+  validateUserId,
+  validateCompany,
+  validateText,
+];
 
 export const getTipValidator = [validateId];
 
 export const updateTipValidator = [
   validateId,
-  validateUser.optional(),
+  validateUserId.optional(),
   validateCompany.optional(),
   validateText.optional(),
 ];
