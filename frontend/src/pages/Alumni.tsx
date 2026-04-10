@@ -92,7 +92,7 @@ const AlumniProfile: React.FC = () => {
       .catch(() => toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "Unexpected error occurred.",
+        detail: "An unexpected error occurred while fetching alumni profile." + console.error(),
       }))
       .finally(() => setLoading(false));
   }, [id]);

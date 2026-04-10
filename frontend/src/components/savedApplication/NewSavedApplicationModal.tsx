@@ -9,6 +9,7 @@ import { createSavedApplication } from "../../api/savedApplications";
 import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
 import { Calendar } from "primereact/calendar";
+import { parseErrorResponse } from "../../utils/errorHandler";
 
 interface NewSavedApplicationModalProps {
   isOpen: boolean;
@@ -123,8 +124,7 @@ const NewSavedApplicationModal = ({
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail:
-          "Failed to create saved application: " + (error as Error).message,
+        detail: parseErrorResponse(error),
       });
     }
   };

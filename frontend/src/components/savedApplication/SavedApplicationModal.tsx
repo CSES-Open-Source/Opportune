@@ -16,6 +16,7 @@ import {
   getIndustryLabel,
 } from "../../utils/valuesToLabels";
 import { LuLayers, LuUsers } from "react-icons/lu";
+import { parseErrorResponse } from "../../utils/errorHandler";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
@@ -73,7 +74,7 @@ const SavedApplicationModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to update saved application: " + response.error,
+            detail: parseErrorResponse(response.error),
           });
         }
       })
@@ -81,8 +82,7 @@ const SavedApplicationModal = ({
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail:
-            "Failed to update saved application: " + (error as Error).message,
+          detail: parseErrorResponse(error),
         });
       });
   };
@@ -103,7 +103,7 @@ const SavedApplicationModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to delete saved application: " + response.error,
+            detail: parseErrorResponse(response.error),
           });
         }
       })
@@ -111,8 +111,7 @@ const SavedApplicationModal = ({
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail:
-            "Failed to delete saved application: " + (error as Error).message,
+          detail: parseErrorResponse(error),
         });
       });
   };

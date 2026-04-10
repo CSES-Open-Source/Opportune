@@ -33,6 +33,7 @@ import { InterviewQuestion } from "../types/InterviewQuestion";
 import NewInterviewQuestionModal from "../components/company/NewInterviewQuestionModal";
 import InterviewQuestionModal from "../components/company/InterviewQuestionModal";
 import { useAuth } from "../contexts/useAuth";
+import { parseErrorResponse } from "../utils/errorHandler";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
@@ -163,7 +164,7 @@ const CompanyProfile: React.FC = () => {
             toast.current?.show({
               severity: "error",
               summary: "Error",
-              detail: "Failed to fetch leetcode questions: " + response.error,
+              detail: parseErrorResponse(response.error),
             });
           }
         })
@@ -171,8 +172,7 @@ const CompanyProfile: React.FC = () => {
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail:
-              "Failed to fetch leetcode questions: " + (error as Error).message,
+            detail: parseErrorResponse(error),
           });
         });
     }
@@ -190,7 +190,7 @@ const CompanyProfile: React.FC = () => {
             toast.current?.show({
               severity: "error",
               summary: "Error",
-              detail: "Failed to fetch interview questions: " + response.error,
+              detail: parseErrorResponse(response.error),
             });
           }
         })
@@ -198,9 +198,7 @@ const CompanyProfile: React.FC = () => {
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail:
-              "Failed to fetch interview questions: " +
-              (error as Error).message,
+            detail: parseErrorResponse(error),
           });
         });
     }
@@ -218,7 +216,7 @@ const CompanyProfile: React.FC = () => {
             toast.current?.show({
               severity: "error",
               summary: "Error",
-              detail: "Failed to fetch tips: " + response.error,
+              detail: parseErrorResponse(response.error),
             });
           }
         })
@@ -226,7 +224,7 @@ const CompanyProfile: React.FC = () => {
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to fetch tips: " + (error as Error).message,
+            detail: parseErrorResponse(error),
           });
         });
     }
