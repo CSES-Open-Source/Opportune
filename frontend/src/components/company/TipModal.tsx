@@ -6,6 +6,7 @@ import { Toast } from "primereact/toast";
 import { Editor } from "primereact/editor";
 import { deleteTip, updateTip } from "../../api/tips";
 import Dialog from "../public/Dialog";
+import { parseErrorResponse } from "../../utils/errorHandler";
 
 interface TipModalProps {
   tip: Tip;
@@ -73,7 +74,7 @@ const TipModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to delete tip: " + response.error,
+            detail: "Failed to delete tip: " + parseErrorResponse(response.error),
           });
         }
       })
@@ -81,7 +82,7 @@ const TipModal = ({
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail: "Failed to delete tip: " + (error as Error).message,
+          detail: "Failed to delete tip: " + parseErrorResponse(error),
         });
       });
   };
@@ -115,7 +116,7 @@ const TipModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to update tip: " + response.error,
+            detail: "Failed to update tip: " + parseErrorResponse(response.error),
           });
         }
       })
@@ -123,7 +124,7 @@ const TipModal = ({
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail: "Failed to update tip: " + (error as Error).message,
+          detail: "Failed to update tip: " + parseErrorResponse(error),
         });
       });
   };

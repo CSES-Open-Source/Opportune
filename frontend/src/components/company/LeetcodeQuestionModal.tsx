@@ -13,6 +13,7 @@ import {
   updateLeetcodeQuestion,
 } from "../../api/leetcodeQuestions";
 import Dialog from "../public/Dialog";
+import { parseErrorResponse } from "../../utils/errorHandler";
 
 interface LeetcodeQuestionModalProps {
   leetcodeQuestion: LeetcodeQuestion;
@@ -93,7 +94,7 @@ const LeetcodeQuestionModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to delete leetcode question: " + response.error,
+            detail: "Failed to delete leetcode question: " + parseErrorResponse(response.error),
           });
         }
       })
@@ -101,8 +102,7 @@ const LeetcodeQuestionModal = ({
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail:
-            "Failed to update leetcode question: " + (error as Error).message,
+          detail: "Failed to update leetcode question: " + parseErrorResponse(error),
         });
       });
   };
@@ -137,7 +137,7 @@ const LeetcodeQuestionModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to update leetcode question: " + response.error,
+            detail: "Failed to update leetcode question: " + parseErrorResponse(response.error),
           });
         }
       })
@@ -145,8 +145,7 @@ const LeetcodeQuestionModal = ({
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail:
-            "Failed to update leetcode question: " + (error as Error).message,
+          detail: "Failed to update leetcode question: " + parseErrorResponse(error),
         });
       });
   };

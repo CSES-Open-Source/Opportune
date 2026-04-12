@@ -10,6 +10,7 @@ import { FaLink, FaCloudUploadAlt } from "react-icons/fa";
 import { createCompany, updateCompany } from "../../api/companies";
 import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
+import { parseErrorResponse } from "../../utils/errorHandler";
 import {
   getEmployeesLabel,
   getIndustryLabel,
@@ -186,9 +187,7 @@ const NewCompanyModal = ({
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: `Failed to ${company ? "update" : "create"} company: ${
-          (error as Error).message
-        }`,
+        detail: `Failed to ${company ? "update" : "create"} company: ${parseErrorResponse(error)}`,
       });
     }
   };

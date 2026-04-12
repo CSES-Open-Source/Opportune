@@ -5,6 +5,7 @@ import { ApplicationStats, MonthlyData, SankeyNode, SankeyTooltipEntry, SankeyDa
 import { Toast } from "primereact/toast";
 import { ResponsiveContainer, Sankey, Tooltip } from 'recharts';
 import { getApplicationDetails } from "../api/applications";
+import { parseErrorResponse } from "../utils/errorHandler";
 
 function buildSankeyFromTimelines(applicationTimelines: ApplicationTimeline[]): SankeyData {
 
@@ -144,7 +145,7 @@ const Analytics: React.FC = () => {
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: `Failed to update analytics: ${error.message || "Unknown error"}`,
+            detail: "Failed to update analytics: " + parseErrorResponse(error),
           });
         }
       };

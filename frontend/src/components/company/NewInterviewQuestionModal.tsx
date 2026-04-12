@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Company } from "../../types/Company";
 import { CreateInterviewQuestionRequest } from "../../types/InterviewQuestion";
 import { createInterviewQuestion } from "../../api/interviewQuestions";
+import { parseErrorResponse } from "../../utils/errorHandler";
 
 interface NewInterviewQuestionModalProps {
   company: Company;
@@ -56,7 +57,7 @@ const NewInterviewQuestionModal = ({
             toast.current?.show({
               severity: "error",
               summary: "Error",
-              detail: "Failed to create interview question: " + response.error,
+              detail: "Failed to add interview question: " + parseErrorResponse(response.error),
             });
           }
         })
@@ -64,9 +65,7 @@ const NewInterviewQuestionModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail:
-              "Failed to create interview question: " +
-              (error as Error).message,
+            detail: "Failed to add interview question: " + parseErrorResponse(error),
           });
         });
     }

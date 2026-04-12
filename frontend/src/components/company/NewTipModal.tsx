@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Company } from "../../types/Company";
 import { createTip } from "../../api/tips";
 import { CreateTipRequest } from "../../types/Tip";
+import { parseErrorResponse } from "../../utils/errorHandler";
 
 interface NewTipModalProps {
   company: Company;
@@ -57,7 +58,7 @@ const NewTipModal = ({
             toast.current?.show({
               severity: "error",
               summary: "Error",
-              detail: "Failed to create tip: " + response.error,
+              detail: "Failed to add tip: " + parseErrorResponse(response.error),
             });
           }
         })
@@ -65,7 +66,7 @@ const NewTipModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to create tip: " + (error as Error).message,
+            detail: parseErrorResponse(error),
           });
         });
     }

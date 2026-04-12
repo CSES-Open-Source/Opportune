@@ -9,6 +9,7 @@ import {
 } from "../../types/LeetcodeQuestion";
 import { createLeetcodeQuestion } from "../../api/leetcodeQuestions";
 import { getDifficultyLabel } from "../../utils/valuesToLabels";
+import { parseErrorResponse } from "../../utils/errorHandler";
 
 interface NewLeetcodeQuestionModalProps {
   company: Company;
@@ -69,7 +70,7 @@ const NewLeetcodeQuestionModal = ({
             toast.current?.show({
               severity: "error",
               summary: "Error",
-              detail: "Failed to create leetcode question: " + response.error,
+              detail: "Failed to add leetcode question: " + parseErrorResponse(response.error),
             });
           }
         })
@@ -77,8 +78,7 @@ const NewLeetcodeQuestionModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail:
-              "Failed to create leetcode question: " + (error as Error).message,
+            detail: "Failed to add leetcode question: " + parseErrorResponse(error),
           });
         });
     }

@@ -16,4 +16,9 @@ code {
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+.p-toast-message-content {
+  padding: 0.25rem; /* Increase padding */
+  font-size: 1rem; /* Increase font size */
+}
+
 

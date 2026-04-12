@@ -11,6 +11,7 @@ import { FaCheck, FaXmark } from "react-icons/fa6";
 import "../../styles/Dropdown.css";
 import ProfileCompletion from "./ProfileCompletion";
 import CompanyDropdown from "../company/CompanyDropdown";
+import { parseErrorResponse } from "../../utils/errorHandler";
 
 const AuthModal = () => {
   const {
@@ -88,7 +89,7 @@ const AuthModal = () => {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: error,
+        detail: parseErrorResponse(error),
         life: 3000,
       });
       setTimeout(() => clearAuthError(), 3000);
