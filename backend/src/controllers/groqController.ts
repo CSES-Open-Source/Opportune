@@ -1,4 +1,4 @@
-import { RequestHandler } from "express";
+import type { NextFunction, Request, RequestHandler, Response } from "express";
 import asyncHandler from "express-async-handler";
 import createHttpError from "http-errors";
 import { validationResult, matchedData } from "express-validator";
@@ -199,7 +199,7 @@ const calculateSharedInterests = (
 };
 
 export const generateEmail: RequestHandler = asyncHandler(
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next(createHttpError(400, validationErrorParser(errors)));

@@ -1,3 +1,4 @@
+import type { NextFunction, Request, Response } from "express";
 import SavedApplication from "../models/SavedApplication";
 import { matchedData, validationResult } from "express-validator";
 import validationErrorParser from "../util/validationErrorParser";
@@ -25,83 +26,91 @@ interface SavedApplicationUpdate extends Partial<SavedApplicationCreate> {}
 // @access Private
 //
 // @returns {SavedApplication[]} 200 - Array of saved applications
-export const getAllSavedApplications = asyncHandler(async (req, res, _) => {
-  // Retrieve all saved applications from the database
-  const savedApplications = await SavedApplication.find()
-    .populate({ path: "company", model: Company })
-    .exec();
+export const getAllSavedApplications = asyncHandler(
+  async (req: Request, res: Response, _: NextFunction) => {
+    // Retrieve all saved applications from the database
+    const savedApplications = await SavedApplication.find()
+      .populate({ path: "company", model: Company })
+      .exec();
 
-  res.status(200).json(savedApplications);
-});
+    res.status(200).json(savedApplications);
+  },
+);
 
 //  @desc Create a new saved application
 //  @route POST /api/applications/saved
 //  @access Private
-export const createSavedApplication = asyncHandler(async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(createHttpError(400, validationErrorParser(errors)));
-  }
+export const createSavedApplication = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(createHttpError(400, validationErrorParser(errors)));
+    }
 
-  // Extract validated data from the request body
-  const savedApplicationData = matchedData(req) as SavedApplicationCreate;
+    // Extract validated data from the request body
+    const savedApplicationData = matchedData(req) as SavedApplicationCreate;
 
-  // Check if an application with the same userId, company, and position already exists
-  const existingSavedApplication = await SavedApplication.findOne({
-    userId: savedApplicationData.userId,
-    company: savedApplicationData.company,
-    position: savedApplicationData.position,
-    location: savedApplicationData.location,
-  }).exec();
+    // Check if an application with the same userId, company, and position already exists
+    const existingSavedApplication = await SavedApplication.findOne({
+      userId: savedApplicationData.userId,
+      company: savedApplicationData.company,
+      position: savedApplicationData.position,
+      location: savedApplicationData.location,
+    }).exec();
 
-  if (existingSavedApplication) {
-    return next(createHttpError(409, "Saved application already exists."));
-  }
+    if (existingSavedApplication) {
+      return next(createHttpError(409, "Saved application already exists."));
+    }
 
-  // Create a new application with the validated data
-  const newSavedApplication = new SavedApplication(savedApplicationData);
-  await newSavedApplication.save();
+    // Create a new application with the validated data
+    const newSavedApplication = new SavedApplication(savedApplicationData);
+    await newSavedApplication.save();
 
-  const populatedSavedApplication = await SavedApplication.findById(
-    newSavedApplication._id,
-  )
-    .populate({ path: "company", model: Company })
-    .exec();
+    const populatedSavedApplication = await SavedApplication.findById(
+      newSavedApplication._id,
+    )
+      .populate({ path: "company", model: Company })
+      .exec();
 
-  if (!populatedSavedApplication) {
-    return next(
-      createHttpError(500, "Failed to populate company after user creation."),
-    );
-  }
+    if (!populatedSavedApplication) {
+      return next(
+        createHttpError(500, "Failed to populate company after user creation."),
+      );
+    }
 
-  res.status(201).json(populatedSavedApplication);
-});
+    res.status(201).json(populatedSavedApplication);
+  },
+);
 
 //  @desc Get saved application by ID
 //  @route GET /api/applications/saved/:id
 //  @access Private
 //
 //  @param {string} id - Saved Application ID
-export const getSavedApplicationByID = asyncHandler(async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(createHttpError(400, validationErrorParser(errors)));
-  }
+export const getSavedApplicationByID = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(createHttpError(400, validationErrorParser(errors)));
+    }
 
-  // Extract the validated "id" from request parameters
-  const { id } = matchedData(req, { locations: ["params"] }) as { id: string };
+    // Extract the validated "id" from request parameters
+    const { id } = matchedData(req, { locations: ["params"] }) as {
+      id: string;
+    };
 
-  // Find the application by ID
-  const savedApplication = await SavedApplication.findById(id)
-    .populate({ path: "company", model: Company })
-    .exec();
+    // Find the application by ID
+    const savedApplication = await SavedApplication.findById(id)
+      .populate({ path: "company", model: Company })
+      .exec();
 
-  if (!savedApplication) {
-    return next(createHttpError(404, "Saved application not found."));
-  }
+    if (!savedApplication) {
+      return next(createHttpError(404, "Saved application not found."));
+    }
 
-  res.status(200).json(savedApplication);
-});
+    res.status(200).json(savedApplication);
+  },
+);
 
 //  @desc Update saved application by ID
 //  @route PATCH /api/applications/saved/:id
@@ -109,7 +118,7 @@ export const getSavedApplicationByID = asyncHandler(async (req, res, next) => {
 //
 //  @param {string} id - Saved Application ID
 export const updateSavedApplicationByID = asyncHandler(
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next(createHttpError(400, validationErrorParser(errors)));
@@ -155,7 +164,7 @@ export const updateSavedApplicationByID = asyncHandler(
 //
 //  @param {string} id - Saved Application ID
 export const deleteSavedApplicationByID = asyncHandler(
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next(createHttpError(400, validationErrorParser(errors)));
@@ -183,7 +192,7 @@ export const deleteSavedApplicationByID = asyncHandler(
 //
 //  @param {string} userId - User ID
 export const getSavedApplicationsByUserID = asyncHandler(
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next(createHttpError(400, validationErrorParser(errors)));

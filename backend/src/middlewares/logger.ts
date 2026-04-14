@@ -1,4 +1,4 @@
-import { RequestHandler } from "express";
+import type { NextFunction, Request, RequestHandler, Response } from "express";
 import fs from "fs";
 import path from "path";
 
@@ -23,7 +23,11 @@ export const logEvents = async (message: string, logFileName: string) => {
   }
 };
 
-export const logger: RequestHandler = (req, res, next) => {
+export const logger: RequestHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   logEvents(`${req.method}\t${req.url}\t${req.headers.origin}`, "reqLog.log");
   console.log(`${req.method} ${req.path}`);
   next();

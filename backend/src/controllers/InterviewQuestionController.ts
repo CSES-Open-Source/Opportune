@@ -1,3 +1,4 @@
+import type { NextFunction, Request, Response } from "express";
 import InterviewQuestion from "../models/InterviewQuestion";
 import { matchedData, validationResult } from "express-validator";
 import validationErrorParser from "../util/validationErrorParser";
@@ -21,88 +22,96 @@ interface InterviewQuestionUpdate extends Partial<InterviewQuestionCreate> {}
 // @access Private
 //
 // @returns {InterviewQuestion[]} 200 - Array of interview questions
-export const getAllInterviewQuestions = asyncHandler(async (req, res, _) => {
-  // TODO: Implement with paginated date, for now it will just return all interview questions for testing
-  const interviewQuestions = await InterviewQuestion.find()
-    .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
-    .lean()
-    .exec();
+export const getAllInterviewQuestions = asyncHandler(
+  async (req: Request, res: Response, _: NextFunction) => {
+    // TODO: Implement with paginated date, for now it will just return all interview questions for testing
+    const interviewQuestions = await InterviewQuestion.find()
+      .populate({ path: "company", model: Company })
+      .populate({ path: "user", model: User })
+      .lean()
+      .exec();
 
-  res.status(200).json(interviewQuestions);
-});
+    res.status(200).json(interviewQuestions);
+  },
+);
 
 // @desc Create a new interview question
 // @route POST /api/questions/interview
 // @access Private
-export const createInterviewQuestion = asyncHandler(async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(createHttpError(400, validationErrorParser(errors)));
-  }
+export const createInterviewQuestion = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(createHttpError(400, validationErrorParser(errors)));
+    }
 
-  // Extract validated data from request body
-  const interviewQuestionData = matchedData(req) as InterviewQuestionCreate;
+    // Extract validated data from request body
+    const interviewQuestionData = matchedData(req) as InterviewQuestionCreate;
 
-  // Check if interview question with same title exists
-  const existingInterviewQuestion = await InterviewQuestion.findOne({
-    question: interviewQuestionData.question,
-  })
-    .lean()
-    .exec();
+    // Check if interview question with same title exists
+    const existingInterviewQuestion = await InterviewQuestion.findOne({
+      question: interviewQuestionData.question,
+    })
+      .lean()
+      .exec();
 
-  if (existingInterviewQuestion) {
-    return next(createHttpError(409, "Interview Question already exists"));
-  }
+    if (existingInterviewQuestion) {
+      return next(createHttpError(409, "Interview Question already exists"));
+    }
 
-  // Create new interview question with validated data
-  const newInterviewQuestion = new InterviewQuestion(interviewQuestionData);
-  await newInterviewQuestion.save();
+    // Create new interview question with validated data
+    const newInterviewQuestion = new InterviewQuestion(interviewQuestionData);
+    await newInterviewQuestion.save();
 
-  const populatedInterviewQuestion = await InterviewQuestion.findOne({
-    question: interviewQuestionData.question,
-  })
-    .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
-    .lean()
-    .exec();
+    const populatedInterviewQuestion = await InterviewQuestion.findOne({
+      question: interviewQuestionData.question,
+    })
+      .populate({ path: "company", model: Company })
+      .populate({ path: "user", model: User })
+      .lean()
+      .exec();
 
-  if (!populatedInterviewQuestion) {
-    return next(
-      createHttpError(500, "Failed to populate company after user creation."),
-    );
-  }
+    if (!populatedInterviewQuestion) {
+      return next(
+        createHttpError(500, "Failed to populate company after user creation."),
+      );
+    }
 
-  res.status(201).json(populatedInterviewQuestion);
-});
+    res.status(201).json(populatedInterviewQuestion);
+  },
+);
 
 // @desc Retrieve interview questions by ID
 // @route GET /api/questions/interview/:id
 // @access Private
 //
 // @returns {InterviewQuestion} 200 - Interview question
-export const getInterviewQuestionById = asyncHandler(async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(createHttpError(400, validationErrorParser(errors)));
-  }
+export const getInterviewQuestionById = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(createHttpError(400, validationErrorParser(errors)));
+    }
 
-  // Extract validated id parameter from request
-  const { id } = matchedData(req, { locations: ["params"] }) as { id: string };
+    // Extract validated id parameter from request
+    const { id } = matchedData(req, { locations: ["params"] }) as {
+      id: string;
+    };
 
-  // Find interview question by ID
-  const interviewQuestion = await InterviewQuestion.findById(id)
-    .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
-    .lean()
-    .exec();
+    // Find interview question by ID
+    const interviewQuestion = await InterviewQuestion.findById(id)
+      .populate({ path: "company", model: Company })
+      .populate({ path: "user", model: User })
+      .lean()
+      .exec();
 
-  if (!interviewQuestion) {
-    return next(createHttpError(404, "Interview question not found"));
-  }
+    if (!interviewQuestion) {
+      return next(createHttpError(404, "Interview question not found"));
+    }
 
-  res.status(200).json(interviewQuestion);
-});
+    res.status(200).json(interviewQuestion);
+  },
+);
 
 // @desc Retrieve interview questions by company ID
 // @route GET /api/questions/interview/company/:companyId
@@ -110,7 +119,7 @@ export const getInterviewQuestionById = asyncHandler(async (req, res, next) => {
 //
 // @returns {InterviewQuestion[]} 200 - Array of interview questions
 export const getInterviewQuestionsByCompanyId = asyncHandler(
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return next(createHttpError(400, validationErrorParser(errors)));
@@ -136,71 +145,79 @@ export const getInterviewQuestionsByCompanyId = asyncHandler(
 // @desc Update interview question by ID
 // @route PATCH /api/questions/interview/:id
 // @access Private
-export const updateInterviewQuestion = asyncHandler(async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(createHttpError(400, validationErrorParser(errors)));
-  }
+export const updateInterviewQuestion = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(createHttpError(400, validationErrorParser(errors)));
+    }
 
-  // Extract id parameter from request
-  const { id } = matchedData(req, { locations: ["params"] }) as { id: string };
+    // Extract id parameter from request
+    const { id } = matchedData(req, { locations: ["params"] }) as {
+      id: string;
+    };
 
-  // Extract validated fields to update from request body
-  const validatedData = matchedData(req, {
-    locations: ["body"],
-  }) as InterviewQuestionUpdate;
+    // Extract validated fields to update from request body
+    const validatedData = matchedData(req, {
+      locations: ["body"],
+    }) as InterviewQuestionUpdate;
 
-  if (Object.keys(validatedData).length === 0) {
-    // If no fields are provided to update, return a 400 Bad Request
-    return next(
-      createHttpError(400, "At least one field is required to update"),
-    );
-  }
+    if (Object.keys(validatedData).length === 0) {
+      // If no fields are provided to update, return a 400 Bad Request
+      return next(
+        createHttpError(400, "At least one field is required to update"),
+      );
+    }
 
-  // Check if another interview question with same title exists
-  const existingInterviewQuestion = await InterviewQuestion.findOne({
-    question: validatedData.question,
-    _id: { $ne: id },
-  })
-    .lean()
-    .exec();
+    // Check if another interview question with same title exists
+    const existingInterviewQuestion = await InterviewQuestion.findOne({
+      question: validatedData.question,
+      _id: { $ne: id },
+    })
+      .lean()
+      .exec();
 
-  if (existingInterviewQuestion) {
-    return next(createHttpError(409, "Repeat Interview Question title"));
-  }
+    if (existingInterviewQuestion) {
+      return next(createHttpError(409, "Repeat Interview Question title"));
+    }
 
-  // Update interview question with provided data
-  const updatedInterviewQuestion = await InterviewQuestion.findByIdAndUpdate(
-    id,
-    { $set: validatedData },
-    { new: true, runValidators: true },
-  )
-    .populate({ path: "company", model: Company })
-    .populate({ path: "user", model: User })
-    .lean()
-    .exec();
+    // Update interview question with provided data
+    const updatedInterviewQuestion = await InterviewQuestion.findByIdAndUpdate(
+      id,
+      { $set: validatedData },
+      { new: true, runValidators: true },
+    )
+      .populate({ path: "company", model: Company })
+      .populate({ path: "user", model: User })
+      .lean()
+      .exec();
 
-  if (!updatedInterviewQuestion) {
-    return next(createHttpError(404, "Interview Question not found"));
-  }
+    if (!updatedInterviewQuestion) {
+      return next(createHttpError(404, "Interview Question not found"));
+    }
 
-  res.status(200).json(updatedInterviewQuestion);
-});
+    res.status(200).json(updatedInterviewQuestion);
+  },
+);
 
 // @desc Delete interview question by ID
 // @route DELETE /api/questions/interview/:id
 // @access Private
-export const deleteInterviewQuestion = asyncHandler(async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(createHttpError(400, validationErrorParser(errors)));
-  }
+export const deleteInterviewQuestion = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(createHttpError(400, validationErrorParser(errors)));
+    }
 
-  // Extract id parameter from request
-  const { id } = matchedData(req, { locations: ["params"] }) as { id: string };
+    // Extract id parameter from request
+    const { id } = matchedData(req, { locations: ["params"] }) as {
+      id: string;
+    };
 
-  // Find and delete interview question by ID
-  await InterviewQuestion.findByIdAndDelete(id).exec();
+    // Find and delete interview question by ID
+    await InterviewQuestion.findByIdAndDelete(id).exec();
 
-  res.status(200).json({ message: "Success" });
-});
+    res.status(200).json({ message: "Success" });
+  },
+);
