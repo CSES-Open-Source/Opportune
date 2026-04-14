@@ -191,8 +191,9 @@ export async function getStudents(
 ): Promise<APIResult<PaginatedData<Student>>> {
   try {
     const response = await get(`/api/users/student`, {
-      ...queries,
-      major: queries.major?.join(",") || "",
+      ...(queries.major?.length
+        ? { major: queries.major.join(",") }
+        : {}),
     });
     const json = (await response.json()) as PaginatedData<UserJSON>;
     const result = { ...json, data: json.data.map(parseStudent) };

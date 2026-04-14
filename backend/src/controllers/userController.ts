@@ -428,13 +428,33 @@ export const getOpenStudents = asyncHandler(async (req, res, next) => {
     return next(createHttpError(400, validationErrorParser(errors)));
   }
 
-  const { page, perPage } = matchedData(req, {
+  const { page, perPage, query, major } = matchedData(req, {
     locations: ["query"],
   });
 
   const dbQuery = User.find({
     type: UserType.Student,
+    shareProfile: true,
   });
+
+  if (query) {
+    dbQuery.or([
+      { name: { $regex: new RegExp(query, "i") } },
+      { school: { $regex: new RegExp(query, "i") } },
+      { major: { $regex: new RegExp(query, "i") } },
+    ]);
+  }
+
+  if (major) {
+    const majorArray = major
+      .split(",")
+      .map((item: string) => item.trim())
+      .filter(Boolean);
+
+    if (majorArray.length > 0) {
+      dbQuery.where("major").in(majorArray);
+    }
+  }
 
   // ensure count and paginate do not conflict
   const countQuery = dbQuery.clone();
