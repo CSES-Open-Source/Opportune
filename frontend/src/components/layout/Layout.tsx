@@ -15,8 +15,11 @@ const Layout = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center w-full h-[100vh]">
-        <ProgressSpinner className="h-16 w-16" strokeWidth="3" />
+      <div
+        className="flex flex-col items-center justify-center w-full h-[100vh]"
+        style={{ background: "linear-gradient(135deg, #0f1419 0%, #1a1d2e 100%)" }}
+      >
+        <ProgressSpinner className="h-16 w-16" strokeWidth="3" style={{ color: "#5b8ef4" }} />
       </div>
     );
   }
@@ -41,9 +44,12 @@ const Layout = () => {
   }
 
   return (
-    <div className="flex bg-background">
+    <div
+      className="flex min-h-screen"
+      style={{ background: "linear-gradient(135deg, #0f1419 0%, #1a1d2e 100%)" }}
+    >
       <SideNav />
-      <div className="w-full">
+      <div className="flex-1 w-full">
         <Outlet />
       </div>
     </div>

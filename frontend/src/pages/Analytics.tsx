@@ -6,17 +6,18 @@ import { Toast } from "primereact/toast";
 import { ResponsiveContainer, Sankey, Tooltip } from 'recharts';
 import { getApplicationDetails } from "../api/applications";
 import { parseErrorResponse } from "../utils/errorHandler";
+import { LuActivity, LuTrendingUp, LuLightbulb, LuSparkles } from "react-icons/lu";
+import "../styles/Animations.css";
 
 function buildSankeyFromTimelines(applicationTimelines: ApplicationTimeline[]): SankeyData {
-
   const fillings = [
-    { name: 'APPLIED', color: '#3b82f6' },
-    { name: 'REJECTED', color: '#EF4444' },
-    { name: 'GHOSTED', color: '#EF4444' },
-    { name: 'OA', color: '#EAB308' },
-    { name: 'PHONE', color: '#EAB308' },
-    { name: 'FINAL', color: '#EAB308' },
-    { name: 'OFFER', color: '#22C55E' },
+    { name: 'APPLIED', color: '#5b8ef4' },
+    { name: 'REJECTED', color: '#f87171' },
+    { name: 'GHOSTED', color: '#f87171' },
+    { name: 'OA', color: '#f59e0b' },
+    { name: 'PHONE', color: '#f59e0b' },
+    { name: 'FINAL', color: '#f59e0b' },
+    { name: 'OFFER', color: '#10b981' },
   ];
 
   const fillingMap: { [name: string]: string } = {};
@@ -35,8 +36,6 @@ function buildSankeyFromTimelines(applicationTimelines: ApplicationTimeline[]): 
         const tgt = String(tl[j + 1].status).toUpperCase();
         const key = src + "|||" + tgt;
         pairCounts[key] = (pairCounts[key] || 0) + 1;
-
-
         nodesSet.add(src);
         nodesSet.add(tgt);
       }
@@ -56,10 +55,8 @@ function buildSankeyFromTimelines(applicationTimelines: ApplicationTimeline[]): 
     color: fillingMap[name.toUpperCase()],
   }));
 
-
   const indexMap: { [name: string]: number } = {};
   for (let i = 0; i < nodes.length; i++) indexMap[nodes[i].name] = i;
-
 
   const links = Object.keys(pairCounts).map(k => {
     const [src, tgt] = k.split("|||");
@@ -71,10 +68,7 @@ function buildSankeyFromTimelines(applicationTimelines: ApplicationTimeline[]): 
   });
 
   return { nodes, links };
-
-
 }
-
 
 const Analytics: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
@@ -93,7 +87,6 @@ const Analytics: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const toast = useRef<Toast>(null);
 
-
   useEffect(() => {
     if (isAuthenticated) {
       const resolveUserId = (): string | null => {
@@ -103,7 +96,6 @@ const Analytics: React.FC = () => {
         return null;
       };
 
-      // Fetch analytics and monthly data for the resolved user id
       const fetchAnalytics = async () => {
         try {
           const userId = resolveUserId();
@@ -150,13 +142,11 @@ const Analytics: React.FC = () => {
         }
       };
 
-      
       const initialTimer = setTimeout(() => {
         fetchAnalytics();
         setLoading(false);
       }, 1000);
 
-      
       const handleApplicationsChanged = () => {
         fetchAnalytics();
       };
@@ -181,18 +171,17 @@ const Analytics: React.FC = () => {
 
   const CustomNode: React.FC<CustomNodeProps> = ({ x = 0, y = 0, width = 0, height = 0, payload = {}, containerWidth = 0, index = 0 }) => {
     const fillings = [
-      { name: 'APPLIED', color: '#3b82f6' },
-      { name: 'REJECTED', color: '#EF4444' },
-      { name: 'GHOSTED', color: '#EF4444' },
-      { name: 'OA', color: '#EAB308' },
-      { name: 'PHONE', color: '#EAB308' },
-      { name: 'FINAL', color: '#EAB308' },
-      { name: 'OFFER', color: '#22C55E' },
-
+      { name: 'APPLIED', color: '#5b8ef4' },
+      { name: 'REJECTED', color: '#f87171' },
+      { name: 'GHOSTED', color: '#f87171' },
+      { name: 'OA', color: '#f59e0b' },
+      { name: 'PHONE', color: '#f59e0b' },
+      { name: 'FINAL', color: '#f59e0b' },
+      { name: 'OFFER', color: '#10b981' },
     ];
 
-    const findFilling = fillings.findIndex(fillings => fillings.name === payload.name);
-    const filling = fillings[findFilling].color;
+    const findFilling = fillings.findIndex(f => f.name === payload.name);
+    const filling = findFilling >= 0 ? fillings[findFilling].color : '#5b8ef4';
 
     if (index === 0) {
       return (
@@ -202,10 +191,10 @@ const Analytics: React.FC = () => {
             x={x + width + 15}
             y={y + height / 2 - 25}
             textAnchor="start"
-            alignmentBaseline="middle"
+            dominantBaseline="middle"
             fontSize={26}
             fontWeight="bold"
-            className="font-semibold text-gray-900"
+            fill="#e8eaed"
           >
             {payload.value}
           </text>
@@ -213,10 +202,10 @@ const Analytics: React.FC = () => {
             x={x + width + 15}
             y={y + height / 2}
             textAnchor="start"
-            alignmentBaseline="middle"
+            dominantBaseline="middle"
             fontSize={16}
             fontWeight="bold"
-            className="text-lg font-semibold text-gray-900 mb-4"
+            fill="#9ca3af"
           >
             {payload.name}
           </text>
@@ -235,10 +224,10 @@ const Analytics: React.FC = () => {
           x={textX}
           y={y + height / 2 - 25}
           textAnchor={textAnchor}
-          alignmentBaseline="middle"
+          dominantBaseline="middle"
           fontSize={26}
           fontWeight="bold"
-          className="font-semibold text-gray-900"
+          fill="#e8eaed"
         >
           {payload.value}
         </text>
@@ -246,10 +235,10 @@ const Analytics: React.FC = () => {
           x={textX}
           y={y + height / 2}
           textAnchor={textAnchor}
-          alignmentBaseline="middle"
+          dominantBaseline="middle"
           fontSize={16}
           fontWeight="bold"
-          className="font-semibold text-gray-900"
+          fill="#9ca3af"
         >
           {payload.name}
         </text>
@@ -271,9 +260,7 @@ const Analytics: React.FC = () => {
     index?: number;
   }
 
-
   const CustomLink: React.FC<CustomLinkProps> = (props) => {
-
     const [hovered, setHovered] = useState(false);
 
     const strokeWidth = props.linkWidth ?? 1;
@@ -283,7 +270,6 @@ const Analytics: React.FC = () => {
     const sy = props.sourceY ?? 0;
     const tx = props.targetX ?? 0;
     const ty = props.targetY ?? 0;
-
 
     const curvature = 0.5;
     const cx1 = sx + (tx - sx) * curvature;
@@ -297,38 +283,36 @@ const Analytics: React.FC = () => {
         d={curvedPath}
         stroke={strokeColor}
         strokeWidth={strokeWidth}
-        strokeOpacity={hovered ? 0.9 : 0.4}
+        strokeOpacity={hovered ? 0.9 : 0.5}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         fill="none"
       />
     );
-
   };
 
   const CustomTooltip: React.FC<{ payload?: unknown }> = ({ payload }) => {
-
     const entries = Array.isArray(payload) ? payload : [];
 
     return (
       <div
+        className="rounded-lg border p-2"
         style={{
-          background: "#fff",
-          border: "1px solid #eee",
-          borderRadius: "4px",
-          boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-          padding: "4px 10px",
-          color: "#222",
+          background: "linear-gradient(145deg, #1e2433, #1a1f2e)",
+          borderColor: "#2d3748",
+          color: "#e8eaed",
           fontSize: "12px",
           minWidth: 0,
           maxWidth: 120,
-          lineHeight: 1.2,
-          pointerEvents: "none",
+          lineHeight: 1.4,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
         }}
       >
         {entries.map((entry: SankeyTooltipEntry, idx: number) => (
-          <div key={idx} style={{ marginBottom: idx }}>
-            <b>{entry.name}</b>: {entry.value}
+          <div key={idx} style={{ marginBottom: idx < entries.length - 1 ? 4 : 0 }}>
+            <span className="font-semibold">{entry.name}</span>
+            <span className="text-[#6b7280]">: </span>
+            <span>{entry.value}</span>
           </div>
         ))}
       </div>
@@ -337,10 +321,13 @@ const Analytics: React.FC = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "linear-gradient(135deg, #0f1419 0%, #1a1d2e 100%)" }}
+      >
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Please sign in to view analytics</h1>
-          <p className="text-gray-600">You need to be logged in to see your application analytics.</p>
+          <h1 className="text-2xl font-bold text-[#e8eaed] mb-4">Please sign in to view analytics</h1>
+          <p className="text-[#6b7280]">You need to be logged in to see your application analytics.</p>
         </div>
       </div>
     );
@@ -348,10 +335,13 @@ const Analytics: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "linear-gradient(135deg, #0f1419 0%, #1a1d2e 100%)" }}
+      >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your analytics...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#2d3748] border-t-[#5b8ef4] mx-auto mb-4"></div>
+          <p className="text-[#6b7280]">Loading your analytics...</p>
         </div>
       </div>
     );
@@ -361,26 +351,82 @@ const Analytics: React.FC = () => {
   const interviewRate = stats.total > 0 ? Math.round((stats.interviews / stats.total) * 100) : 0;
 
   return (
-    <div className="h-screen overflow-auto bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="max-w-7xl mx-auto p-5">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Application Analytics</h1>
-          <p className="text-gray-600">Track your internship application progress and success rates</p>
+    <div
+      className="min-h-screen overflow-auto"
+      style={{ background: "linear-gradient(135deg, #0f1419 0%, #1a1d2e 100%)" }}
+    >
+      <style dangerouslySetInnerHTML={{ __html: `
+        /* Stat card stagger */
+        @keyframes statCardFade {
+          from { opacity:0; transform:translateY(20px); }
+          to   { opacity:1; transform:translateY(0); }
+        }
+        .stat-card-0 { animation: statCardFade 0.4s ease-out 0.0s both; }
+        .stat-card-1 { animation: statCardFade 0.4s ease-out 0.1s both; }
+        .stat-card-2 { animation: statCardFade 0.4s ease-out 0.2s both; }
+        .stat-card-3 { animation: statCardFade 0.4s ease-out 0.3s both; }
+
+        /* Number count up */
+        @keyframes countUp {
+          from { opacity:0; transform:scale(0.5); }
+          to   { opacity:1; transform:scale(1); }
+        }
+        .count-up { animation: countUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+        /* Progress bar fill */
+        @keyframes barFill {
+          from { width: 0; }
+        }
+        .bar-fill { animation: barFill 1s ease-out 0.5s both; }
+
+        /* Sankey glow */
+        @keyframes sankeyGlow {
+          0%,100% { box-shadow: 0 0 20px rgba(91,142,244,0.1), inset 0 0 20px rgba(91,142,244,0.05); }
+          50%      { box-shadow: 0 0 30px rgba(91,142,244,0.2), inset 0 0 30px rgba(91,142,244,0.08); }
+        }
+        .sankey-glow { animation: sankeyGlow 4s ease-in-out infinite; }
+      `}} />
+
+      <div className="max-w-7xl mx-auto p-6 md:p-8">
+        {/* ── Header ── */}
+        <div className="mb-10 text-center animate-fadeIn">
+          <div className="inline-flex items-center gap-2 mb-3">
+            <div
+              className="p-2 rounded-lg"
+              style={{
+                background: "linear-gradient(135deg, #5b8ef4, #7c3aed)",
+                boxShadow: "0 4px 14px rgba(91,142,244,0.3)",
+              }}
+            >
+              <LuActivity className="w-5 h-5 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold text-[#e8eaed]">Application Analytics</h1>
+          </div>
+          <p className="text-[#9ca3af]">Track your internship application progress and success rates</p>
         </div>
 
-        {/* Sankey Chart Section */}
-        <div className="mb-8">
+        {/* ── Sankey Chart Section ── */}
+        <div className="mb-10 animate-slideUp">
           <div
-            className="rounded-lg shadow p-6"
-            style={{ backgroundColor: "#FDFFFC" }}
+            className="sankey-glow rounded-2xl border p-6"
+            style={{
+              background: "linear-gradient(145deg, #1e2433, #1a1f2e)",
+              borderColor: "#2d3748",
+            }}
           >
-            {/* Box Title */}
-            <h2 className="text-2xl font-semibold text-gray-700 text-center mb-4">
-              Application Flow
-            </h2>
+            <div className="flex items-center gap-3 mb-6">
+              <div
+                className="p-2 rounded-lg"
+                style={{
+                  background: "rgba(91,142,244,0.12)",
+                  border: "1px solid rgba(91,142,244,0.25)",
+                }}
+              >
+                <LuTrendingUp className="w-5 h-5 text-[#5b8ef4]" />
+              </div>
+              <h2 className="text-2xl font-bold text-[#e8eaed]">Application Flow</h2>
+            </div>
 
-            {/* Sankey Chart */}
             <div style={{ width: "100%", height: 400 }}>
               <ResponsiveContainer>
                 <Sankey
@@ -398,145 +444,167 @@ const Analytics: React.FC = () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <FiTarget className="h-6 w-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Applications</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <FiCheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Success Rate</p>
-                <p className="text-2xl font-bold text-gray-900">{successRate}%</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <FiTrendingUp className="h-6 w-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Interview Rate</p>
-                <p className="text-2xl font-bold text-gray-900">{interviewRate}%</p>
+        {/* ── Stats Cards ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          {[
+            { icon: FiTarget, label: "Total Applications", value: stats.total, color: "#5b8ef4", bg: "rgba(91,142,244,0.12)", border: "rgba(91,142,244,0.25)", index: 0 },
+            { icon: FiCheckCircle, label: "Success Rate", value: `${successRate}%`, color: "#10b981", bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.25)", index: 1 },
+            { icon: FiTrendingUp, label: "Interview Rate", value: `${interviewRate}%`, color: "#a78bfa", bg: "rgba(124,58,237,0.12)", border: "rgba(124,58,237,0.25)", index: 2 },
+            { icon: FiCalendar, label: "Offers Received", value: stats.offer, color: "#f59e0b", bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.25)", index: 3 },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className={`stat-card-${stat.index} rounded-2xl border p-6 transition-all hover:-translate-y-1`}
+              style={{
+                background: "linear-gradient(145deg, #1e2433, #1a1f2e)",
+                borderColor: "#2d3748",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.4)")}
+              onMouseLeave={e => (e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)")}
+            >
+              <div className="flex items-center gap-4">
+                <div
+                  className="p-3 rounded-xl"
+                  style={{ background: stat.bg, border: `1px solid ${stat.border}` }}
+                >
+                  <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-1">
+                    {stat.label}
+                  </p>
+                  <p className="count-up text-3xl font-bold text-[#e8eaed]">{stat.value}</p>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <FiCalendar className="h-6 w-6 text-orange-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Offers Received</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.offer}</p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Application Status Chart */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Application Status</h3>
+        {/* ── Charts Section ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+          {/* Application Status */}
+          <div
+            className="rounded-2xl border p-6 animate-slideUp delay-100"
+            style={{
+              background: "linear-gradient(145deg, #1e2433, #1a1f2e)",
+              borderColor: "#2d3748",
+            }}
+          >
+            <h3 className="text-xl font-bold text-[#e8eaed] mb-6">Application Status</h3>
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-4 h-4 bg-blue-500 rounded mr-3"></div>
-                  <span className="text-sm text-gray-600">Applied</span>
+              {[
+                { label: "Applied", value: stats.total, color: "#5b8ef4" },
+                { label: "Interview", value: stats.interviews, color: "#f59e0b" },
+                { label: "Offer", value: stats.offer, color: "#10b981" },
+                { label: "Rejected", value: stats.rejected, color: "#f87171" },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 rounded" style={{ background: item.color }} />
+                    <span className="text-sm text-[#9ca3af]">{item.label}</span>
+                  </div>
+                  <span className="font-bold text-[#e8eaed]">{item.value}</span>
                 </div>
-                <span className="font-semibold">{stats.total}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-4 h-4 bg-yellow-500 rounded mr-3"></div>
-                  <span className="text-sm text-gray-600">Interview</span>
-                </div>
-                <span className="font-semibold">{stats.interviews}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-4 h-4 bg-green-500 rounded mr-3"></div>
-                  <span className="text-sm text-gray-600">Offer</span>
-                </div>
-                <span className="font-semibold">{stats.offer}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-4 h-4 bg-red-500 rounded mr-3"></div>
-                  <span className="text-sm text-gray-600">Rejected</span>
-                </div>
-                <span className="font-semibold">{stats.rejected}</span>
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Monthly Applications Chart */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Applications This Year</h3>
-            <div className="space-y-3">
+          {/* Monthly Applications */}
+          <div
+            className="rounded-2xl border p-6 animate-slideUp delay-200"
+            style={{
+              background: "linear-gradient(145deg, #1e2433, #1a1f2e)",
+              borderColor: "#2d3748",
+            }}
+          >
+            <h3 className="text-xl font-bold text-[#e8eaed] mb-6">Applications This Year</h3>
+            <div className="space-y-4">
               {monthlyData.map((data, index) => (
-                <div key={index} className="flex items-center">
-                  <div className="w-16 text-sm text-gray-600">{data.month}</div>
-                  <div className="flex-1 mx-4">
-                    <div className="bg-gray-200 rounded-full h-2">
+                <div key={index} className="flex items-center gap-4">
+                  <div className="w-16 text-sm text-[#6b7280] font-medium">{data.month}</div>
+                  <div className="flex-1">
+                    <div className="rounded-full h-2.5" style={{ background: "#2d3748" }}>
                       <div
-                        className="bg-blue-500 h-2 rounded-full"
-                        style={{ width: `${(data.applications / 50) * 100}%` }}
-                      ></div>
+                        className="bar-fill h-2.5 rounded-full"
+                        style={{
+                          width: `${Math.min((data.applications / 50) * 100, 100)}%`,
+                          background: "linear-gradient(90deg, #5b8ef4, #7c3aed)",
+                          boxShadow: "0 0 8px rgba(91,142,244,0.5)",
+                        }}
+                      />
                     </div>
                   </div>
-                  <div className="w-8 text-sm font-semibold">{data.applications}</div>
+                  <div className="w-10 text-sm font-bold text-[#e8eaed] text-right">{data.applications}</div>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Insights Section */}
-        <div className="mt-8 bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Insights & Recommendations</h3>
+        {/* ── Insights Section ── */}
+        <div
+          className="rounded-2xl border p-6 animate-slideUp delay-300"
+          style={{
+            background: "linear-gradient(145deg, #1e2433, #1a1f2e)",
+            borderColor: "#2d3748",
+          }}
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div
+              className="p-2 rounded-lg"
+              style={{
+                background: "rgba(255,205,0,0.12)",
+                border: "1px solid rgba(255,205,0,0.25)",
+              }}
+            >
+              <LuLightbulb className="w-5 h-5 text-[#FFCD00]" />
+            </div>
+            <h3 className="text-xl font-bold text-[#e8eaed]">Insights & Recommendations</h3>
+          </div>
+
           <div className="space-y-4">
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-800">
-                <strong>Great progress!</strong> You&apos;ve applied to {stats.total} companies.{" "}
+            <div
+              className="rounded-xl border p-4"
+              style={{
+                background: "rgba(91,142,244,0.08)",
+                borderColor: "rgba(91,142,244,0.25)",
+              }}
+            >
+              <div className="flex items-start gap-3">
+                <LuSparkles className="w-5 h-5 text-[#5b8ef4] flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-[#9ca3af]">
+                  <strong className="text-[#5b8ef4]">Great progress!</strong> You&apos;ve applied to {stats.total} companies.{" "}
                   {interviewRate >= 50 && (
                     <>Your {interviewRate}% interview rate is excellent — you&apos;re doing amazing!</>
                   )}
-
                   {interviewRate >= 25 && interviewRate < 50 && (
                     <>Your {interviewRate}% interview rate is solid — keep applying strategically.</>
                   )}
-
                   {interviewRate > 0 && interviewRate < 25 && (
                     <>Your {interviewRate}% interview rate is below average — consider refining your resume or targeting different roles.</>
                   )}
-
                   {interviewRate === 0 && (
                     <>You haven&apos;t received interviews yet — time to adjust your resume or application strategy.</>
                   )}
-              </p>
+                </p>
+              </div>
             </div>
-            <div className="p-4 bg-green-50 rounded-lg">
-              <p className="text-sm text-green-800">
-                <strong>Success tip:</strong> Focus on companies where you&apos;ve received interviews.
-                Your conversion rate from interview to offer is {stats.interviews > 0 ? Math.round((stats.offer / stats.interviews) * 100) : 0}%.
-              </p>
+
+            <div
+              className="rounded-xl border p-4"
+              style={{
+                background: "rgba(16,185,129,0.08)",
+                borderColor: "rgba(16,185,129,0.25)",
+              }}
+            >
+              <div className="flex items-start gap-3">
+                <LuSparkles className="w-5 h-5 text-[#10b981] flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-[#9ca3af]">
+                  <strong className="text-[#10b981]">Success tip:</strong> Focus on companies where you&apos;ve received interviews.
+                  Your conversion rate from interview to offer is {stats.interviews > 0 ? Math.round((stats.offer / stats.interviews) * 100) : 0}%.
+                </p>
+              </div>
             </div>
           </div>
         </div>
