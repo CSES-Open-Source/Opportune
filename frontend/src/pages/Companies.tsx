@@ -10,7 +10,7 @@ import { getEmployeesLabel, getIndustryLabel } from "../utils/valuesToLabels";
 import { NumEmployees, IndustryType, Company } from "../types/Company";
 import {
   LuBuilding2, LuPlus, LuSlidersHorizontal, LuX,
-  LuSearch, LuSparkles,
+   LuSparkles,
 } from "react-icons/lu";
 import "../styles/Animations.css";
 

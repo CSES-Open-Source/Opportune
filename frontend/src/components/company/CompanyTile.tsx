@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Company, IndustryType } from "../../types/Company";
 import { getIndustryLabel, INDUSTRY_COLOR_MAP } from "../../utils/valuesToLabels";
-import { LuMapPin, LuExternalLink, LuChevronRight, LuBuilding2 } from "react-icons/lu";
+import { LuMapPin, LuExternalLink, LuChevronRight } from "react-icons/lu";
 
 const defaultLogo = "/assets/defaultLogo.png";
 

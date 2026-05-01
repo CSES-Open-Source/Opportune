@@ -45,11 +45,11 @@ const Layout = () => {
 
   return (
     <div
-      className="flex min-h-screen"
+      className="flex overflow-x-hidden"
       style={{ background: "linear-gradient(135deg, #0f1419 0%, #1a1d2e 100%)" }}
     >
       <SideNav />
-      <div className="flex-1 w-full">
+      <div className="flex-1 w-full overflow-x-hidden">
         <Outlet />
       </div>
     </div>

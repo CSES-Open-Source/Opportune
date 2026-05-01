@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiBriefcase, FiLink } from "react-icons/fi";
 import { FaLinkedin, FaInstagram, FaGithub } from "react-icons/fa";
 import { SiLinktree } from "react-icons/si";
@@ -147,7 +147,7 @@ const Home: React.FC = () => {
   ];
 
   return (
-    <div className="h-screen overflow-auto" style={{ background: "linear-gradient(160deg, #0a0e1a 0%, #0f1419 40%, #141b2e 100%)" }}>
+    <div className="h-screen overflow-y-auto overflow-x-hidden relative" style={{ background: "linear-gradient(160deg, #0a0e1a 0%, #0f1419 40%, #141b2e 100%)" }}>
       <style dangerouslySetInnerHTML={{ __html: `
         /* ── Typewriter cursor ── */
         .type-cursor { display: inline-block; width: 3px; background: #FFCD00; margin-left: 3px; border-radius: 1px; animation: cursorBlink 0.75s step-end infinite; }
@@ -226,7 +226,7 @@ const Home: React.FC = () => {
       `}} />
 
       {/* ═══ AMBIENT LAYER ═══ */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Mesh gradients */}
         <div className="absolute inset-0 opacity-50" style={{ background: "radial-gradient(ellipse 80% 60% at 20% 10%, rgba(91,142,244,0.11) 0%, transparent 60%), radial-gradient(ellipse 60% 80% at 80% 80%, rgba(124,58,237,0.09) 0%, transparent 60%), radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,205,0,0.04) 0%, transparent 70%)" }} />
 

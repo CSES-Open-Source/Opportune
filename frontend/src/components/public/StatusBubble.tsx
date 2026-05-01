@@ -1,4 +1,3 @@
-import { statusColors } from "../../constants/statusColors";
 import { getApplicationStatusLabel } from "../../utils/valuesToLabels";
 
 interface StatusBubbleProps {

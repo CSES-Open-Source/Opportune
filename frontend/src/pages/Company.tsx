@@ -1,11 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  FaExternalLinkAlt,
   FaChevronLeft,
   FaChevronRight,
-  FaEdit,
-  FaArrowLeft,
 } from "react-icons/fa";
 import { getCompanyById } from "../api/companies";
 import { APIResult } from "../api/requests";
@@ -314,6 +311,31 @@ const CompanyProfile: React.FC = () => {
         }
         .diff-badge:hover {
           transform: scale(1.05);
+        }
+
+        /* Alumni Insights tip text styling */
+        .alumni-tip-card .p-editor-container {
+          background: transparent !important;
+          border: none !important;
+        }
+        .alumni-tip-card .p-editor-content {
+          background: transparent !important;
+          border: none !important;
+        }
+        .alumni-tip-card .ql-editor {
+          color: #9ca3af !important;
+          padding: 0 !important;
+          font-size: 0.875rem !important;
+          line-height: 1.4 !important;
+        }
+        .alumni-tip-card .ql-editor p {
+          color: #9ca3af !important;
+        }
+        .alumni-tip-card .ql-editor strong {
+          color: #e8eaed !important;
+        }
+        .alumni-tip-card .ql-editor a {
+          color: #a78bfa !important;
         }
       `}} />
 
@@ -674,7 +696,7 @@ const CompanyProfile: React.FC = () => {
                     {tips.map((tip, i) => (
                       <div
                         key={i}
-                        className="carousel-card w-64 h-44 rounded-xl p-4 border cursor-pointer"
+                        className="carousel-card alumni-tip-card w-64 h-44 rounded-xl p-4 border cursor-pointer"
                         style={{
                           background: "linear-gradient(145deg, #1e2433, #1a1f2e)",
                           borderColor: "#2d3748",

@@ -17,7 +17,7 @@ import {
 } from "../../utils/valuesToLabels";
 import {
   LuLayers, LuUsers, LuBriefcase, LuMapPin, LuLink, LuCalendar,
-  LuListChecks, LuX, LuPencil, LuTrash2, LuSave, LuBuilding2,
+  LuListChecks, LuX, LuPencil, LuTrash2, LuSave,
 } from "react-icons/lu";
 import { parseErrorResponse } from "../../utils/errorHandler";
 

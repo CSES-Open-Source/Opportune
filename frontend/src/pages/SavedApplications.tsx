@@ -191,7 +191,7 @@ const SavedApplications: React.FC = () => {
                 Saved Applications
               </h1>
               <p className="text-[#9ca3af] mt-1">
-                Applications you're working on
+                Applications you`&apos;`re working on
               </p>
             </div>
           </div>

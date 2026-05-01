@@ -18,8 +18,7 @@ import {
   getIndustryLabel,
 } from "../../utils/valuesToLabels";
 import {
-  LuLayers, LuUsers, LuPencil, LuTrash2, LuSave, LuX,
-  LuMapPin, LuLink, LuCalendar, LuPlus,
+  LuLayers, LuUsers, LuPencil, LuTrash2, LuSave, LuX, LuLink, LuPlus,
 } from "react-icons/lu";
 import { parseErrorResponse } from "../../utils/errorHandler";
 

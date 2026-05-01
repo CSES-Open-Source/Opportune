@@ -11,13 +11,13 @@ import "../styles/Animations.css";
 
 function buildSankeyFromTimelines(applicationTimelines: ApplicationTimeline[]): SankeyData {
   const fillings = [
-    { name: 'APPLIED', color: '#5b8ef4' },
-    { name: 'REJECTED', color: '#f87171' },
-    { name: 'GHOSTED', color: '#f87171' },
-    { name: 'OA', color: '#f59e0b' },
-    { name: 'PHONE', color: '#f59e0b' },
-    { name: 'FINAL', color: '#f59e0b' },
-    { name: 'OFFER', color: '#10b981' },
+    { name: 'APPLIED', color: '#60a5fa' },      // Brighter blue
+    { name: 'REJECTED', color: '#f87171' },     // Red
+    { name: 'GHOSTED', color: '#f87171' },      // Red
+    { name: 'OA', color: '#c084fc' },           // Brighter purple
+    { name: 'PHONE', color: '#fbbf24' },        // Brighter yellow/gold
+    { name: 'FINAL', color: '#f472b6' },        // Brighter pink
+    { name: 'OFFER', color: '#34d399' },        // Brighter green
   ];
 
   const fillingMap: { [name: string]: string } = {};
@@ -171,13 +171,13 @@ const Analytics: React.FC = () => {
 
   const CustomNode: React.FC<CustomNodeProps> = ({ x = 0, y = 0, width = 0, height = 0, payload = {}, containerWidth = 0, index = 0 }) => {
     const fillings = [
-      { name: 'APPLIED', color: '#5b8ef4' },
-      { name: 'REJECTED', color: '#f87171' },
-      { name: 'GHOSTED', color: '#f87171' },
-      { name: 'OA', color: '#f59e0b' },
-      { name: 'PHONE', color: '#f59e0b' },
-      { name: 'FINAL', color: '#f59e0b' },
-      { name: 'OFFER', color: '#10b981' },
+      { name: 'APPLIED', color: '#60a5fa' },      // Brighter blue
+      { name: 'REJECTED', color: '#f87171' },     // Red
+      { name: 'GHOSTED', color: '#f87171' },      // Red
+      { name: 'OA', color: '#c084fc' },           // Brighter purple
+      { name: 'PHONE', color: '#fbbf24' },        // Brighter yellow/gold
+      { name: 'FINAL', color: '#f472b6' },        // Brighter pink
+      { name: 'OFFER', color: '#34d399' },        // Brighter green
     ];
 
     const findFilling = fillings.findIndex(f => f.name === payload.name);
@@ -283,10 +283,14 @@ const Analytics: React.FC = () => {
         d={curvedPath}
         stroke={strokeColor}
         strokeWidth={strokeWidth}
-        strokeOpacity={hovered ? 0.9 : 0.5}
+        strokeOpacity={hovered ? 1.0 : 0.7}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         fill="none"
+        style={{
+          transition: "stroke-opacity 0.2s ease",
+          filter: hovered ? `drop-shadow(0 0 8px ${strokeColor})` : "none",
+        }}
       />
     );
   };
