@@ -26,6 +26,7 @@ interface StudentResponse extends BaseUserResponse {
   fieldOfInterest?: string[];
   projects?: string[];
   companiesOfInterest?: string[];
+  shareProfile?: boolean;
 }
 
 interface AlumniResponse extends BaseUserResponse {
@@ -178,6 +179,7 @@ export const getUserById = asyncHandler(
         hobbies: foundUser.hobbies,
         skills: foundUser.skills,
         companiesOfInterest: foundUser.companiesOfInterest,
+        shareProfile: foundUser.shareProfile,
       } as StudentResponse;
     } else {
       responseData = {
