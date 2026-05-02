@@ -434,6 +434,23 @@ const Profile = () => {
                         : "Not specified"}
                     </p>
                   </div>
+                  <div className="mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-500 mb-1">
+                          <div className="flex items-center gap-2">
+                            <LuShare2 size={16} />
+                            <span>Share Profile</span>
+                          </div>
+                        </label>
+                        <p className="text-gray-800">
+                          {user.shareProfile
+                            ? "Visible to students"
+                            : "Not shared with students"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
 
                   {/* School */}
                   <div>
@@ -554,6 +571,31 @@ const Profile = () => {
 
             {updatedUser.type === UserType.Student && isEditing && (
               <div className="mb-6">
+                <div className="mb-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500 mb-1">
+                        <div className="flex items-center gap-2">
+                          <LuShare2 size={16} />
+                          <span>Share Profile</span>
+                        </div>
+                      </label>
+                      <div className="flex items-center mt-2">
+                        <label className="inline-flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={updatedUser.shareProfile}
+                            className="form-checkbox h-5 w-5 text-blue-600"
+                            onChange={(e) =>
+                              handleInputChange("shareProfile", e.target.checked)
+                            }
+                          />
+                          <span className="ml-2 text-gray-700">
+                            Make my profile visible to students
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">
                   Academic Information
                 </h2>

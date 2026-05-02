@@ -22,6 +22,7 @@ const preservedUserIds: string[] = [];
 
 const sampleStudents = [
   {
+    _id: "student_001",
     email: "alex.chen@university.edu",
     name: "Alex Chen",
     profilePicture:
@@ -38,8 +39,10 @@ const sampleStudents = [
     organizations: ["Computer Science Society"],
     specializations: ["Web Systems"],
     school: "Tech University",
+    shareProfile: true,
   },
   {
+    _id: "student_002",
     email: "maya.patel@state.edu",
     name: "Maya Patel",
     profilePicture:
@@ -56,8 +59,10 @@ const sampleStudents = [
     organizations: ["Women in STEM"],
     specializations: ["Artificial Intelligence"],
     school: "State University",
+    shareProfile: true,
   },
   {
+    _id: "student_003",
     email: "jordan.smith@college.edu",
     name: "Jordan Smith",
     profilePicture:
@@ -66,7 +71,7 @@ const sampleStudents = [
     linkedIn: "https://www.linkedin.com/in/jordansmith",
     hobbies: ["Gaming", "Cooking"],
     skills: ["Java", "C++", "Docker"],
-    major: "Software Engineering",
+    major: "Computer Science",
     classLevel: "SOPHOMORE",
     fieldOfInterest: ["Cybersecurity", "Embedded Systems"],
     projects: ["Network Traffic Monitor"],
@@ -74,8 +79,10 @@ const sampleStudents = [
     organizations: ["Cyber Defense Club"],
     specializations: ["Infrastructure"],
     school: "Institute of Technology",
+    shareProfile: false,
   },
   {
+    _id: "student_004",
     email: "liam.nguyen@uni.edu",
     name: "Liam Nguyen",
     profilePicture:
@@ -84,7 +91,7 @@ const sampleStudents = [
     linkedIn: "https://www.linkedin.com/in/liamnguyen",
     hobbies: ["Basketball", "Guitar"],
     skills: ["C#", "Unity", "Maya"],
-    major: "Game Design",
+    major: "Computer Science",
     classLevel: "FRESHMAN",
     fieldOfInterest: ["Game Development", "VR/AR"],
     projects: ["2D Platformer"],
@@ -92,8 +99,10 @@ const sampleStudents = [
     organizations: ["Game Dev Guild"],
     specializations: ["Interactive Media"],
     school: "Academy of Arts",
+    shareProfile: true,
   },
   {
+    _id: "student_005",
     email: "sarah.kim@global.edu",
     name: "Sarah Kim",
     profilePicture:
@@ -110,8 +119,10 @@ const sampleStudents = [
     organizations: ["Finance Association"],
     specializations: ["Econometrics"],
     school: "Global Business School",
+    shareProfile: false,
   },
   {
+    _id: "student_006",
     email: "oscar.rodriguez@tech.edu",
     name: "Oscar Rodriguez",
     profilePicture:
@@ -120,7 +131,7 @@ const sampleStudents = [
     linkedIn: "https://www.linkedin.com/in/oscarrod",
     hobbies: ["Cycling", "Baking"],
     skills: ["JavaScript", "HTML/CSS", "Figma"],
-    major: "Digital Media",
+    major: "Visual Arts",
     classLevel: "JUNIOR",
     fieldOfInterest: ["UX/UI Design", "Product Management"],
     projects: ["Smart Home App Design"],
@@ -128,8 +139,10 @@ const sampleStudents = [
     organizations: ["Design Collective"],
     specializations: ["User Experience"],
     school: "Design Institute",
+    shareProfile: true,
   },
   {
+    _id: "student_007",
     email: "chloe.wilson@state.edu",
     name: "Chloe Wilson",
     profilePicture: "https://images.unsplash.com/photo-1544005313-94ddf0286df2",
@@ -137,16 +150,18 @@ const sampleStudents = [
     linkedIn: "https://www.linkedin.com/in/chloewilson",
     hobbies: ["Yoga", "Volunteering"],
     skills: ["Go", "Kubernetes", "AWS"],
-    major: "Cloud Architecture",
+    major: "Computer Science",
     classLevel: "SENIOR",
     fieldOfInterest: ["DevOps", "Site Reliability"],
     projects: ["Automated CI/CD Pipeline"],
     companiesOfInterest: ["Amazon", "Microsoft"],
     organizations: ["Cloud Computing Group"],
-    specializations: ["Distrubuted Systems"],
+    specializations: ["Distributed Systems"],
     school: "Western University",
+    shareProfile: true,
   },
   {
+    _id: "student_008",
     email: "ethan.brown@poly.edu",
     name: "Ethan Brown",
     profilePicture:
@@ -155,7 +170,7 @@ const sampleStudents = [
     linkedIn: "https://www.linkedin.com/in/ethanbrown",
     hobbies: ["Chess", "Swimming"],
     skills: ["Rust", "Assembly", "Verilog"],
-    major: "Computer Engineering",
+    major: "Computer Engineering (CSE)",
     classLevel: "SOPHOMORE",
     fieldOfInterest: ["Hardware Design", "Robotics"],
     projects: ["FPGA Traffic Controller"],
@@ -163,8 +178,10 @@ const sampleStudents = [
     organizations: ["IEEE Student Branch"],
     specializations: ["Microprocessors"],
     school: "Polytechnic University",
+    shareProfile: false,
   },
   {
+    _id: "student_009",
     email: "isabella.white@uni.edu",
     name: "Isabella White",
     profilePicture: "https://images.unsplash.com/photo-1554151228-14d9def656e4",
@@ -172,7 +189,7 @@ const sampleStudents = [
     linkedIn: "https://www.linkedin.com/in/isabellawhite",
     hobbies: ["Skiing", "Writing"],
     skills: ["Swift", "CoreData", "Firebase"],
-    major: "Mobile Development",
+    major: "Computer Science",
     classLevel: "FRESHMAN",
     fieldOfInterest: ["iOS Development", "Mobile UX"],
     projects: ["Task Tracker App"],
@@ -180,8 +197,10 @@ const sampleStudents = [
     organizations: ["App Developers Club"],
     specializations: ["Interface Design"],
     school: "Central University",
+    shareProfile: true,
   },
   {
+    _id: "student_10",
     email: "noah.davis@college.edu",
     name: "Noah Davis",
     profilePicture: "https://images.unsplash.com/photo-1552058544-f2b08422138a",
@@ -189,7 +208,7 @@ const sampleStudents = [
     linkedIn: "https://www.linkedin.com/in/noahdavis",
     hobbies: ["Drums", "Tennis"],
     skills: ["PHP", "Laravel", "MySQL"],
-    major: "Information Systems",
+    major: "Data Science",
     classLevel: "JUNIOR",
     fieldOfInterest: ["Business Analysis", "Database Management"],
     projects: ["Inventory Management System"],
@@ -197,6 +216,7 @@ const sampleStudents = [
     organizations: ["MIS Society"],
     specializations: ["Information Security"],
     school: "Business College",
+    shareProfile: false,
   },
 ];
 

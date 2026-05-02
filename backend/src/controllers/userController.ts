@@ -26,6 +26,7 @@ interface StudentResponse extends BaseUserResponse {
   fieldOfInterest?: string[];
   projects?: string[];
   companiesOfInterest?: string[];
+  shareProfile?: boolean;
 }
 
 interface AlumniResponse extends BaseUserResponse {
@@ -178,6 +179,7 @@ export const getUserById = asyncHandler(
         hobbies: foundUser.hobbies,
         skills: foundUser.skills,
         companiesOfInterest: foundUser.companiesOfInterest,
+        shareProfile: foundUser.shareProfile,
       } as StudentResponse;
     } else {
       responseData = {
@@ -418,3 +420,60 @@ export const getAlumniSimilarities = asyncHandler(
     });
   },
 );
+
+// @desc Get students willing to share profile
+// @route GET /api/users/student
+// @access Private
+export const getOpenStudents = asyncHandler(async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(createHttpError(400, validationErrorParser(errors)));
+  }
+
+  const { page, perPage, query, major } = matchedData(req, {
+    locations: ["query"],
+  });
+
+  const dbQuery = User.find({
+    type: UserType.Student,
+    shareProfile: true,
+  });
+
+  if (query) {
+    dbQuery.or([
+      { name: { $regex: new RegExp(query, "i") } },
+      { school: { $regex: new RegExp(query, "i") } },
+      { major: { $regex: new RegExp(query, "i") } },
+    ]);
+  }
+
+  if (major) {
+    const majorArray = major
+      .split(",")
+      .map((item: string) => item.trim())
+      .filter(Boolean);
+
+    if (majorArray.length > 0) {
+      dbQuery.where("major").in(majorArray);
+    }
+  }
+
+  // ensure count and paginate do not conflict
+  const countQuery = dbQuery.clone();
+
+  // count total results, populate company, and paginate in parallel
+  const [total, users] = await Promise.all([
+    countQuery.countDocuments(),
+    dbQuery
+      .skip(page * perPage)
+      .limit(perPage)
+      .exec(),
+  ]);
+
+  res.status(200).json({
+    page,
+    perPage,
+    total,
+    data: users,
+  });
+});

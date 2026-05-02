@@ -192,6 +192,14 @@ const validateQuery = query("query")
   .withMessage("query must be a string.")
   .trim();
 
+const validateMajorQuery = query("major")
+  .optional()
+  .isString()
+  .withMessage("major must be a string.")
+  .trim()
+  .notEmpty()
+  .withMessage("major must not be empty.");
+
 const validateCompanyName = query("company")
   .optional()
   .isString()
@@ -296,6 +304,13 @@ export const getOpenAlumniValidator = [
   validateCompanyName,
   validatePositionQuery,
   validateIndustry,
+];
+
+export const getOpenStudentsValidator = [
+  validatePage,
+  validatePerPage,
+  validateQuery,
+  validateMajorQuery,
 ];
 
 export const getSimilaritiesValidator = [

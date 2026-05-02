@@ -43,7 +43,7 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   };
 
   return (
-    <div className="absolute top-8 flex flex-col gap-2 min-w-[150px] bg-background shadow-md rounded-md z-10">
+    <div className="absolute top-8 flex flex-col gap-2 min-w-[300px] bg-background shadow-md rounded-md z-10 overflow-auto max-h-80">
       <div className="flex flex-col gap-1 border border-gray-300 p-2 rounded-md">
         {options.map((option) => (
           <label key={option} className="flex items-center gap-2">
@@ -58,6 +58,7 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
         ))}
       </div>
     </div>
+    
   );
 };
 

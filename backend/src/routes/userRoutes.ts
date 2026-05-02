@@ -14,6 +14,12 @@ userRouter.get(
 );
 
 userRouter.get(
+  "/student",
+  userValidator.getOpenStudentsValidator,
+  userController.getOpenStudents,
+);
+
+userRouter.get(
   "/:id",
   userValidator.getUservalidator,
   userController.getUserById,

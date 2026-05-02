@@ -8,7 +8,9 @@ import SavedApplications from "./pages/SavedApplications";
 import Companies from "./pages/Companies";
 import CompanyProfile from "./pages/Company";
 import AlumniProfile from "./pages/Alumni";
+import StudentProfile from "./pages/Student";
 import Connect from "./pages/Connect";
+import Students from "./pages/Students";
 import Sandbox from "./pages/Sandbox";
 import Profile from "./pages/Profile";
 import Analytics from "./pages/Analytics";
@@ -24,7 +26,9 @@ function App() {
             <Route path="companies" element={<Companies />} />
             <Route path="/companies/:id" element={<CompanyProfile />} />
             <Route path="/alumni/:id" element={<AlumniProfile />} />
+            <Route path="/student/:id" element={<StudentProfile />} />
             <Route path="connect" element={<Connect />} />
+            <Route path="students" element={<Students />} />
             <Route path="applications">
               <Route path="applied" element={<Applications />} />
               <Route path="saved" element={<SavedApplications />} />
