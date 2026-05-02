@@ -19,6 +19,7 @@ import {
   getIndustryLabel,
 } from "../../utils/valuesToLabels";
 import { LuLayers, LuUsers } from "react-icons/lu";
+import { parseErrorResponse } from "../../utils/errorHandler";
 
 const defaultLogo = "/assets/defaultLogo.png";
 
@@ -86,7 +87,7 @@ const ApplicationModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to update application: " + response.error,
+            detail: parseErrorResponse(response.error),
           });
         }
       })
@@ -94,7 +95,7 @@ const ApplicationModal = ({
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail: "Failed to update application: " + (error as Error).message,
+          detail: parseErrorResponse(error),
         });
       });
   };
@@ -115,7 +116,7 @@ const ApplicationModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to delete application: " + response.error,
+            detail: parseErrorResponse(response.error),
           });
         }
       })
@@ -123,7 +124,7 @@ const ApplicationModal = ({
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail: "Failed to delete application: " + (error as Error).message,
+          detail: parseErrorResponse(error),
         });
       });
   };

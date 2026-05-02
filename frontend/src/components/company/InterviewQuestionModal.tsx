@@ -11,6 +11,7 @@ import {
   updateInterviewQuestion,
 } from "../../api/interviewQuestions";
 import Dialog from "../public/Dialog";
+import { parseErrorResponse } from "../../utils/errorHandler";
 
 interface InterviewQuestionModalProps {
   interviewQuestion: InterviewQuestion;
@@ -77,7 +78,7 @@ const InterviewQuestionModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to delete interview question: " + response.error,
+            detail: "Failed to delete interview question: " + parseErrorResponse(response.error),
           });
         }
       })
@@ -85,8 +86,7 @@ const InterviewQuestionModal = ({
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail:
-            "Failed to update interview question: " + (error as Error).message,
+          detail: "Failed to update interview question: " + parseErrorResponse(error),
         });
       });
   };
@@ -119,7 +119,7 @@ const InterviewQuestionModal = ({
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to update interview question: " + response.error,
+            detail: "Failed to update interview question: " + parseErrorResponse(response.error),
           });
         }
       })
@@ -127,8 +127,7 @@ const InterviewQuestionModal = ({
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail:
-            "Failed to update interview question: " + (error as Error).message,
+          detail: "Failed to update interview question: " + parseErrorResponse(error),
         });
       });
   };

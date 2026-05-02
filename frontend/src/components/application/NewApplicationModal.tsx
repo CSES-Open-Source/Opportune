@@ -7,6 +7,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { createApplication } from "../../api/applications";
 import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
+import { parseErrorResponse } from "../../utils/errorHandler";
 
 interface NewApplicationModalProps {
   isOpen: boolean;
@@ -90,7 +91,7 @@ const NewApplicationModal = ({
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "Failed to create application: " + (error as Error).message,
+        detail: parseErrorResponse(error),
       });
     }
 

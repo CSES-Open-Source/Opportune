@@ -16,6 +16,7 @@ import { Alumni } from "../types/User";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { Similarity } from "../types/Similarity";
 import {Toast} from "primereact/toast";
+import { parseErrorResponse } from "../utils/errorHandler";
 
 const AlumniProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -58,7 +59,7 @@ const AlumniProfile: React.FC = () => {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: result.error || "Failed to generate email"
+        detail: parseErrorResponse(result.error),
       });
     }
     setGenerating(false);
@@ -85,14 +86,14 @@ const AlumniProfile: React.FC = () => {
           toast.current?.show({
             severity: "error",
             summary: "Error",
-            detail: "Failed to fetch alumni profile: " + result.error,
+            detail: "Failed to fetch alumni: " + parseErrorResponse(result.error),
           });
         }
       })
-      .catch(() => toast.current?.show({
+      .catch((error: unknown) => toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: "Unexpected error occurred.",
+        detail: "Failed to fetch alumni: " + parseErrorResponse(error),
       }))
       .finally(() => setLoading(false));
   }, [id]);
