@@ -23,7 +23,7 @@ export const navItems: NavItem[] = [
     icon: FiBriefcase,
   },
   {
-    label: "Connect",
+    label: "Alumni Network",
     path: "/connect",
     icon: FiLink,
   },
