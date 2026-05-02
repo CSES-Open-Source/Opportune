@@ -9,7 +9,6 @@ import {
 import { createCompany, updateCompany } from "../../api/companies";
 import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
-import { parseErrorResponse } from "../../utils/errorHandler";
 import {
   getEmployeesLabel,
   getIndustryLabel,
