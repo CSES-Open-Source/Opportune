@@ -564,7 +564,7 @@ const Profile = () => {
                             }
                           />
                           <span className="ml-3 text-[#e8eaed]">
-                            Make my profile visible to alumni
+                            Make my profile visible to alumni and students
                           </span>
                         </label>
                       </div>
@@ -819,7 +819,7 @@ const Profile = () => {
                             }
                           />
                           <span className="ml-3 text-[#e8eaed]">
-                            Make my profile visible to students
+                            Make my profile visible to alumni and students
                           </span>
                         </label>
                       </div>
