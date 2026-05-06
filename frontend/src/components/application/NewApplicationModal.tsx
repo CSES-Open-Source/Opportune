@@ -5,7 +5,6 @@ import { Company } from "../../types/Company";
 import { createApplication } from "../../api/applications";
 import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
-import { parseErrorResponse } from "../../utils/errorHandler";
 import { LuBuilding2, LuBriefcase, LuMapPin, LuLink, LuPlus, LuX } from "react-icons/lu";
 
 interface NewApplicationModalProps {
@@ -88,7 +87,7 @@ const NewApplicationModal = ({
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: parseErrorResponse(error),
+        detail: "Failed to create application: " + (error as Error).message,
       });
     }
 
@@ -147,20 +146,12 @@ const NewApplicationModal = ({
                 <LuBuilding2 className="w-3.5 h-3.5" />
                 Company <span className="text-[#f87171]">*</span>
               </label>
-              <div
-                className="rounded-lg transition-all"
-                style={{
-                  background: "#141920",
-                  border: company ? "1px solid #5b8ef4" : "1px solid #2d3748",
-                }}
-              >
-                <CompanyDropdown
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                  dropdownClassName="w-full py-2.5 bg-transparent text-[#e8eaed] outline-none"
-                  buttonClassName=""
-                />
-              </div>
+              <CompanyDropdown
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                dropdownClassName="w-full py-2.5 text-[#e8eaed] outline-none"
+                buttonClassName=""
+              />
             </div>
 
             {/* Position */}

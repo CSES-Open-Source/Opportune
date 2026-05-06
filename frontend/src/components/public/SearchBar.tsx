@@ -65,7 +65,6 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
         ))}
       </div>
     </div>
-    
   );
 };
 
@@ -139,7 +138,7 @@ const SearchBar = <T extends Record<string, unknown>>({
       <div className="flex items-center gap-3">
         <div className="flex items-center flex-1 rounded-xl px-4 py-2.5 border transition-all"
           style={{
-            background: "#141920",
+            background: "#0f1419",
             borderColor: "#2d3748",
           }}
         >
@@ -149,7 +148,7 @@ const SearchBar = <T extends Record<string, unknown>>({
             placeholder={placeholder}
             value={query}
             onChange={handleInputChange}
-            className="flex-1 bg-transparent text-[#e8eaed] placeholder-[#4b5563] outline-none text-sm"
+            className="flex-1 bg-transparent text-[#e8eaed] placeholder-[#6b7280] outline-none text-sm"
             name="query"
           />
         </div>

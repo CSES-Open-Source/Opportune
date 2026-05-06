@@ -17,6 +17,7 @@ import {
   Student,
   UpdateUserRequest,
   UserType,
+  MajorType,
 } from "../types/User";
 import { Dropdown } from "primereact/dropdown";
 import CompanyDropdown from "../components/company/CompanyDropdown";
@@ -28,10 +29,12 @@ const Profile = () => {
     value: ClassLevel[key as keyof typeof ClassLevel],
   }));
 
-  const { user, updateUser } = useAuth();
+  const majorOptions = Object.keys(MajorType).map((key) => ({
+    label: MajorType[key as keyof typeof MajorType],
+    value: MajorType[key as keyof typeof MajorType],
+  }));
 
-  const [studentProfile, setStudentProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
-  const [alumniProfile, setAlumniProfile] = useState<{ _id?: string; userId: string }>({ userId: user?._id ? String(user._id) : "" });
+  const { user, updateUser } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
   const [updatedUser, setUpdatedUser] = useState<UpdateUserRequest>(
@@ -42,30 +45,6 @@ const Profile = () => {
   const [canSave, setCanSave] = useState<boolean>(true);
 
   useEffect(() => {
-    if (!user?._id) return;
-
-    if (user?.type === UserType.Student) {
-      fetch(`/api/profile/student/${user._id}`)
-        .then(res => res.json())
-        .then(data => {
-          if (!data || data.error) {
-            setStudentProfile({ userId: user._id });
-          } else {
-            setStudentProfile(data);
-          }
-        });
-    }
-    if (user?.type === UserType.Alumni) {
-      fetch(`/api/profile/alumni/${user._id}`)
-        .then(res => res.json())
-        .then(data => {
-          if (!data || data.error) {
-            setAlumniProfile({ userId: user._id });
-          } else {
-            setAlumniProfile(data);
-          }
-        });
-    }
     setCanSave(isValidLinkedIn && isValidPhoneNumber);
   }, [user, isValidLinkedIn, isValidPhoneNumber]);
 
@@ -88,12 +67,6 @@ const Profile = () => {
       if (response.success) {
         setIsEditing(false);
       }
-
-      if (updatedUser.type === UserType.Student) {
-        saveStudentProfile();
-      } else if (updatedUser.type === UserType.Alumni) {
-        saveAlumniProfile();
-      }
     });
   };
 
@@ -101,60 +74,6 @@ const Profile = () => {
     if (user) {
       setUpdatedUser(user);
       setIsEditing(true);
-    }
-  };
-
-  const saveStudentProfile = () => {
-    if (!studentProfile) return;
-    if (!studentProfile._id) {
-      fetch(`/api/profile/student`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(studentProfile),
-      })
-        .then(r => r.json())
-        .then((data) => {
-          setStudentProfile(data);
-          console.log("created student profile", data);
-        });
-    } else {
-      fetch(`/api/profile/student/${user?._id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(studentProfile),
-      })
-        .then(r => r.json())
-        .then((data) => {
-          setStudentProfile(data);
-          console.log("saved student profile", data);
-        });
-    }
-  };
-
-  const saveAlumniProfile = () => {
-    if (!alumniProfile) return;
-    if (!alumniProfile._id) {
-      fetch(`/api/profile/alumni`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(alumniProfile),
-      })
-        .then(r => r.json())
-        .then((data) => {
-          setAlumniProfile(data);
-          console.log("created alumni profile", data);
-        });
-    } else {
-      fetch(`/api/profile/alumni/${user?._id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(alumniProfile),
-      })
-        .then(r => r.json())
-        .then((data) => {
-          setAlumniProfile(data);
-          console.log("saved alumni profile", data);
-        });
     }
   };
 
@@ -579,12 +498,16 @@ const Profile = () => {
                       <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
                         <LuGraduationCap size={14} /> Major
                       </label>
-                      <input
-                        type="text"
+                      <Dropdown
+                        id="major"
                         value={updatedUser.major}
-                        placeholder="Enter your major"
-                        onChange={(e) => handleInputChange("major", e.target.value)}
-                        className="w-full px-3 py-3 bg-[#1a1f2e] rounded-lg border-2 border-[#2d3748] text-[#e8eaed] focus:outline-none focus:border-[#5b8ef4] transition-all"
+                        options={majorOptions}
+                        onChange={(e) => handleInputChange("major", e.value)}
+                        placeholder="Select your major"
+                        className="w-full border-2 border-[#2d3748] rounded-lg bg-[#1a1f2e] text-[#e8eaed] focus:border-[#5b8ef4]"
+                        panelClassName="bg-[#1a1f2e] border-[#2d3748]"
+                        filter
+                        filterPlaceholder="Search majors..."
                       />
                     </div>
 

@@ -98,7 +98,11 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full">
-        <ProgressSpinner className="h-16 w-16" strokeWidth="3" />
+        <ProgressSpinner 
+          className="h-16 w-16" 
+          strokeWidth="3" 
+          style={{ color: "#5b8ef4" }} 
+        />
       </div>
     );
   }
@@ -107,23 +111,84 @@ const DataList = <T extends object>(props: DataListProps<T>) => {
     <div style={listStyle} className="flex flex-col h-full">
       {/* 1) scrollable list region */}
 
-      {data.length > 0 ? <div className={`flex-1 overflow-y-auto ${listClassName ?? ""}`}>
-        {data.map((item, i) => (
-          <TileComponent key={i} data={item} />
-        ))}</div> : pageType === "companies" ?
-        <div className="text-center">
-          <br></br>
-          <p>No companies currently match your query.</p>
-          <p>Edit your <b>Filter</b> or <b>Add</b> more entries to receive results.</p>
-          <p></p>
-        </div> :
-        <div className="text-center">
-          <br></br>
-          <p>No users currently fit your query.</p>
-          <p>Edit your <b>filters</b> to find users in a different category.</p>
-          <p></p>
+      {data.length > 0 ? (
+        <div className={`flex-1 overflow-y-auto ${listClassName ?? ""}`}>
+          {data.map((item, i) => (
+            <TileComponent key={i} data={item} />
+          ))}
         </div>
-      }
+      ) : pageType === "companies" ? (
+        <div className="text-center py-12">
+          <div 
+            className="max-w-md mx-auto p-6 rounded-xl border"
+            style={{
+              background: 'linear-gradient(145deg, #1e2433, #1a1f2e)',
+              borderColor: '#2d3748',
+            }}
+          >
+            <div className="mb-4">
+              <svg
+                className="w-16 h-16 mx-auto text-[#6b7280]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
+            </div>
+            <p className="text-[#e8eaed] text-lg font-semibold mb-2">
+              No companies found
+            </p>
+            <p className="text-[#9ca3af] text-sm mb-1">
+              No companies currently match your query.
+            </p>
+            <p className="text-[#9ca3af] text-sm">
+              Edit your <span className="font-semibold text-[#5b8ef4]">Filter</span> or{" "}
+              <span className="font-semibold text-[#5b8ef4]">Add</span> more entries to receive results.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <div 
+            className="max-w-md mx-auto p-6 rounded-xl border"
+            style={{
+              background: 'linear-gradient(145deg, #1e2433, #1a1f2e)',
+              borderColor: '#2d3748',
+            }}
+          >
+            <div className="mb-4">
+              <svg
+                className="w-16 h-16 mx-auto text-[#6b7280]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+            </div>
+            <p className="text-[#e8eaed] text-lg font-semibold mb-2">
+              No users found
+            </p>
+            <p className="text-[#9ca3af] text-sm mb-1">
+              No users currently fit your query.
+            </p>
+            <p className="text-[#9ca3af] text-sm">
+              Edit your <span className="font-semibold text-[#5b8ef4]">filters</span> to find users in a different category.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* 2) paginator "below" the scroll region */}
       {(useServerPagination || props.usePagination) && (

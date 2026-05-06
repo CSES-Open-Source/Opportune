@@ -6,7 +6,6 @@ interface AddableCardProps {
   placeholder?: string;
   maxItems?: number;
   onChange: (next: string[]) => void;
-
 }
 
 export function AddableCardList({
@@ -31,19 +30,27 @@ export function AddableCardList({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-gray-500">{label}</label>
+        <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider">
+          {label}
+        </label>
         <button
           type="button"
           onClick={addItem}
-          className="text-sm text-blue-600 hover:underline"
+          disabled={maxItems ? values.length >= maxItems : false}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          style={{
+            background: 'linear-gradient(135deg, #5b8ef4, #7c3aed)',
+            boxShadow: '0 2px 8px rgba(91,142,244,0.25)',
+          }}
         >
-          + Add
+          <span className="text-lg leading-none">+</span>
+          <span>Add</span>
         </button>
       </div>
 
-      <div className="block text-sm font-medium text-gray-500 mb-1">
+      <div className="space-y-2">
         {values.map((value, index) => (
           <DeletableCard
             key={index}
