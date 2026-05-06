@@ -15,7 +15,10 @@ import {
   getEmployeesLabel,
   getIndustryLabel,
 } from "../../utils/valuesToLabels";
-import { LuLayers, LuUsers } from "react-icons/lu";
+import {
+  LuLayers, LuUsers, LuBriefcase, LuMapPin, LuLink, LuCalendar,
+  LuListChecks, LuX, LuPencil, LuTrash2, LuSave,
+} from "react-icons/lu";
 import { parseErrorResponse } from "../../utils/errorHandler";
 
 const defaultLogo = "/assets/defaultLogo.png";
@@ -181,247 +184,355 @@ const SavedApplicationModal = ({
           resetStates();
           onClose();
         }}
-        className="w-full max-w-2xl h-auto max-h-[90vh] rounded-xl flex flex-col p-6"
+        className="w-full max-w-3xl max-h-[90vh] rounded-2xl flex flex-col p-0 overflow-hidden"
+        style={{
+          background: "linear-gradient(145deg, #1e2433, #1a1f2e)",
+          border: "1px solid #2d3748",
+        }}
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Saved Application Details</h2>
-        </div>
+        {/* Gradient top bar */}
+        <div className="h-1" style={{ background: "linear-gradient(90deg, #ec4899, #a78bfa)" }} />
 
-        <div className="flex mb-6">
-          <img
-            src={savedApplication.company.logo || defaultLogo}
-            alt={savedApplication.company.name}
-            className="w-16 h-16 mr-4 rounded-md object-contain"
-          />
+        <div className="p-6 flex flex-col overflow-hidden max-h-[90vh]">
+          {/* Header with Company Info */}
+          <div className="flex items-start gap-4 mb-6 pb-6 border-b" style={{ borderColor: "#2d3748" }}>
+            {/* Company logo */}
+            <div
+              className="w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0 border"
+              style={{ background: "#141920", borderColor: "#2d3748" }}
+            >
+              <img
+                src={savedApplication.company.logo || defaultLogo}
+                alt={savedApplication.company.name}
+                className="w-12 h-12 object-contain rounded"
+              />
+            </div>
 
-          <div>
-            <h3 className="text-xl font-semibold">
-              {savedApplication.company.name}
-            </h3>
-            {savedApplication.company.industry && (
-              <div className="flex flex-row gap-1 items-center">
-                <LuLayers className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                <p className="text-gray-600">
-                  {getIndustryLabel(savedApplication.company.industry)}
-                </p>
-              </div>
-            )}
-            {savedApplication.company.employees && (
-              <div className="flex flex-row gap-1 items-center">
-                <LuUsers className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                <p className="text-gray-600">
-                  {getEmployeesLabel(savedApplication.company.employees)}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Position
-            </label>
-            {isEditing ? (
-              <input
-                value={updatedSavedApplication.position || ""}
-                onChange={(e) =>
-                  setUpdatedSavedApplication((prev) => ({
-                    ...prev,
-                    position: e.target.value,
-                  }))
-                }
-                className="w-full p-2 border-2 rounded-md focus:outline-blue-600"
-              />
-            ) : (
-              <p>{savedApplication.position}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Location
-            </label>
-            {isEditing ? (
-              <input
-                value={updatedSavedApplication.location || ""}
-                onChange={(e) =>
-                  setUpdatedSavedApplication((prev) => ({
-                    ...prev,
-                    location: e.target.value,
-                  }))
-                }
-                className="w-full p-2 border-2 rounded-md focus:outline-blue-600"
-              />
-            ) : (
-              <p>{savedApplication.location || "Not specified"}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Job Link
-            </label>
-            {isEditing ? (
-              <input
-                value={updatedSavedApplication.link || ""}
-                onChange={onLinkChange}
-                className={`w-full p-2 border-2 rounded-md ${
-                  isValidLink
-                    ? "focus:outline-blue-600"
-                    : "outline-red-600 border-red-600"
-                }`}
-              />
-            ) : (
-              <p>
-                {savedApplication.link ? (
-                  <a
-                    href={savedApplication.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    View Job Posting
-                  </a>
-                ) : (
-                  "Not specified"
+            {/* Company info */}
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold text-[#e8eaed] mb-1">
+                {savedApplication.company.name}
+              </h2>
+              <div className="flex flex-wrap gap-3 text-sm">
+                {savedApplication.company.industry && (
+                  <div className="flex items-center gap-1.5 text-[#9ca3af]">
+                    <LuLayers className="w-3.5 h-3.5" />
+                    <span>{getIndustryLabel(savedApplication.company.industry)}</span>
+                  </div>
                 )}
-              </p>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Deadline
-            </label>
-            {isEditing ? (
-              <Calendar
-                value={
-                  updatedSavedApplication.deadline
-                    ? new Date(updatedSavedApplication.deadline)
-                    : null
-                }
-                onChange={(e) => {
-                  setUpdatedSavedApplication((prev) => ({
-                    ...prev,
-                    deadline: e.value as Date | undefined,
-                  }));
-                }}
-                placeholder="MM/DD/YYYY"
-                showIcon
-                inputClassName="p-2 border-2 rounded-md focus:outline-blue-600 w-full"
-                className="w-full"
-              />
-            ) : (
-              <p>
-                {savedApplication.deadline
-                  ? new Date(savedApplication.deadline).toLocaleDateString()
-                  : "Not specified"}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Materials Needed
-          </label>
-          {isEditing ? (
-            <div>
-              <div className="flex items-center mb-2">
-                <input
-                  type="text"
-                  value={materialsInput}
-                  onChange={(e) => setMaterialsInput(e.target.value)}
-                  placeholder="Add a material"
-                  className="w-full p-2 border-2 rounded-md focus:outline-blue-600"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleAddMaterial();
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={handleAddMaterial}
-                  className="ml-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
-                >
-                  Add
-                </button>
+                {savedApplication.company.employees && (
+                  <div className="flex items-center gap-1.5 text-[#9ca3af]">
+                    <LuUsers className="w-3.5 h-3.5" />
+                    <span>{getEmployeesLabel(savedApplication.company.employees)}</span>
+                  </div>
+                )}
               </div>
-              <div className="flex flex-wrap gap-2">
-                {materialsNeeded.map((material, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center bg-gray-200 text-gray-700 px-2 py-1 rounded-md text-sm"
-                  >
-                    {material}
+            </div>
+
+            {/* Close button */}
+            <button
+              onClick={() => {
+                resetStates();
+                onClose();
+              }}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6b7280] hover:text-[#e8eaed] hover:rotate-90 transition-all duration-200"
+              style={{ background: "#141920", border: "1px solid #2d3748" }}
+            >
+              <LuX className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Form fields - Scrollable */}
+          <div className="flex-1 overflow-y-auto pr-2 space-y-6">
+            {/* Position & Location Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                  <LuBriefcase className="w-3.5 h-3.5" />
+                  Position
+                </label>
+                {isEditing ? (
+                  <input
+                    value={updatedSavedApplication.position || ""}
+                    onChange={(e) =>
+                      setUpdatedSavedApplication((prev) => ({
+                        ...prev,
+                        position: e.target.value,
+                      }))
+                    }
+                    className="w-full p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                    style={{
+                      background: "#141920",
+                      border: "1px solid #2d3748",
+                    }}
+                    onFocus={e => (e.target as HTMLInputElement).style.borderColor = "#ec4899"}
+                    onBlur={e => (e.target as HTMLInputElement).style.borderColor = "#2d3748"}
+                  />
+                ) : (
+                  <p className="text-[#e8eaed] text-sm">{savedApplication.position}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                  <LuMapPin className="w-3.5 h-3.5" />
+                  Location
+                </label>
+                {isEditing ? (
+                  <input
+                    value={updatedSavedApplication.location || ""}
+                    onChange={(e) =>
+                      setUpdatedSavedApplication((prev) => ({
+                        ...prev,
+                        location: e.target.value,
+                      }))
+                    }
+                    placeholder="e.g., San Diego, CA"
+                    className="w-full p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                    style={{
+                      background: "#141920",
+                      border: "1px solid #2d3748",
+                    }}
+                    onFocus={e => (e.target as HTMLInputElement).style.borderColor = "#ec4899"}
+                    onBlur={e => (e.target as HTMLInputElement).style.borderColor = "#2d3748"}
+                  />
+                ) : (
+                  <p className="text-[#e8eaed] text-sm">
+                    {savedApplication.location || <span className="text-[#6b7280]">Not specified</span>}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Link & Deadline Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                  <LuLink className="w-3.5 h-3.5" />
+                  Job Link
+                </label>
+                {isEditing ? (
+                  <>
+                    <input
+                      value={updatedSavedApplication.link || ""}
+                      onChange={onLinkChange}
+                      placeholder="https://..."
+                      className="w-full p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                      style={{
+                        background: "#141920",
+                        border: isValidLink ? "1px solid #2d3748" : "1px solid #f87171",
+                      }}
+                      onFocus={e => (e.target as HTMLInputElement).style.borderColor = isValidLink ? "#ec4899" : "#f87171"}
+                      onBlur={e => (e.target as HTMLInputElement).style.borderColor = isValidLink ? "#2d3748" : "#f87171"}
+                    />
+                    {!isValidLink && (
+                      <p className="text-xs text-[#f87171] mt-1.5">Please enter a valid URL</p>
+                    )}
+                  </>
+                ) : (
+                  <div>
+                    {savedApplication.link ? (
+                      <a
+                        href={savedApplication.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm text-[#ec4899] hover:text-[#f472b6] hover:underline transition-colors inline-flex items-center gap-1"
+                      >
+                        View Job Posting
+                        <LuLink className="w-3 h-3" />
+                      </a>
+                    ) : (
+                      <p className="text-[#6b7280] text-sm">Not specified</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                  <LuCalendar className="w-3.5 h-3.5" />
+                  Deadline
+                </label>
+                {isEditing ? (
+                  <Calendar
+                    value={
+                      updatedSavedApplication.deadline
+                        ? new Date(updatedSavedApplication.deadline)
+                        : null
+                    }
+                    onChange={(e) => {
+                      setUpdatedSavedApplication((prev) => ({
+                        ...prev,
+                        deadline: e.value as Date | undefined,
+                      }));
+                    }}
+                    placeholder="MM/DD/YYYY"
+                    showIcon={false}
+                    dateFormat="mm/dd/yy"
+                    inputClassName="w-full p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                    inputStyle={{
+                      background: "#141920",
+                      border: "1px solid #2d3748",
+                    }}
+                  />
+                ) : (
+                  <p className="text-[#e8eaed] text-sm">
+                    {savedApplication.deadline
+                      ? new Date(savedApplication.deadline).toLocaleDateString()
+                      : <span className="text-[#6b7280]">Not specified</span>}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Materials Needed */}
+            <div>
+              <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                <LuListChecks className="w-3.5 h-3.5" />
+                Materials Needed
+              </label>
+              {isEditing ? (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <input
+                      type="text"
+                      value={materialsInput}
+                      onChange={(e) => setMaterialsInput(e.target.value)}
+                      placeholder="e.g., Resume, Cover Letter"
+                      className="flex-1 p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                      style={{
+                        background: "#141920",
+                        border: "1px solid #2d3748",
+                      }}
+                      onFocus={e => (e.target as HTMLInputElement).style.borderColor = "#ec4899"}
+                      onBlur={e => (e.target as HTMLInputElement).style.borderColor = "#2d3748"}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAddMaterial();
+                        }
+                      }}
+                    />
                     <button
                       type="button"
-                      onClick={() => handleRemoveMaterial(index)}
-                      className="ml-2 text-red-500 hover:text-red-700"
+                      onClick={handleAddMaterial}
+                      className="px-3 py-2.5 rounded-lg text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
+                      style={{
+                        background: "linear-gradient(135deg, #ec4899, #a78bfa)",
+                        boxShadow: "0 2px 8px rgba(236,72,153,0.25)",
+                      }}
                     >
-                      &times;
+                      Add
                     </button>
                   </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div>
-              {savedApplication.materialsNeeded &&
-              savedApplication.materialsNeeded.length > 0 ? (
-                <ul className="list-disc list-inside">
-                  {savedApplication.materialsNeeded.map((material, index) => (
-                    <li key={index}>{material}</li>
-                  ))}
-                </ul>
+                  <div className="flex flex-wrap gap-2">
+                    {materialsNeeded.map((material, index) => (
+                      <div
+                        key={index}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border"
+                        style={{
+                          background: "rgba(236,72,153,0.12)",
+                          color: "#ec4899",
+                          borderColor: "rgba(236,72,153,0.3)",
+                        }}
+                      >
+                        {material}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMaterial(index)}
+                          className="text-[#f87171] hover:text-[#ef4444] transition-colors"
+                        >
+                          <LuX className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ) : (
-                <p>Not specified</p>
+                <div>
+                  {savedApplication.materialsNeeded &&
+                  savedApplication.materialsNeeded.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {savedApplication.materialsNeeded.map((material, index) => (
+                        <div
+                          key={index}
+                          className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium border"
+                          style={{
+                            background: "rgba(236,72,153,0.08)",
+                            color: "#e8eaed",
+                            borderColor: "rgba(236,72,153,0.2)",
+                          }}
+                        >
+                          {material}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[#6b7280] text-sm">Not specified</p>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
+          </div>
 
-        {!isEditing && (
-          <div className="flex justify-between mt-auto">
-            <button
-              className={`w-[131px] rounded-lg p-2 flex flex-col items-center justify-center transition-all bg-red-600 ${
-                isEditing ? "bg-opacity-50" : "hover:bg-red-700"
-              } text-white`}
-              onClick={handleDeleteSavedApplication}
-              disabled={isEditing}
-            >
-              Delete
-            </button>
-            <button
-              className={`w-[131px] rounded-lg p-2 flex flex-col items-center justify-center transition-all bg-blue-600 ${
-                isEditing ? "bg-opacity-50" : "hover:bg-blue-700"
-              } text-white`}
-              onClick={handleEditApplication}
-              disabled={isEditing}
-            >
-              Edit Application
-            </button>
+          {/* Actions */}
+          <div className="flex gap-3 mt-6 pt-6 border-t" style={{ borderColor: "#2d3748" }}>
+            {!isEditing ? (
+              <>
+                <button
+                  onClick={handleDeleteSavedApplication}
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-0.5 inline-flex items-center gap-2"
+                  style={{
+                    background: "rgba(248,113,113,0.15)",
+                    border: "1px solid rgba(248,113,113,0.3)",
+                    color: "#f87171",
+                  }}
+                >
+                  <LuTrash2 className="w-4 h-4" />
+                  Delete
+                </button>
+                <div className="flex-1" />
+                <button
+                  onClick={handleEditApplication}
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-0.5 inline-flex items-center gap-2"
+                  style={{
+                    background: "linear-gradient(135deg, #ec4899, #a78bfa)",
+                    boxShadow: "0 4px 14px rgba(236,72,153,0.25)",
+                  }}
+                >
+                  <LuPencil className="w-4 h-4" />
+                  Edit Application
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={resetStates}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-[#9ca3af] hover:text-[#e8eaed] transition-all"
+                  style={{ background: "#141920", border: "1px solid #2d3748" }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveChanges}
+                  disabled={!isValidLink}
+                  className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    background: isValidLink
+                      ? "linear-gradient(135deg, #10b981, #34d399)"
+                      : "#2d3748",
+                    boxShadow: isValidLink
+                      ? "0 4px 14px rgba(16,185,129,0.25)"
+                      : "none",
+                  }}
+                >
+                  <LuSave className="w-4 h-4" />
+                  Save Changes
+                </button>
+              </>
+            )}
           </div>
-        )}
-        {isEditing && (
-          <div className="flex justify-end gap-4 mt-auto">
-            <button
-              className="border w-28 rounded-lg p-2 flex flex-col items-center justify-center transition-all hover:bg-gray-50"
-              onClick={() => resetStates()}
-            >
-              Cancel
-            </button>
-            <button
-              className={`w-[131px] rounded-lg p-2 flex flex-col items-center justify-center transition-all bg-green-600 ${
-                isValidLink ? "hover:bg-green-700" : "opacity-50"
-              } text-white`}
-              onClick={handleSaveChanges}
-              disabled={!isValidLink}
-            >
-              Save Changes
-            </button>
-          </div>
-        )}
+        </div>
       </Modal>
       <Dialog
         isDialogOpen={isDialogOpen}

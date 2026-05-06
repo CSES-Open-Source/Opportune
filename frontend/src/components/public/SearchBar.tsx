@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FaAngleDown, FaSistrix } from "react-icons/fa6";
+import { LuSearch, LuChevronDown } from "react-icons/lu";
 import camelize from "../../utils/camelize";
 
 interface SelectionOption {
   label: string;
   options: string[];
-  single?: boolean; // Whether the selection option is single select
+  single?: boolean;
 }
 
 interface SearchBarProps<T> {
@@ -20,10 +20,8 @@ interface CheckboxGroupProps {
   selectedValues: string[];
   single?: boolean;
   onUpdate: (values: string[]) => void;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-// Subcomponent of the SearchBar component used to display a group of checkboxes for a selection option.
 const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   options,
   single = false,
@@ -43,77 +41,49 @@ const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   };
 
   return (
-    <div className="absolute top-8 flex flex-col gap-2 min-w-[300px] bg-background shadow-md rounded-md z-10 overflow-auto max-h-80">
-      <div className="flex flex-col gap-1 border border-gray-300 p-2 rounded-md">
+    <div
+      className="absolute top-10 flex flex-col gap-2 min-w-[150px] rounded-lg shadow-2xl z-20 border overflow-hidden animate-fadeIn"
+      style={{
+        background: "linear-gradient(145deg, #1e2433, #1a1f2e)",
+        borderColor: "#2d3748",
+      }}
+    >
+      <div className="flex flex-col p-2">
         {options.map((option) => (
-          <label key={option} className="flex items-center gap-2">
+          <label
+            key={option}
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[#e8eaed] cursor-pointer hover:bg-[#141920] transition-colors"
+          >
             <input
               type={single ? "radio" : "checkbox"}
               checked={selectedValues.includes(option)}
               onChange={() => handleCheckboxChange(option)}
-              className="form-checkbox"
+              className="form-checkbox w-4 h-4 rounded border-[#2d3748] text-[#5b8ef4] focus:ring-[#5b8ef4] focus:ring-offset-0 bg-[#141920]"
             />
-            {option}
+            <span>{option}</span>
           </label>
         ))}
       </div>
     </div>
-    
   );
 };
 
-/**
- * A generic search bar component that allows users to input a query and select multiple options from dropdowns.
- *
- * @template T - The type of the form data object that will be passed to the `onSubmitForm` callback function. The object should contain a `query` field of type string and additional fields for each selection option.
- *
- * An example `FormData` interface if your form data contains the selection options titled `"Location"`, `"Department"`, and `"Type"`:
- *
- * @example
- *
- * ```ts
- * interface FormData extends Record<string, string | string[]> {
- *     query: string;
- *     "location": string[];
- *     "department": string[];
- *     "type": string[];
- * }
- * ```
- *
- * @param {SearchBarProps<T>} props - The props for the SearchBar component.
- * @param {Array<{ label: string; options: string[]; single: boolean }>} props.selections - An array of selection objects, each containing a label, an array of options, and whether or not it should be single select. The options will be displayed in a dropdown as checkboxes when the corresponding label is clicked.
- * @param {string} [props.placeholder="Search"] - The placeholder text for the search input field. Defaults to "Search".
- * @param {(formData: T) => void} [props.onSubmitForm] - A callback function to handle form submission. The function will be called with the current state of the form data as an argument when the form is submitted.
- * @param {string} [props.width="100%"] - The width of the search bar component. Defaults to "100%".
- *
- * @returns {React.JSX.Element} The rendered search bar component.
- */
 const SearchBar = <T extends Record<string, unknown>>({
   selections,
   placeholder = "Search",
   onSubmitForm,
   width = "100%",
 }: SearchBarProps<T>): React.JSX.Element => {
-  // String search query input
   const [query, setQuery] = useState("");
-
-  // Object to store selected values for each selection option
-  const [selectionValues, setSelectionValues] = useState<
-    Record<string, string[]>
-  >(
+  const [selectionValues, setSelectionValues] = useState<Record<string, string[]>>(
     selections.reduce((acc, selection) => {
       acc[selection.label] = [];
       return acc;
     }, {} as Record<string, string[]>),
   );
-
-  // Current expanded selection option
   const [expanded, setExpanded] = useState<string>("");
-
-  // Reference to the selections container, used for auto-closing dropdowns
   const selectionsRef = useRef<HTMLDivElement>(null);
 
-  // Function to handle clicks outside the search bar container to close dropdowns
   const handleClickOutside = (event: MouseEvent) => {
     if (
       selectionsRef.current &&
@@ -130,7 +100,6 @@ const SearchBar = <T extends Record<string, unknown>>({
     };
   }, []);
 
-  // Event handlers
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
@@ -162,55 +131,84 @@ const SearchBar = <T extends Record<string, unknown>>({
 
   return (
     <form
-      className="flex flex-col gap-2 rounded-lg"
+      className="flex flex-col gap-3"
       style={{ width }}
       onSubmit={handleFormSubmit}
     >
-      <div className="flex items-center gap-2">
-        <div className="flex items-center border border-gray-300 rounded-md flex-1">
-          <FaSistrix className="ml-2 text-gray-700" size={20} />
+      <div className="flex items-center gap-3">
+        <div className="flex items-center flex-1 rounded-xl px-4 py-2.5 border transition-all"
+          style={{
+            background: "#0f1419",
+            borderColor: "#2d3748",
+          }}
+        >
+          <LuSearch className="text-[#6b7280] w-4 h-4 mr-3" />
           <input
             type="text"
             placeholder={placeholder}
             value={query}
             onChange={handleInputChange}
-            className="flex-1 p-3 text-base border-none outline-none"
+            className="flex-1 bg-transparent text-[#e8eaed] placeholder-[#6b7280] outline-none text-sm"
             name="query"
           />
         </div>
         <button
           type="submit"
-          className="px-4 py-3 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition text-base font-medium"
+          className="px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-all hover:-translate-y-0.5"
+          style={{
+            background: "linear-gradient(135deg, #5b8ef4, #7c3aed)",
+            boxShadow: "0 4px 14px rgba(91,142,244,0.25)",
+          }}
         >
           Search
         </button>
       </div>
-      <div className="flex flex-wrap gap-4 self-start" ref={selectionsRef}>
-        {selections.map((selection) => (
-          <div
-            key={selection.label}
-            className="relative flex flex-col gap-2 items-start"
-          >
-            <button
-              type="button"
-              onClick={() => toggleSelection(selection.label)}
-              className="px-5 py-0.5 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 flex flex-row justify-center items-center gap-2"
+
+      <div className="flex flex-wrap gap-2" ref={selectionsRef}>
+        {selections.map((selection) => {
+          const hasSelections = selectionValues[selection.label].length > 0;
+          return (
+            <div
+              key={selection.label}
+              className="relative"
             >
-              <span>{selection.label}</span>
-              <FaAngleDown />
-            </button>
-            {expanded === selection.label && (
-              <CheckboxGroup
-                options={selection.options}
-                selectedValues={selectionValues[selection.label]}
-                single={selection.single}
-                onUpdate={(values) =>
-                  handleSelectionChange(selection.label, values)
-                }
-              />
-            )}
-          </div>
-        ))}
+              <button
+                type="button"
+                onClick={() => toggleSelection(selection.label)}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all hover:-translate-y-0.5"
+                style={{
+                  background: hasSelections ? "rgba(91,142,244,0.12)" : "#1a1f2e",
+                  border: hasSelections ? "1px solid rgba(91,142,244,0.35)" : "1px solid #2d3748",
+                  color: hasSelections ? "#5b8ef4" : "#9ca3af",
+                }}
+              >
+                <span>{selection.label}</span>
+                {hasSelections && (
+                  <span
+                    className="w-5 h-5 rounded-full text-[10px] font-bold text-white flex items-center justify-center"
+                    style={{ background: "linear-gradient(135deg, #5b8ef4, #7c3aed)" }}
+                  >
+                    {selectionValues[selection.label].length}
+                  </span>
+                )}
+                <LuChevronDown
+                  className="w-3.5 h-3.5 transition-transform"
+                  style={{ transform: expanded === selection.label ? "rotate(180deg)" : "rotate(0deg)" }}
+                />
+              </button>
+              {expanded === selection.label && (
+                <CheckboxGroup
+                  options={selection.options}
+                  selectedValues={selectionValues[selection.label]}
+                  single={selection.single}
+                  onUpdate={(values) =>
+                    handleSelectionChange(selection.label, values)
+                  }
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
     </form>
   );

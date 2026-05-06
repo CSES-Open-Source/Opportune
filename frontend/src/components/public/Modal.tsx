@@ -85,11 +85,11 @@ const Modal = (props: ModalProps): React.JSX.Element => {
   if (!isOpen) return <></>;
 
   return (
-    // backdrop
+    // backdrop with blur
     <div
       className={`fixed inset-0 w-full h-full flex justify-center items-center ${
         !disableClose && "hover:cursor-pointer"
-      } transition z-50`}
+      } transition z-50 backdrop-blur-sm`}
       style={{
         backgroundColor: useOverlay
           ? `rgba(0, 0, 0, ${backdropOpacity / 100})`
@@ -97,15 +97,15 @@ const Modal = (props: ModalProps): React.JSX.Element => {
       }}
       ref={backdropRef}
     >
-      {/* modal container */}
+      {/* modal container - removed bg-white, now uses className from props */}
       <div
         {...props}
-        className={`relative bg-white mx-auto max-w-2xl hover:cursor-default ${className}`}
+        className={`relative mx-auto max-w-2xl hover:cursor-default ${className}`}
       >
         {!disableClose && (
           <FaXmark
-            className="absolute top-2 right-2 hover:text-primary hover:cursor-pointer transition"
-            size={20}
+            className="absolute top-4 right-4 text-[#9ca3af] hover:text-[#e8eaed] hover:cursor-pointer transition z-10"
+            size={24}
             onClick={() => props.onClose()}
           />
         )}

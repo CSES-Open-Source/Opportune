@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../contexts/useAuth";
 import Modal from "../public/Modal";
-import {ClassLevel, CreateUserRequest, UserType } from "../../types/User";
+import {ClassLevel, CreateUserRequest, UserType, MajorType } from "../../types/User";
 import { ProgressBar } from "primereact/progressbar";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
@@ -52,19 +52,16 @@ const AuthModal = () => {
     newUser.hobbies?.join(", ") ?? ""
   ); 
 
-  const [studentProfile, setStudentProfile] = useState<{ userId: string }>({
-    userId: "",
-  });
-
-  const [alumniProfile, setAlumniProfile] = useState<{ userId: string }>({
-    userId: "",
-  });
-
   const toast = useRef<Toast>(null);
 
   const classLevelOptions = Object.keys(ClassLevel).map((key) => ({
     label: key,
     value: ClassLevel[key as keyof typeof ClassLevel],
+  })); 
+
+  const majorOptions = Object.keys(MajorType).map((key) => ({
+    label: MajorType[key as keyof typeof MajorType],
+    value: MajorType[key as keyof typeof MajorType],
   })); 
 
   useEffect(() => {
@@ -76,9 +73,6 @@ const AuthModal = () => {
         email: user.email,
         profilePicture: user.profilePicture,
       }));
-
-      setStudentProfile({userId: user._id}); 
-      setAlumniProfile({userId: user._id}); 
     }
   }, [user]);
 
@@ -174,32 +168,6 @@ const AuthModal = () => {
     );
   };
 
-  const saveStudentProfile = () => {
-    fetch("/api/profile/student", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(studentProfile),
-    })
-      .then(res => res.json())
-      .then(data => {
-        setStudentProfile(data);
-        console.log("created student profile", data);
-      });
-  };
-
-  const saveAlumniProfile = () => {
-    fetch("/api/profile/alumni", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(alumniProfile),
-    })
-      .then(res => res.json())
-      .then(data => {
-        setAlumniProfile(data);
-        console.log("created alumni profile", data);
-      });
-  };
-
   const handleNewUserChange = (
     field: keyof CreateUserRequest,
     value: unknown,
@@ -218,74 +186,107 @@ const AuthModal = () => {
         isOpen={!isProfileComplete}
         disableClose={true}
         useOverlay={true}
-        className="w-[70vh] h-[70vh] rounded-xl flex flex-col px-8 py-4"
+        className="w-[70vh] h-[70vh] rounded-xl flex flex-col px-8 py-4 border"
+        style={{ 
+          background: '#1a1f2e',
+          borderColor: '#2d3748'
+        }}
       >
         {/* Complete Profile */}
         {stage !== totalStages && (
           <div className="w-full h-full flex flex-col">
-            <h1 className="text-2xl font-bold">Complete your profile</h1>
+            {/* Top gradient accent bar */}
+            <div 
+              className="absolute top-0 left-0 right-0 h-1 rounded-t-xl"
+              style={{
+                background: 'linear-gradient(90deg, #5b8ef4, #7c3aed, #ec4899)',
+              }}
+            />
+
+            <h1 className="text-2xl font-bold text-[#e8eaed] mt-2">Complete your profile</h1>
 
             {/* Progress Bar */}
-            <ProgressBar
-              color="#2563eb"
-              className="h-3 mt-5 mx-1 border shadow-sm rounded-full"
-              value={((stage + 1) * 100) / totalStages}
-              showValue={false}
-            ></ProgressBar>
+            <div className="mt-5 mx-1">
+              <ProgressBar
+                className="h-3 border shadow-sm rounded-full overflow-hidden"
+                style={{
+                  background: '#141920',
+                  borderColor: '#2d3748'
+                }}
+                value={((stage + 1) * 100) / totalStages}
+                showValue={false}
+                pt={{
+                  value: {
+                    style: {
+                      background: 'linear-gradient(90deg, #5b8ef4, #7c3aed)',
+                    }
+                  }
+                }}
+              />
+            </div>
 
             <div className="w-full h-[80%] flex items-center justify-center">
-              {/* Type */}
+              {/* Type Selection */}
               {stage === 0 && (
                 <div className="w-full flex items-center justify-center flex-col flex-1">
-                  <h2 className="text-xl font-semibold mb-6">
+                  <h2 className="text-xl font-semibold mb-6 text-[#e8eaed]">
                     Are you a student or Alumni?
                   </h2>
                   <div className="flex gap-6 w-full mb-auto">
                     <button
                       onClick={() => onSelectType(UserType.Student)}
-                      className={`flex-1 border-2 rounded-lg px-6 py-14 flex flex-col items-center justify-center transition-all ${
+                      className={`flex-1 border-2 rounded-xl px-6 py-14 flex flex-col items-center justify-center transition-all ${
                         selectedType === UserType.Student
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-200 hover:border-blue-300 hover:bg-blue-50/50"
+                          ? "bg-[#5b8ef4]/10 shadow-lg"
+                          : "hover:bg-[#5b8ef4]/5"
                       }`}
+                      style={{
+                        borderColor: selectedType === UserType.Student ? '#5b8ef4' : '#2d3748',
+                        boxShadow: selectedType === UserType.Student ? '0 4px 20px rgba(91,142,244,0.3)' : 'none'
+                      }}
                     >
                       <img
                         src="/assets/studentLogo.png"
                         alt="Student"
                         className="w-16 h-16 mb-4"
                       />
-                      <div className="font-medium text-lg">Student</div>
+                      <div className="font-medium text-lg text-[#e8eaed]">Student</div>
                     </button>
 
                     <button
                       onClick={() => onSelectType(UserType.Alumni)}
-                      className={`flex-1 border-2 rounded-lg px-6 py-14 flex flex-col items-center justify-center transition-all ${
+                      className={`flex-1 border-2 rounded-xl px-6 py-14 flex flex-col items-center justify-center transition-all ${
                         selectedType === UserType.Alumni
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-200 hover:border-blue-300 hover:bg-blue-50/50"
+                          ? "bg-[#7c3aed]/10 shadow-lg"
+                          : "hover:bg-[#7c3aed]/5"
                       }`}
+                      style={{
+                        borderColor: selectedType === UserType.Alumni ? '#7c3aed' : '#2d3748',
+                        boxShadow: selectedType === UserType.Alumni ? '0 4px 20px rgba(124,58,237,0.3)' : 'none'
+                      }}
                     >
                       <img
                         src="/assets/alumniLogo.png"
                         alt="Alumni"
                         className="w-16 h-16 mb-4"
                       />
-                      <div className="font-medium text-lg">Alumni</div>
+                      <div className="font-medium text-lg text-[#e8eaed]">Alumni</div>
                     </button>
                   </div>
                 </div>
               )}
+              
               {/* Contact Info */}
               {stage === 1 && (
                 <div className="flex flex-col items-center w-full flex-1">
-                  <h2 className="text-xl font-semibold mb-8">
+                  <h2 className="text-xl font-semibold mb-8 text-[#e8eaed]">
                     {"Let's add your contact information!"}
                   </h2>
                   <div className="w-full space-y-6 max-w-md">
                     <div className="flex flex-col">
                       <label
                         htmlFor="linkedIn"
-                        className="text-sm font-medium text-gray-700 mb-1"
+                        className="text-sm font-medium text-[#9ca3af] mb-2"
                       >
                         LinkedIn URL (Optional)
                       </label>
@@ -296,18 +297,22 @@ const AuthModal = () => {
                             className={`${
                               newUser.linkedIn
                                 ? "text-[#0077B5]"
-                                : "text-gray-300"
+                                : "text-[#4b5563]"
                             }`}
                           />
                         </div>
                         <input
                           type="url"
                           id="linkedIn"
-                          className={`block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none ${
+                          className={`block w-full pl-10 pr-3 py-2.5 border-2 rounded-lg focus:outline-none text-[#e8eaed] placeholder-[#6b7280] transition-all ${
                             isValidLinkedIn
-                              ? "focus:border-blue-500"
-                              : "border-red-600"
+                              ? "focus:border-[#5b8ef4] focus:ring-2 focus:ring-[#5b8ef4]/20"
+                              : "border-[#f87171]"
                           }`}
+                          style={{
+                            background: '#141920',
+                            borderColor: isValidLinkedIn ? '#2d3748' : '#f87171'
+                          }}
                           placeholder="Add LinkedIn profile"
                           value={newUser.linkedIn || ""}
                           onChange={onLinkedInChanged}
@@ -318,7 +323,7 @@ const AuthModal = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="phoneNumber"
-                        className="text-sm font-medium text-gray-700 mb-1"
+                        className="text-sm font-medium text-[#9ca3af] mb-2"
                       >
                         Phone Number (Optional)
                       </label>
@@ -328,19 +333,23 @@ const AuthModal = () => {
                             size={22}
                             className={`${
                               newUser.phoneNumber
-                                ? "text-green-600"
-                                : "text-gray-300"
+                                ? "text-[#10b981]"
+                                : "text-[#4b5563]"
                             }`}
                           />
                         </div>
                         <input
                           type="tel"
                           id="phoneNumber"
-                          className={`block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none ${
+                          className={`block w-full pl-10 pr-3 py-2.5 border-2 rounded-lg focus:outline-none text-[#e8eaed] placeholder-[#6b7280] transition-all ${
                             isValidPhoneNumber
-                              ? "focus:border-blue-500"
-                              : "border-red-600"
+                              ? "focus:border-[#5b8ef4] focus:ring-2 focus:ring-[#5b8ef4]/20"
+                              : "border-[#f87171]"
                           }`}
+                          style={{
+                            background: '#141920',
+                            borderColor: isValidPhoneNumber ? '#2d3748' : '#f87171'
+                          }}
                           placeholder="Add phone number"
                           value={newUser.phoneNumber || ""}
                           onChange={onPhoneNumberChanged}
@@ -351,41 +360,46 @@ const AuthModal = () => {
                 </div>
               )}
 
-              {/* Education Info */}
+              {/* Education Info (Student) */}
               {stage === 2 && newUser.type === UserType.Student && (
                 <div className="flex flex-col items-center w-full flex-1">
-                  <h2 className="text-xl font-semibold mb-8">
+                  <h2 className="text-xl font-semibold mb-8 text-[#e8eaed]">
                     Tell us about your education!
                   </h2>
                   <div className="w-full space-y-6 max-w-md">
                     <div className="flex flex-col">
                       <label
                         htmlFor="major"
-                        className="text-sm font-medium text-gray-700 mb-1"
+                        className="text-sm font-medium text-[#9ca3af] mb-2"
                       >
                         Major (Optional)
                       </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          id="major"
-                          className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
-                          placeholder="Computer Science"
-                          value={newUser.major || ""}
-                          onChange={(e) =>
-                            setNewUser((prev) => ({
-                              ...prev,
-                              major: e.target.value,
-                            }))
-                          }
-                        />
-                      </div>
+                      <Dropdown
+                        id="major"
+                        value={newUser.major}
+                        options={majorOptions}
+                        onChange={(e) =>
+                          setNewUser((prev) => ({
+                            ...prev,
+                            major: e.value,
+                          }))
+                        }
+                        placeholder="Select your major"
+                        className="w-full border-2 p-[2px] rounded-lg"
+                        style={{
+                          background: '#141920',
+                          borderColor: '#2d3748'
+                        }}
+                        panelClassName="dark-dropdown-panel"
+                        filter
+                        filterPlaceholder="Search majors..."
+                      />
                     </div>
 
                     <div className="flex flex-col">
                       <label
                         htmlFor="year"
-                        className="text-sm font-medium text-gray-700 mb-1"
+                        className="text-sm font-medium text-[#9ca3af] mb-2"
                       >
                         Year (Optional)
                       </label>
@@ -400,9 +414,14 @@ const AuthModal = () => {
                           }))
                         }
                         placeholder="Select a year"
-                        className="w-full border-2 p-[2px] border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full border-2 p-[2px] rounded-lg"
+                        style={{
+                          background: '#141920',
+                          borderColor: '#2d3748'
+                        }}
+                        panelClassName="dark-dropdown-panel"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[#6b7280] mt-2">
                         Select the year that best represents your current status
                       </p>
                     </div>
@@ -411,14 +430,18 @@ const AuthModal = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="specialization"
-                        className="text-sm font-medium text-gray-700 mb-1"
+                        className="text-sm font-medium text-[#9ca3af] mb-2"
                       >
                         Specialization (Optional)
                       </label>
                       <input
                         type="text"
                         id="specialization"
-                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        className="block w-full px-3 py-2.5 border-2 rounded-lg focus:outline-none focus:border-[#5b8ef4] focus:ring-2 focus:ring-[#5b8ef4]/20 text-[#e8eaed] placeholder-[#6b7280] transition-all"
+                        style={{
+                          background: '#141920',
+                          borderColor: '#2d3748'
+                        }}
                         placeholder="e.g. AI/ML, Systems, Product..."
                         value={newUser.fieldOfInterest?.[0] ?? ""}
                         onChange={(e) =>
@@ -436,7 +459,7 @@ const AuthModal = () => {
               {/* Professional Summary (Student) */}
               {stage === 3 && newUser.type === UserType.Student && (
                 <div className="flex flex-col items-center w-full flex-1">
-                  <h2 className="text-xl font-semibold mb-8">
+                  <h2 className="text-xl font-semibold mb-8 text-[#e8eaed]">
                     Professional summary
                   </h2>
                   <div className="w-full space-y-6 max-w-md">
@@ -444,13 +467,17 @@ const AuthModal = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="skills"
-                        className="text-sm font-medium text-gray-700 mb-1"
+                        className="text-sm font-medium text-[#9ca3af] mb-2"
                       >
                         Skills (Optional)
                       </label>
                       <textarea
                         id="skills"
-                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        className="block w-full px-3 py-2.5 border-2 rounded-lg focus:outline-none focus:border-[#5b8ef4] focus:ring-2 focus:ring-[#5b8ef4]/20 text-[#e8eaed] placeholder-[#6b7280] transition-all resize-none"
+                        style={{
+                          background: '#141920',
+                          borderColor: '#2d3748'
+                        }}
                         placeholder="e.g. Python, React, Systems Design..."
                         rows={3}
                         value={skillsText}
@@ -465,7 +492,7 @@ const AuthModal = () => {
                           )
                         }}
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[#6b7280] mt-2">
                         Separate skills with commas.
                       </p>
                     </div>
@@ -474,13 +501,17 @@ const AuthModal = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="companiesOfInterest"
-                        className="text-sm font-medium text-gray-700 mb-1"
+                        className="text-sm font-medium text-[#9ca3af] mb-2"
                       >
                         Companies of interest (Optional)
                       </label>
                       <textarea
                         id="companiesOfInterest"
-                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        className="block w-full px-3 py-2.5 border-2 rounded-lg focus:outline-none focus:border-[#5b8ef4] focus:ring-2 focus:ring-[#5b8ef4]/20 text-[#e8eaed] placeholder-[#6b7280] transition-all resize-none"
+                        style={{
+                          background: '#141920',
+                          borderColor: '#2d3748'
+                        }}
                         placeholder="e.g. Google, NVIDIA, Cisco..."
                         rows={2}
                         value={companiesOfInterestText}
@@ -495,7 +526,7 @@ const AuthModal = () => {
                           )
                         }}
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[#6b7280] mt-2">
                         Separate company names with commas.
                       </p>
                     </div>
@@ -506,7 +537,7 @@ const AuthModal = () => {
               {/* Tell us more about yourself (Student) */}
               {stage === 4 && newUser.type === UserType.Student && (
               <div className="flex flex-col items-center w-full flex-1">
-                <h2 className="text-xl font-semibold mb-8">
+                <h2 className="text-xl font-semibold mb-8 text-[#e8eaed]">
                   Tell us more about yourself
                 </h2>
                 <div className="w-full space-y-6 max-w-md">
@@ -514,13 +545,17 @@ const AuthModal = () => {
                   <div className="flex flex-col">
                     <label
                       htmlFor="organizations"
-                      className="text-sm font-medium text-gray-700 mb-1"
+                      className="text-sm font-medium text-[#9ca3af] mb-2"
                     >
                       Organizations (Optional)
                     </label>
                     <textarea
                       id="organizations"
-                      className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                      className="block w-full px-3 py-2.5 border-2 rounded-lg focus:outline-none focus:border-[#5b8ef4] focus:ring-2 focus:ring-[#5b8ef4]/20 text-[#e8eaed] placeholder-[#6b7280] transition-all resize-none"
+                      style={{
+                        background: '#141920',
+                        borderColor: '#2d3748'
+                      }}
                       placeholder="e.g. IEEE, ACM, Robotics Club..."
                       rows={2}
                       value={organizationsText}
@@ -539,7 +574,7 @@ const AuthModal = () => {
                         );
                       }}
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[#6b7280] mt-2">
                       Separate organization names with commas.
                     </p>
                   </div>
@@ -548,13 +583,17 @@ const AuthModal = () => {
                   <div className="flex flex-col">
                     <label
                       htmlFor="hobbies"
-                      className="text-sm font-medium text-gray-700 mb-1"
+                      className="text-sm font-medium text-[#9ca3af] mb-2"
                     >
                       Hobbies (Optional)
                     </label>
                     <textarea
                       id="hobbies"
-                      className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                      className="block w-full px-3 py-2.5 border-2 rounded-lg focus:outline-none focus:border-[#5b8ef4] focus:ring-2 focus:ring-[#5b8ef4]/20 text-[#e8eaed] placeholder-[#6b7280] transition-all resize-none"
+                      style={{
+                        background: '#141920',
+                        borderColor: '#2d3748'
+                      }}
                       placeholder="e.g. Hiking, Guitar, Chess..."
                       rows={2}
                       value={hobbiesText}
@@ -573,7 +612,7 @@ const AuthModal = () => {
                         );
                       }}
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[#6b7280] mt-2">
                       Separate hobbies with commas.
                     </p>
                   </div>
@@ -581,17 +620,17 @@ const AuthModal = () => {
               </div>
             )}
 
-              {/* Professional Info */}
+              {/* Professional Info (Alumni) */}
               {stage === 2 && newUser.type === UserType.Alumni && (
                 <div className="flex flex-col items-center w-full flex-1">
-                  <h2 className="text-xl font-semibold mb-8">
+                  <h2 className="text-xl font-semibold mb-8 text-[#e8eaed]">
                     Professional Information
                   </h2>
                   <div className="w-full space-y-6 max-w-md">
                     <div className="flex flex-col">
                       <label
                         htmlFor="company"
-                        className="text-sm font-medium text-gray-700 mb-1"
+                        className="text-sm font-medium text-[#9ca3af] mb-2"
                       >
                         Company (Optional)
                       </label>
@@ -604,10 +643,10 @@ const AuthModal = () => {
                           }))
                         }
                         className="w-full"
-                        dropdownClassName="w-full border-2 p-[2px] border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        dropdownClassName="w-full border-2 p-[2px] rounded-lg"
                         buttonClassName="w-12"
                       />
-                      <p className="text-xs text-gray-500 mt-2">
+                      <p className="text-xs text-[#6b7280] mt-2">
                         {
                           "Can't find your company? Add it to Opportune after completing your profile!"
                         }
@@ -618,7 +657,7 @@ const AuthModal = () => {
                       <div className="flex flex-col">
                         <label
                           htmlFor="position"
-                          className="text-sm font-medium text-gray-700 mb-1"
+                          className="text-sm font-medium text-[#9ca3af] mb-2"
                         >
                           Position (Optional)
                         </label>
@@ -626,7 +665,11 @@ const AuthModal = () => {
                           <input
                             type="text"
                             id="position"
-                            className="block w-full pl-3 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                            className="block w-full pl-3 pr-3 py-2.5 border-2 rounded-lg focus:outline-none focus:border-[#5b8ef4] focus:ring-2 focus:ring-[#5b8ef4]/20 text-[#e8eaed] placeholder-[#6b7280] transition-all"
+                            style={{
+                              background: '#141920',
+                              borderColor: '#2d3748'
+                            }}
                             placeholder="Enter your position"
                             value={newUser.position || ""}
                             onChange={(e) =>
@@ -641,16 +684,20 @@ const AuthModal = () => {
                     )}
 
                     <div className="flex flex-col">
-                      <label className="text-sm font-medium text-gray-700 mb-3">
+                      <label className="text-sm font-medium text-[#9ca3af] mb-3">
                         Share your profile with students?
                       </label>
                       <div className="flex gap-4">
                         <button
                           className={`flex-1 border-2 rounded-lg p-4 flex items-center justify-center transition-all ${
                             newUser.shareProfile === true
-                              ? "border-blue-500 bg-blue-50"
-                              : "border-gray-200 hover:border-blue-300 hover:bg-blue-50/50"
+                              ? "bg-[#10b981]/10"
+                              : "hover:bg-[#10b981]/5"
                           }`}
+                          style={{
+                            borderColor: newUser.shareProfile === true ? '#10b981' : '#2d3748',
+                            boxShadow: newUser.shareProfile === true ? '0 2px 10px rgba(16,185,129,0.2)' : 'none'
+                          }}
                           onClick={() =>
                             setNewUser((prev) => ({
                               ...prev,
@@ -659,15 +706,19 @@ const AuthModal = () => {
                           }
                           type="button"
                         >
-                          <FaCheck className="mr-2.5" />
-                          Yes
+                          <FaCheck className="mr-2.5 text-[#10b981]" />
+                          <span className="text-[#e8eaed]">Yes</span>
                         </button>
                         <button
                           className={`flex-1 border-2 rounded-lg p-4 flex items-center justify-center transition-all ${
                             newUser.shareProfile === false
-                              ? "border-blue-500 bg-blue-50"
-                              : "border-gray-200 hover:border-blue-300 hover:bg-blue-50/50"
+                              ? "bg-[#f87171]/10"
+                              : "hover:bg-[#f87171]/5"
                           }`}
+                          style={{
+                            borderColor: newUser.shareProfile === false ? '#f87171' : '#2d3748',
+                            boxShadow: newUser.shareProfile === false ? '0 2px 10px rgba(248,113,113,0.2)' : 'none'
+                          }}
                           onClick={() =>
                             setNewUser((prev) => ({
                               ...prev,
@@ -676,11 +727,11 @@ const AuthModal = () => {
                           }
                           type="button"
                         >
-                          <FaXmark className="mr-2.5" />
-                          No
+                          <FaXmark className="mr-2.5 text-[#f87171]" />
+                          <span className="text-[#e8eaed]">No</span>
                         </button>
                       </div>
-                      <p className="text-xs text-gray-500 mt-2">
+                      <p className="text-xs text-[#6b7280] mt-2">
                         If yes, students will be able to view your profile and
                         connect with you for mentorship or networking.
                       </p>
@@ -692,7 +743,7 @@ const AuthModal = () => {
               {/* Professional Summary (Alumni) */}
               {stage === 3 && newUser.type === UserType.Alumni && (
                 <div className="flex flex-col items-center w-full flex-1">
-                  <h2 className="text-xl font-semibold mb-8">
+                  <h2 className="text-xl font-semibold mb-8 text-[#e8eaed]">
                     Professional summary
                   </h2>
                   <div className="w-full space-y-6 max-w-md">
@@ -700,13 +751,17 @@ const AuthModal = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="alumni-companies"
-                        className="text-sm font-medium text-gray-700 mb-1"
+                        className="text-sm font-medium text-[#9ca3af] mb-2"
                       >
-                        Companies you’ve worked at (Optional)
+                        Companies you&apos;ve worked at (Optional)
                       </label>
                       <textarea
                         id="alumni-companies"
-                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        className="block w-full px-3 py-2.5 border-2 rounded-lg focus:outline-none focus:border-[#5b8ef4] focus:ring-2 focus:ring-[#5b8ef4]/20 text-[#e8eaed] placeholder-[#6b7280] transition-all resize-none"
+                        style={{
+                          background: '#141920',
+                          borderColor: '#2d3748'
+                        }}
                         placeholder="e.g. Google, NVIDIA, Cisco..."
                         rows={2}
                         value={alumniCompaniesText}
@@ -714,14 +769,14 @@ const AuthModal = () => {
                           const text = e.target.value;
                           setAlumniCompaniesText(text);
                           handleNewUserChange(
-                            "organizations", // or a different array field if you prefer
+                            "organizations",
                             text
                               ? text.split(",").map(c => c.trim()).filter(Boolean)
                               : []
                           );
                         }}
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[#6b7280] mt-2">
                         Separate company names with commas.
                       </p>
                     </div>
@@ -730,13 +785,17 @@ const AuthModal = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="alumni-skills"
-                        className="text-sm font-medium text-gray-700 mb-1"
+                        className="text-sm font-medium text-[#9ca3af] mb-2"
                       >
                         Skills (Optional)
                       </label>
                       <textarea
                         id="alumni-skills"
-                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        className="block w-full px-3 py-2.5 border-2 rounded-lg focus:outline-none focus:border-[#5b8ef4] focus:ring-2 focus:ring-[#5b8ef4]/20 text-[#e8eaed] placeholder-[#6b7280] transition-all resize-none"
+                        style={{
+                          background: '#141920',
+                          borderColor: '#2d3748'
+                        }}
                         placeholder="e.g. Backend, Kubernetes, Leadership..."
                         rows={3}
                         value={skillsText}
@@ -751,7 +810,7 @@ const AuthModal = () => {
                           );
                         }}
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[#6b7280] mt-2">
                         Separate skills with commas.
                       </p>
                     </div>
@@ -762,7 +821,7 @@ const AuthModal = () => {
               {/* More about you (Alumni) */}
               {stage === 4 && newUser.type === UserType.Alumni && (
                 <div className="flex flex-col items-center w-full flex-1">
-                  <h2 className="text-xl font-semibold mb-8">
+                  <h2 className="text-xl font-semibold mb-8 text-[#e8eaed]">
                     More about you
                   </h2>
                   <div className="w-full space-y-6 max-w-md">
@@ -770,13 +829,17 @@ const AuthModal = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="alumni-organizations"
-                        className="text-sm font-medium text-gray-700 mb-1"
+                        className="text-sm font-medium text-[#9ca3af] mb-2"
                       >
                         Organizations (Optional)
                       </label>
                       <textarea
                         id="alumni-organizations"
-                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        className="block w-full px-3 py-2.5 border-2 rounded-lg focus:outline-none focus:border-[#5b8ef4] focus:ring-2 focus:ring-[#5b8ef4]/20 text-[#e8eaed] placeholder-[#6b7280] transition-all resize-none"
+                        style={{
+                          background: '#141920',
+                          borderColor: '#2d3748'
+                        }}
                         placeholder="e.g. IEEE, ACM, ERG groups, community orgs..."
                         rows={2}
                         value={organizationsText}
@@ -794,7 +857,7 @@ const AuthModal = () => {
                           );
                         }}
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[#6b7280] mt-2">
                         Separate organization names with commas.
                       </p>
                     </div>
@@ -803,13 +866,17 @@ const AuthModal = () => {
                     <div className="flex flex-col">
                       <label
                         htmlFor="alumni-hobbies"
-                        className="text-sm font-medium text-gray-700 mb-1"
+                        className="text-sm font-medium text-[#9ca3af] mb-2"
                       >
                         Hobbies (Optional)
                       </label>
                       <textarea
                         id="alumni-hobbies"
-                        className="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                        className="block w-full px-3 py-2.5 border-2 rounded-lg focus:outline-none focus:border-[#5b8ef4] focus:ring-2 focus:ring-[#5b8ef4]/20 text-[#e8eaed] placeholder-[#6b7280] transition-all resize-none"
+                        style={{
+                          background: '#141920',
+                          borderColor: '#2d3748'
+                        }}
                         placeholder="e.g. Hiking, Guitar, Chess..."
                         rows={2}
                         value={hobbiesText}
@@ -827,7 +894,7 @@ const AuthModal = () => {
                           );
                         }}
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[#6b7280] mt-2">
                         Separate hobbies with commas.
                       </p>
                     </div>
@@ -839,33 +906,36 @@ const AuthModal = () => {
             {/* Buttons */}
             <div className="flex justify-between mt-6">
               <button
-                className={`w-24 px-4 py-2 bg-gray-100 rounded-md ${
+                className={`w-24 px-4 py-2 rounded-md font-medium transition-all ${
                   stage === 0
-                    ? "text-gray-200"
-                    : "text-gray-600 hover:bg-gray-200"
-                } font-medium transition-colors`}
+                    ? "text-[#4b5563] cursor-not-allowed"
+                    : "text-[#e8eaed] hover:bg-[#2d3748]"
+                }`}
+                style={{
+                  background: stage === 0 ? '#141920' : '#1e2433',
+                  border: '1px solid #2d3748'
+                }}
                 onClick={() => setStage(stage - 1)}
                 disabled={stage === 0}
               >
                 Previous
               </button>
               <button
-                className={`w-24 px-4 py-2 rounded-md text-white font-medium transition-colors ${
-                  canProceed ? "bg-blue-600 hover:bg-blue-700" : "bg-blue-300"
+                className={`w-24 px-4 py-2 rounded-md text-white font-medium transition-all ${
+                  canProceed ? "hover:-translate-y-0.5" : "cursor-not-allowed opacity-50"
                 }`}
+                style={{
+                  background: canProceed 
+                    ? 'linear-gradient(135deg, #5b8ef4, #7c3aed)' 
+                    : '#2d3748',
+                  boxShadow: canProceed ? '0 4px 14px rgba(91,142,244,0.3)' : 'none'
+                }}
                 onClick={async () => {
                   if (stage === totalStages - 1) {
                     const response = await createUser(newUser);
                     console.log("create user response", response);  
 
-                    if (response.success && user?._id) {
-                      if (newUser.type === UserType.Student) {
-                        setStudentProfile({ ...studentProfile, userId: user._id });
-                        await saveStudentProfile();
-                      } else if (newUser.type === UserType.Alumni) {
-                        setAlumniProfile({ ...alumniProfile, userId: user._id });
-                        await saveAlumniProfile();
-                      }
+                    if (response.success) {
                       setStage(totalStages);
                     }
                   } else {

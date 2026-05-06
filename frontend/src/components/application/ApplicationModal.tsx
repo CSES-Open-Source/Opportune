@@ -10,7 +10,6 @@ import { Timeline } from "primereact/timeline";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { deleteApplication, updateApplication } from "../../api/applications";
-import { FiEdit, FiTrash } from "react-icons/fi";
 import { Toast } from "primereact/toast";
 import { statusColors } from "../../constants/statusColors";
 import Dialog from "../public/Dialog";
@@ -18,8 +17,11 @@ import {
   getEmployeesLabel,
   getIndustryLabel,
 } from "../../utils/valuesToLabels";
-import { LuLayers, LuUsers } from "react-icons/lu";
+import {
+  LuLayers, LuUsers, LuPencil, LuTrash2, LuSave, LuX, LuLink, LuPlus,
+} from "react-icons/lu";
 import { parseErrorResponse } from "../../utils/errorHandler";
+
 
 const defaultLogo = "/assets/defaultLogo.png";
 
@@ -50,9 +52,7 @@ const ApplicationModal = ({
     date: new Date(),
     note: "",
   });
-  const [editingStatusIndex, setEditingStatusIndex] = useState<number | null>(
-    null,
-  );
+  const [editingStatusIndex, setEditingStatusIndex] = useState<number | null>(null);
   const [updatedApplication, setUpdatedApplication] =
     useState<UpdateApplicationRequest>({ process: [] });
   const [isValidLink, setIsValidLink] = useState(true);
@@ -234,7 +234,13 @@ const ApplicationModal = ({
     return (
       <div className="flex flex-col mb-2 group">
         {editingStatusIndex === index ? (
-          <div className="flex flex-col gap-3 mb-4 p-4 rounded-lg bg-gray-50">
+          <div
+            className="flex flex-col gap-3 mb-4 p-4 rounded-lg border"
+            style={{
+              background: "rgba(91,142,244,0.08)",
+              borderColor: "rgba(91,142,244,0.25)",
+            }}
+          >
             <Dropdown
               value={updatedApplication.process?.[index].status}
               options={statusOptions}
@@ -281,19 +287,29 @@ const ApplicationModal = ({
                 });
               }}
               placeholder="Add notes"
-              className="w-full p-2 rounded-md focus:outline-none focus:ring focus:ring-ring"
+              className="w-full p-2 rounded-md text-[#e8eaed] outline-none"
+              style={{
+                background: "#141920",
+                border: "1px solid #2d3748",
+              }}
             />
-            <div className="flex justify-end gap-4">
+            <div className="flex justify-end gap-3">
               <button
-                className="border rounded-lg p-1 w-20 flex flex-col items-center justify-center transition-all bg-white hover:bg-gray-50"
+                className="px-4 py-2 rounded-lg text-sm font-semibold text-[#9ca3af] hover:text-[#e8eaed] transition-all"
+                style={{ background: "#141920", border: "1px solid #2d3748" }}
                 onClick={() => resetStates()}
               >
                 Cancel
               </button>
               <button
-                className="w-20 rounded-lg p-1 flex flex-col items-center justify-center transition-all bg-green-600 hover:bg-green-700 text-white"
+                className="px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
+                style={{
+                  background: "linear-gradient(135deg, #10b981, #34d399)",
+                  boxShadow: "0 4px 14px rgba(16,185,129,0.25)",
+                }}
                 onClick={() => handleUpdateStatus(index)}
               >
+                <LuSave className="w-4 h-4 inline mr-1" />
                 Save
               </button>
             </div>
@@ -302,38 +318,32 @@ const ApplicationModal = ({
           <>
             <div className="flex justify-between items-center">
               <div>
-                <span className="font-bold">{statusLabel}</span>
-                <p className="text-sm text-gray-500">{formattedDate}</p>
+                <span className="font-bold text-[#e8eaed]">{statusLabel}</span>
+                <p className="text-sm text-[#6b7280]">{formattedDate}</p>
               </div>
               {!isEditing && !isAddingStatus && (
-                <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-all">
+                <div className="flex gap-3 opacity-0 group-hover:opacity-100 transition-all">
                   <button
-                    className=""
                     onClick={() => {
                       setUpdatedApplication({
                         process: [...(application.process || [])],
                       });
                       setEditingStatusIndex(index);
                     }}
+                    className="p-1.5 rounded-lg text-[#5b8ef4] hover:bg-[#141920] transition-all"
                   >
-                    <FiEdit
-                      size={20}
-                      className="hover:text-blue-600 transition-all"
-                    />
+                    <LuPencil size={16} />
                   </button>
                   <button
-                    className=""
                     onClick={() => handleDeleteStatus(index)}
+                    className="p-1.5 rounded-lg text-[#f87171] hover:bg-[#141920] transition-all"
                   >
-                    <FiTrash
-                      size={20}
-                      className="hover:text-red-600 transition-all"
-                    />
+                    <LuTrash2 size={16} />
                   </button>
                 </div>
               )}
             </div>
-            {item.note && <p className="text-sm mt-1">{item.note}</p>}
+            {item.note && <p className="text-sm mt-1 text-[#9ca3af]">{item.note}</p>}
           </>
         )}
       </div>
@@ -351,240 +361,316 @@ const ApplicationModal = ({
           setUpdatedApplication({ process: [] });
           onClose();
         }}
-        className="w-full max-w-2xl h-[80%] rounded-xl flex flex-col p-6"
+        className="w-full max-w-2xl h-[80%] rounded-2xl flex flex-col p-0 overflow-hidden"
+        style={{
+          background: "linear-gradient(145deg, #1e2433, #1a1f2e)",
+          border: "1px solid #2d3748",
+        }}
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Application Details</h2>
-        </div>
+        {/* Gradient top bar */}
+        <div className="h-1" style={{ background: "linear-gradient(90deg, #5b8ef4, #7c3aed)" }} />
 
-        <div className="flex mb-6">
-          <img
-            src={application.company.logo || defaultLogo}
-            alt={application.company.name}
-            className="w-16 h-16 mr-4 rounded-md object-contain"
-          />
+        <div className="p-6 flex flex-col h-full overflow-hidden">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-[#e8eaed]">Application Details</h2>
+            <button
+              onClick={() => {
+                setIsEditing(false);
+                setIsAddingStatus(false);
+                setEditingStatusIndex(null);
+                setUpdatedApplication({ process: [] });
+                onClose();
+              }}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6b7280] hover:text-[#e8eaed] hover:rotate-90 transition-all duration-200"
+              style={{ background: "#141920", border: "1px solid #2d3748" }}
+            >
+              <LuX className="w-4 h-4" />
+            </button>
+          </div>
 
-          <div>
-            <h3 className="text-xl font-semibold">
-              {application.company.name}
-            </h3>
-            {application.company.industry && (
-              <div className="flex flex-row gap-1 items-center">
-                <p className="text-gray-600">
-                  <LuLayers className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                  {getIndustryLabel(application.company.industry)}
-                </p>
-              </div>
-            )}
-            {application.company.employees && (
-              <div className="flex flex-row gap-1 items-center">
-                <LuUsers className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                <p className="text-gray-600">
-                  {getEmployeesLabel(application.company.employees)}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+          {/* Company info */}
+          <div className="flex gap-4 mb-6">
+            <div
+              className="w-16 h-16 rounded-xl flex items-center justify-center border flex-shrink-0"
+              style={{
+                background: "#141920",
+                borderColor: "rgba(91,142,244,0.3)",
+              }}
+            >
+              <img
+                src={application.company.logo || defaultLogo}
+                alt={application.company.name}
+                className="w-10 h-10 object-contain rounded"
+              />
+            </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Position
-            </label>
-            {isEditing ? (
-              <input
-                value={updatedApplication.position}
-                onChange={(e) =>
-                  setUpdatedApplication((prev) => ({
-                    ...prev,
-                    position: e.target.value,
-                  }))
-                }
-                className="w-full p-2 border-2 rounded-md focus:outline-blue-600"
-              />
-            ) : (
-              <p>{application.position}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Location
-            </label>
-            {isEditing ? (
-              <input
-                value={updatedApplication.location || ""}
-                onChange={(e) =>
-                  setUpdatedApplication((prev) => ({
-                    ...prev,
-                    location: e.target.value,
-                  }))
-                }
-                className="w-full p-2 border-2 rounded-md focus:outline-blue-600"
-              />
-            ) : (
-              <p>{application.location || "Not specified"}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Job Link
-            </label>
-            {isEditing ? (
-              <input
-                value={updatedApplication.link || ""}
-                onChange={onLinkChange}
-                className={`w-full p-2 border-2 rounded-md ${
-                  isValidLink
-                    ? "focus:outline-blue-600"
-                    : "outline-red-600 border-red-600"
-                }`}
-              />
-            ) : (
-              <p>
-                {application.link ? (
-                  <a
-                    href={application.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    View Job Posting
-                  </a>
-                ) : (
-                  "Not specified"
+            <div className="flex-1">
+              <h3 className="text-xl font-semibold text-[#e8eaed] mb-1">
+                {application.company.name}
+              </h3>
+              <div className="flex flex-wrap items-center gap-3 text-sm text-[#6b7280]">
+                {application.company.industry && (
+                  <div className="flex items-center gap-1.5">
+                    <LuLayers className="w-3.5 h-3.5" />
+                    <span>{getIndustryLabel(application.company.industry)}</span>
+                  </div>
                 )}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col mb-6 h-[70%] overflow-hidden">
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-semibold">Application Timeline</h3>
-            {!isEditing && editingStatusIndex === null && (
-              <button
-                className={`rounded-lg px-3 py-1 flex flex-col items-center justify-center transition-all bg-green-600 text-white ${
-                  isAddingStatus ? "bg-opacity-50" : "hover:bg-green-700"
-                }`}
-                disabled={isAddingStatus}
-                onClick={() => setIsAddingStatus(true)}
-              >
-                Add Status
-              </button>
-            )}
-          </div>
-
-          <div className="flex-grow overflow-auto">
-            {isAddingStatus && (
-              <div className="p-4 bg-gray-50 rounded-lg mb-4">
-                <h4 className="font-medium mb-3">Add New Status</h4>
-                <div className="flex flex-grow-0 flex-col gap-3 mb-3">
-                  <Dropdown
-                    value={newStatus.status}
-                    options={statusOptions}
-                    onChange={(e) =>
-                      setNewStatus({ ...newStatus, status: e.value })
-                    }
-                    placeholder="Select Status"
-                    className="w-full"
-                  />
-                  <Calendar
-                    value={new Date(newStatus.date)}
-                    onChange={(e) =>
-                      setNewStatus({ ...newStatus, date: e.value as Date })
-                    }
-                    placeholder="Select Date"
-                    className="w-full"
-                    inputClassName="p-2"
-                  />
-                  <input
-                    value={newStatus.note}
-                    onChange={(e) =>
-                      setNewStatus({ ...newStatus, note: e.target.value })
-                    }
-                    placeholder="Add notes (optional)"
-                    className="w-full p-2 rounded-md focus:outline-none focus:ring focus:ring-ring"
-                  />
-                </div>
-                <div className="flex justify-end gap-4">
-                  <button
-                    className="border rounded-lg p-1 w-20 flex flex-col items-center justify-center transition-all bg-white hover:bg-gray-50"
-                    onClick={() => resetStates()}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="w-20 rounded-lg p-1 flex flex-col items-center justify-center transition-all bg-green-600 hover:bg-green-700 text-white"
-                    onClick={handleAddStatus}
-                    disabled={!newStatus.status || !newStatus.date}
-                  >
-                    Add
-                  </button>
-                </div>
+                {application.company.employees && (
+                  <div className="flex items-center gap-1.5">
+                    <LuUsers className="w-3.5 h-3.5" />
+                    <span>{getEmployeesLabel(application.company.employees)}</span>
+                  </div>
+                )}
               </div>
-            )}
-
-            {application.process && application.process.length > 0 ? (
-              <Timeline
-                value={application.process}
-                content={timelineContent}
-                marker={customizedMarker}
-                className="custom-timeline"
-              />
-            ) : (
-              <p className="text-gray-500 italic text-center py-4">
-                No status updates yet. Add your first status update.
-              </p>
-            )}
+            </div>
           </div>
+
+          {/* Application details */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <label className="block text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                Position
+              </label>
+              {isEditing ? (
+                <input
+                  value={updatedApplication.position}
+                  onChange={(e) =>
+                    setUpdatedApplication((prev) => ({
+                      ...prev,
+                      position: e.target.value,
+                    }))
+                  }
+                  className="w-full p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                  style={{
+                    background: "#141920",
+                    border: "1px solid #2d3748",
+                  }}
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = "#5b8ef4"}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = "#2d3748"}
+                />
+              ) : (
+                <p className="text-[#e8eaed]">{application.position}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                Location
+              </label>
+              {isEditing ? (
+                <input
+                  value={updatedApplication.location || ""}
+                  onChange={(e) =>
+                    setUpdatedApplication((prev) => ({
+                      ...prev,
+                      location: e.target.value,
+                    }))
+                  }
+                  className="w-full p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                  style={{
+                    background: "#141920",
+                    border: "1px solid #2d3748",
+                  }}
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = "#5b8ef4"}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = "#2d3748"}
+                />
+              ) : (
+                <p className="text-[#e8eaed]">{application.location || "Not specified"}</p>
+              )}
+            </div>
+
+            <div className="col-span-2">
+              <label className="block text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                Job Link
+              </label>
+              {isEditing ? (
+                <input
+                  value={updatedApplication.link || ""}
+                  onChange={onLinkChange}
+                  className="w-full p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                  style={{
+                    background: "#141920",
+                    border: isValidLink ? "1px solid #2d3748" : "1px solid #f87171",
+                  }}
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = isValidLink ? "#5b8ef4" : "#f87171"}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = isValidLink ? "#2d3748" : "#f87171"}
+                />
+              ) : (
+                <div>
+                  {application.link ? (
+                    <a
+                      href={application.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 text-sm text-[#5b8ef4] hover:text-[#7c3aed] transition-colors"
+                    >
+                      <LuLink className="w-4 h-4" />
+                      View Job Posting
+                    </a>
+                  ) : (
+                    <p className="text-[#6b7280]">Not specified</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Timeline */}
+          <div className="flex flex-col flex-1 overflow-hidden">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-[#e8eaed]">Application Timeline</h3>
+              {!isEditing && editingStatusIndex === null && (
+                <button
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-white transition-all hover:-translate-y-0.5 disabled:opacity-50"
+                  style={{
+                    background: "linear-gradient(135deg, #10b981, #34d399)",
+                    boxShadow: "0 4px 14px rgba(16,185,129,0.25)",
+                  }}
+                  disabled={isAddingStatus}
+                  onClick={() => setIsAddingStatus(true)}
+                >
+                  <LuPlus className="w-4 h-4" />
+                  Add Status
+                </button>
+              )}
+            </div>
+
+            <div className="flex-1 overflow-auto pr-2">
+              {isAddingStatus && (
+                <div
+                  className="p-4 rounded-lg mb-4 border"
+                  style={{
+                    background: "rgba(16,185,129,0.08)",
+                    borderColor: "rgba(16,185,129,0.25)",
+                  }}
+                >
+                  <h4 className="font-semibold text-[#e8eaed] mb-3">Add New Status</h4>
+                  <div className="flex flex-col gap-3 mb-3">
+                    <Dropdown
+                      value={newStatus.status}
+                      options={statusOptions}
+                      onChange={(e) =>
+                        setNewStatus({ ...newStatus, status: e.value })
+                      }
+                      placeholder="Select Status"
+                      className="w-full"
+                    />
+                    <Calendar
+                      value={new Date(newStatus.date)}
+                      onChange={(e) =>
+                        setNewStatus({ ...newStatus, date: e.value as Date })
+                      }
+                      placeholder="Select Date"
+                      className="w-full"
+                      inputClassName="p-2"
+                    />
+                    <input
+                      value={newStatus.note}
+                      onChange={(e) =>
+                        setNewStatus({ ...newStatus, note: e.target.value })
+                      }
+                      placeholder="Add notes (optional)"
+                      className="w-full p-2 rounded-lg text-[#e8eaed] outline-none"
+                      style={{
+                        background: "#141920",
+                        border: "1px solid #2d3748",
+                      }}
+                    />
+                  </div>
+                  <div className="flex justify-end gap-3">
+                    <button
+                      className="px-4 py-2 rounded-lg text-sm font-semibold text-[#9ca3af] hover:text-[#e8eaed] transition-all"
+                      style={{ background: "#141920", border: "1px solid #2d3748" }}
+                      onClick={() => resetStates()}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:-translate-y-0.5 disabled:opacity-50"
+                      style={{
+                        background: "linear-gradient(135deg, #10b981, #34d399)",
+                        boxShadow: "0 4px 14px rgba(16,185,129,0.25)",
+                      }}
+                      onClick={handleAddStatus}
+                      disabled={!newStatus.status || !newStatus.date}
+                    >
+                      <LuPlus className="w-4 h-4 inline mr-1" />
+                      Add
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {application.process && application.process.length > 0 ? (
+                <Timeline
+                  value={application.process}
+                  content={timelineContent}
+                  marker={customizedMarker}
+                  className="custom-timeline"
+                />
+              ) : (
+                <p className="text-[#6b7280] italic text-center py-8">
+                  No status updates yet. Add your first status update.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Actions */}
+          {!isEditing && (
+            <div className="flex gap-3 mt-6 pt-6 border-t" style={{ borderColor: "#2d3748" }}>
+              <button
+                className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5 disabled:opacity-50"
+                style={{
+                  background: "rgba(239,68,68,0.12)",
+                  border: "1px solid rgba(239,68,68,0.3)",
+                  color: "#f87171",
+                }}
+                onClick={handleDeleteApplication}
+                disabled={isAddingStatus || editingStatusIndex !== null}
+              >
+                <LuTrash2 className="w-4 h-4" />
+                Delete
+              </button>
+              <button
+                className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-0.5 disabled:opacity-50"
+                style={{
+                  background: "linear-gradient(135deg, #5b8ef4, #7c3aed)",
+                  boxShadow: "0 4px 14px rgba(91,142,244,0.25)",
+                }}
+                onClick={handleEditApplication}
+                disabled={isAddingStatus || editingStatusIndex !== null}
+              >
+                <LuPencil className="w-4 h-4" />
+                Edit Application
+              </button>
+            </div>
+          )}
+          {isEditing && (
+            <div className="flex gap-3 mt-6 pt-6 border-t" style={{ borderColor: "#2d3748" }}>
+              <button
+                className="px-6 py-2.5 rounded-xl text-sm font-semibold text-[#9ca3af] hover:text-[#e8eaed] transition-all"
+                style={{ background: "#141920", border: "1px solid #2d3748" }}
+                onClick={() => resetStates()}
+              >
+                Cancel
+              </button>
+              <button
+                className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-0.5 disabled:opacity-50"
+                style={{
+                  background: "linear-gradient(135deg, #10b981, #34d399)",
+                  boxShadow: "0 4px 14px rgba(16,185,129,0.25)",
+                }}
+                onClick={handleSaveChanges}
+                disabled={!isValidLink}
+              >
+                <LuSave className="w-4 h-4" />
+                Save Changes
+              </button>
+            </div>
+          )}
         </div>
-
-        {!isEditing && (
-          <div className="flex justify-between mt-auto">
-            <button
-              className={`w-[131px] rounded-lg p-2 flex flex-col items-center justify-center transition-all bg-red-600 ${
-                isAddingStatus || editingStatusIndex !== null
-                  ? "bg-opacity-50"
-                  : "hover:bg-red-700"
-              } text-white`}
-              onClick={handleDeleteApplication}
-              disabled={isAddingStatus || editingStatusIndex !== null}
-            >
-              Delete
-            </button>
-            <button
-              className={`w-[131px] rounded-lg p-2 flex flex-col items-center justify-center transition-all bg-blue-600 ${
-                isAddingStatus || editingStatusIndex !== null
-                  ? "bg-opacity-50"
-                  : "hover:bg-blue-700"
-              } text-white`}
-              onClick={handleEditApplication}
-              disabled={isAddingStatus || editingStatusIndex !== null}
-            >
-              Edit Application
-            </button>
-          </div>
-        )}
-        {isEditing && (
-          <div className="flex justify-end gap-4 mt-auto">
-            <button
-              className="border w-28 rounded-lg p-2 flex flex-col items-center justify-center transition-all hover:bg-gray-50"
-              onClick={() => resetStates()}
-            >
-              Cancel
-            </button>
-            <button
-              className={`w-[131px] rounded-lg p-2 flex flex-col items-center justify-center transition-all bg-green-600 ${
-                isValidLink ? "hover:bg-green-700" : "opacity-50"
-              } text-white`}
-              onClick={handleSaveChanges}
-              disabled={!isValidLink}
-            >
-              Save Changes
-            </button>
-          </div>
-        )}
       </Modal>
       <Dialog
         isDialogOpen={isDialogOpen}

@@ -23,27 +23,28 @@ const Dialog = ({
       useOverlay={true}
       isOpen={isDialogOpen}
       onClose={onDialogClose}
-      className="rounded-xl px-20 py-10 flex flex-col"
+      className="rounded-2xl px-16 py-12 flex flex-col bg-[#1e2433] border border-[#2d3748]"
     >
-      <div className="h-full flex flex-col justify-center items-center gap-7">
-        {type === "confirmation" && <RxQuestionMarkCircled size={120} />}
-        {type === "error" ||
-          (type === "warning" && (
-            <RxExclamationTriangle size={120} className="text-red-700" />
-          ))}
-        <div className="text-xl text-center max-w-[70%] font-medium text-gray-700 mb-3">
+      <div className="h-full flex flex-col justify-center items-center gap-6">
+        {type === "confirmation" && (
+          <RxQuestionMarkCircled size={100} className="text-[#5b8ef4]" />
+        )}
+        {(type === "error" || type === "warning") && (
+          <RxExclamationTriangle size={100} className="text-[#f87171]" />
+        )}
+        <div className="text-lg text-center max-w-[80%] font-medium text-[#e8eaed] mb-2">
           {text}
         </div>
         {type === "confirmation" && (
-          <div className="w-full flex justify-center items-center gap-10">
+          <div className="w-full flex justify-center items-center gap-4 mt-2">
             <button
-              className="w-28 h-10 rounded-lg font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition"
+              className="px-8 py-2.5 rounded-xl font-semibold text-[#9ca3af] bg-[#141920] border border-[#2d3748] hover:border-[#6b7280] transition-all"
               onClick={onDialogClose}
             >
               Cancel
             </button>
             <button
-              className="w-28 h-10 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition font font-medium"
+              className="px-8 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-[#5b8ef4] to-[#7c3aed] hover:shadow-lg hover:shadow-[#5b8ef4]/30 transition-all"
               onClick={onConfirm}
             >
               Confirm
@@ -51,9 +52,9 @@ const Dialog = ({
           </div>
         )}
         {type === "error" && (
-          <div className="w-full flex justify-center items-center gap-10">
+          <div className="w-full flex justify-center items-center mt-2">
             <button
-              className="w-28 h-10 border-2 border-solid rounded-full text-white bg-red-700 hover:bg-opacity-80 hover:transition font font-medium"
+              className="px-8 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-[#f87171] to-[#ef4444] hover:shadow-lg hover:shadow-[#f87171]/30 transition-all"
               onClick={onConfirm}
             >
               Confirm
@@ -61,15 +62,15 @@ const Dialog = ({
           </div>
         )}
         {type === "warning" && (
-          <div className="w-full flex justify-center items-center gap-10">
+          <div className="w-full flex justify-center items-center gap-4 mt-2">
             <button
-              className="w-28 h-10 rounded-lg font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition"
+              className="px-8 py-2.5 rounded-xl font-semibold text-[#9ca3af] bg-[#141920] border border-[#2d3748] hover:border-[#6b7280] transition-all"
               onClick={onDialogClose}
             >
               Cancel
             </button>
             <button
-              className="w-28 h-10 rounded-lg text-white bg-red-700 hover:bg-opacity-80 transition font-medium"
+              className="px-8 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-[#f87171] to-[#ef4444] hover:shadow-lg hover:shadow-[#f87171]/30 transition-all"
               onClick={onConfirm}
             >
               Confirm
