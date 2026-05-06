@@ -359,6 +359,15 @@ const Profile = () => {
 
                     <div>
                       <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                        <LuShare2 size={14} /> Share Profile
+                      </div>
+                      <div className="text-lg text-[#e8eaed] font-medium px-3 py-3 bg-[#1a1f2e] rounded-lg border border-[#2d3748] hover:bg-[#252d3f] hover:border-[#5b8ef4] transition-all">
+                        {user.shareProfile ? "Visible to alumni" : "Not shared with alumni"}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
                         <span>🔬</span> Field of Interest
                       </div>
                       {Array.isArray(user.fieldOfInterest) && user.fieldOfInterest.length > 0 ? (
@@ -537,6 +546,28 @@ const Profile = () => {
                         onChange={(e) => handleInputChange("school", e.target.value)}
                         className="w-full px-3 py-3 bg-[#1a1f2e] rounded-lg border-2 border-[#2d3748] text-[#e8eaed] focus:outline-none focus:border-[#5b8ef4] transition-all"
                       />
+                    </div>
+
+                    <div className="col-span-full pt-4 border-t" style={{ borderColor: "#2d3748" }}>
+                      <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-3">
+                        <LuShare2 size={14} /> Share Profile
+                      </label>
+                      <div className="flex items-center">
+                        <label className="inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={updatedUser.shareProfile}
+                            className="w-5 h-5 text-[#5b8ef4] border-[#2d3748] rounded focus:ring-[#5b8ef4] focus:ring-2"
+                            style={{ background: updatedUser.shareProfile ? '#5b8ef4' : '#141920' }}
+                            onChange={(e) =>
+                              handleInputChange("shareProfile", e.target.checked)
+                            }
+                          />
+                          <span className="ml-3 text-[#e8eaed]">
+                            Make my profile visible to alumni
+                          </span>
+                        </label>
+                      </div>
                     </div>
 
                     <div className="col-span-full">
