@@ -117,7 +117,7 @@ const SideNav = () => {
       `}} />
 
       <aside
-        className="sidebar-container sticky top-0 min-h-screen w-[300px] flex flex-col items-center border-r"
+        className="sidebar-container fixed left-0 top-0 h-screen w-[300px] flex flex-col items-center border-r z-40"
         style={{
           background: "linear-gradient(180deg, #1a1f2e 0%, #151920 100%)",
           borderColor: "#2d3748",

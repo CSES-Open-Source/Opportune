@@ -49,7 +49,7 @@ const Layout = () => {
       style={{ background: "linear-gradient(135deg, #0f1419 0%, #1a1d2e 100%)" }}
     >
       <SideNav />
-      <div className="flex-1 w-full overflow-x-hidden">
+      <div className="flex-1 w-full overflow-x-hidden ml-[300px]">
         <Outlet />
       </div>
     </div>
