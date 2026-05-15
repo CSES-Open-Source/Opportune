@@ -19,10 +19,12 @@ interface ApplicationCreate {
   position: string;
   link?: string;
   location?: string;
+  applicationDate?: Date;
   process?: Array<{
     status: Status;
     date: string | Date;
     note?: string;
+  
   }>;
 }
 interface ApplicationUpdate extends Partial<ApplicationCreate> {}

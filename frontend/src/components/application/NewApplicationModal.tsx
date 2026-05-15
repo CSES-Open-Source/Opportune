@@ -8,6 +8,7 @@ import { createApplication } from "../../api/applications";
 import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
 import { parseErrorResponse } from "../../utils/errorHandler";
+import { Calendar } from "primereact/calendar";
 
 interface NewApplicationModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ const NewApplicationModal = ({
   const [position, setPosition] = useState("");
   const [location, setLocation] = useState("");
   const [link, setLink] = useState("");
+  const [applicationDate, setApplicationDate] = useState<Date>(new Date());
 
   const [isValidPosition, setIsValidPosition] = useState(false);
   const [isValidLink, setIsValidLink] = useState(true);
@@ -62,6 +64,7 @@ const NewApplicationModal = ({
     setPosition("");
     setLocation("");
     setLink("");
+    setApplicationDate(new Date());
     setIsValidPosition(false);
     setIsValidLink(true);
   };
@@ -78,6 +81,7 @@ const NewApplicationModal = ({
         company: company,
         location: location && location.length > 0 ? location : undefined,
         link: link && link.length > 0 ? link : undefined,
+        applicationDate,
         process: [],
         position,
       });
@@ -171,6 +175,19 @@ const NewApplicationModal = ({
                   onChange={(e) => onLocationChange(e.target.value)}
                 />
               </div>
+            </div>
+            <div className="flex flex-col">
+              <label className="text-sm font-medium text-gray-700 mb-1">
+                Application Date
+              </label>
+              <Calendar
+                value={applicationDate}
+                onChange={(e) => setApplicationDate(e.value as Date)}
+                placeholder="Select Application Date"
+                className="w-full"
+                inputClassName="block w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
+                maxDate={new Date()}
+              />
             </div>
             <div className="flex flex-col">
               <label

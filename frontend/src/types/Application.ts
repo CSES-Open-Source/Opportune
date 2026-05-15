@@ -23,6 +23,7 @@ export interface Application {
   position: string;
   link?: string;
   location?: string;
+  applicationDate?: Date;
   process?: Array<ApplicationProcess>;
   createdAt?: Date;
   updatedAt?: Date;
@@ -35,6 +36,7 @@ export interface ApplicationJSON {
   position: string;
   link?: string;
   location?: string;
+  applicationDate?: string;
   process?: Array<ApplicationProcess>;
   createdAt?: string;
   updatedAt?: string;
@@ -46,6 +48,7 @@ export interface CreateApplicationRequest {
   position: string;
   location?: string;
   link?: string;
+  applicationDate: Date;
   process?: Array<ApplicationProcess>;
 }
 
@@ -55,6 +58,7 @@ export interface UpdateApplicationRequest {
   position?: string;
   link?: string;
   location?: string;
+  applicationDate?: Date;
   process?: Array<ApplicationProcess>;
 }
 

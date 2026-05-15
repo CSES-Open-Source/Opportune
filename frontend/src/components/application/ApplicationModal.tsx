@@ -140,6 +140,9 @@ const ApplicationModal = ({
       position: application.position,
       link: application.link,
       location: application.location,
+      applicationDate: application.applicationDate
+        ? new Date(application.applicationDate)
+        : undefined,
       process: [...(application.process || [])],
     });
     setIsEditing(true);
@@ -388,6 +391,35 @@ const ApplicationModal = ({
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Application Date
+            </label>
+            {isEditing ? (
+              <Calendar
+                value={
+                  updatedApplication.applicationDate
+                    ? new Date(updatedApplication.applicationDate)
+                    : undefined
+                }
+                onChange={(e) =>
+                  setUpdatedApplication((prev) => ({
+                    ...prev,
+                    applicationDate: e.value as Date,
+                  }))
+                }
+                className="w-full"
+                inputClassName="p-2 border-2 rounded-md focus:outline-blue-600"
+                maxDate={new Date()}
+              />
+            ) : (
+              <p>
+                {application.applicationDate
+                  ? new Date(application.applicationDate).toLocaleDateString()
+                  : "Not specified"}
+              </p>
+            )}
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Position

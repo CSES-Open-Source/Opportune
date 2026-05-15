@@ -57,6 +57,10 @@ const applicationSchema = new Schema(
       type: String,
       required: false,
     },
+    applicationDate:{
+      type: Date,
+      required: true,
+    },
     process: {
       type: [applicationStatusSchema],
       default: [],
