@@ -128,7 +128,7 @@ const SideNav = () => {
           <div
             className="logo-glow w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{
-              background: "#ffffff",
+              background: "#000000",
             }}
           >
             <img className="h-8 w-8" src={OpportuneLogo} alt="Opportune" />
