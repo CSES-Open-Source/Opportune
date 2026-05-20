@@ -3,7 +3,7 @@ import AuthModal from "../auth/AuthModal";
 
 const AuthLayer = () => {
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <Layout />
       <AuthModal />
     </div>

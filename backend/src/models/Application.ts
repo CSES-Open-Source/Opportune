@@ -57,7 +57,7 @@ const applicationSchema = new Schema(
       type: String,
       required: false,
     },
-    applicationDate:{
+    applicationDate: {
       type: Date,
       required: true,
     },

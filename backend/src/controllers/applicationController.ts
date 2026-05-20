@@ -24,7 +24,6 @@ interface ApplicationCreate {
     status: Status;
     date: string | Date;
     note?: string;
-  
   }>;
 }
 interface ApplicationUpdate extends Partial<ApplicationCreate> {}

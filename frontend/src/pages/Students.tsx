@@ -6,6 +6,8 @@ import { getStudents } from "../api/users";
 import { Student } from "../types/User";
 import { PaginatedData } from "../types/PaginatedData";
 import { MajorType } from "../types/User";
+import { LuUsers, LuGraduationCap } from "react-icons/lu";
+import "../styles/Animations.css";
 
 interface SearchBarData extends Record<string, string | string[]> {
   query: string;
@@ -46,14 +48,40 @@ const Students = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen overflow-auto" style={{ background: 'linear-gradient(135deg, #0f1419 0%, #1a1d2e 100%)' }}>
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Student Directory</h1>
-          <p className="text-gray-600">Connect with UCSD students on Opportune!</p>
+        <div className="mb-8 animate-fadeIn">
+          <div className="flex items-center gap-4 mb-3">
+            <div 
+              className="p-3 rounded-xl"
+              style={{
+                background: 'linear-gradient(135deg, #5b8ef4, #7c3aed)',
+                boxShadow: '0 4px 14px rgba(91,142,244,0.3)',
+              }}
+            >
+              <LuUsers className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold text-[#e8eaed] flex items-center gap-3">
+                Student Directory
+              </h1>
+              <div className="flex items-center gap-2 text-[#9ca3af] mt-1">
+                <LuGraduationCap className="w-4 h-4" />
+                <p>Connect with UCSD students on Opportune!</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
+
+        {/* Search Bar */}
+        <div 
+          className="rounded-2xl p-6 mb-8 border shadow-2xl animate-slideUp"
+          style={{
+            background: 'linear-gradient(145deg, #1e2433, #1a1f2e)',
+            borderColor: '#2d3748',
+          }}
+        >
           <SearchBar<SearchBarData>
             selections={[
               {
@@ -61,20 +89,21 @@ const Students = () => {
                 options: [...Object.values(MajorType)],
               },
             ]}
-            placeholder="Search by name, company, or position"
+            placeholder="Search by name, major, or interests..."
             onSubmitForm={setSearch}
           />
         </div>
+
         {/* Student List */}
-        <div className="overflow-visible">
-          <div className="flex flex-col h-[75vh]">
+        <div className="overflow-visible animate-slideInLeft delay-200">
+          <div className="flex flex-col min-h-[75vh]">
             <DataList<Student>
               pageType="students"
               key={`${search.query}_${search.major.join(',')}`}
               fetchData={getPaginatedOpenStudents}
               useServerPagination
               listStyle={{}}
-              listClassName="grid grid-cols-3 gap-4"
+              listClassName="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               paginatorContent={{ setPerPage: true, goToPage: true }}
               TileComponent={StudentTile}
             />

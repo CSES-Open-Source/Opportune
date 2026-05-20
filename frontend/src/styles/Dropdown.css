@@ -1,5 +1,165 @@
-/* Custom styles for PrimeReact Dropdown */
+/* Custom styles for PrimeReact Dropdown - Dark Theme */
+
+/* Dropdown trigger/button */
 .p-dropdown {
-  border: 2 !important;
-  box-shadow: none;
+  border: 1px solid #2d3748 !important;
+  box-shadow: none !important;
+  background: #141920 !important;
+  color: #e8eaed !important;
+  border-radius: 0.5rem !important;
+}
+
+.p-dropdown:not(.p-disabled):hover {
+  border-color: #5b8ef4 !important;
+}
+
+.p-dropdown:not(.p-disabled).p-focus {
+  border-color: #5b8ef4 !important;
+  box-shadow: 0 0 0 2px rgba(91, 142, 244, 0.2) !important;
+}
+
+.p-dropdown .p-dropdown-label {
+  color: #e8eaed !important;
+  padding: 0.625rem 0.75rem !important;
+}
+
+.p-dropdown .p-dropdown-label.p-placeholder {
+  color: #6b7280 !important;
+}
+
+.p-dropdown .p-dropdown-trigger {
+  color: #9ca3af !important;
+  width: 2.5rem !important;
+}
+
+/* Dropdown panel/menu */
+.p-dropdown-panel {
+  background: #1a1f2e !important;
+  border: 1px solid #2d3748 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+  margin-top: 0.25rem !important;
+}
+
+.p-dropdown-panel .p-dropdown-header {
+  background: #1a1f2e !important;
+  border-bottom: 1px solid #2d3748 !important;
+  padding: 0 !important;
+}
+
+.p-dropdown-panel .p-dropdown-items-wrapper {
+  background: #1a1f2e !important;
+}
+
+/* Dropdown items */
+.p-dropdown-items {
+  padding: 0.5rem !important;
+  background: transparent !important;
+}
+
+.p-dropdown-item {
+  color: #e8eaed !important;
+  background: transparent !important;
+  border-radius: 0.5rem !important;
+  padding: 0.625rem 0.75rem !important;
+  margin: 0.125rem 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.p-dropdown-item:not(.p-highlight):not(.p-disabled):hover {
+  background: #1e2433 !important;
+  color: #e8eaed !important;
+}
+
+.p-dropdown-item.p-highlight {
+  background: rgba(91, 142, 244, 0.15) !important;
+  color: #5b8ef4 !important;
+}
+
+.p-dropdown-item.p-focus {
+  background: #1e2433 !important;
+  box-shadow: none !important;
+}
+
+/* Filter input */
+.p-dropdown-filter-container {
+  padding: 0.5rem !important;
+  background: transparent !important;
+}
+
+.p-dropdown-filter {
+  background: #0f1419 !important;
+  border: 1px solid #2d3748 !important;
+  color: #e8eaed !important;
+  border-radius: 0.5rem !important;
+  padding: 0.625rem 0.75rem !important;
+  width: 100% !important;
+  font-size: 0.875rem !important;
+}
+
+.p-dropdown-filter:focus {
+  border-color: #5b8ef4 !important;
+  box-shadow: 0 0 0 2px rgba(91, 142, 244, 0.2) !important;
+  outline: none !important;
+  background: #0f1419 !important;
+}
+
+.p-dropdown-filter::placeholder {
+  color: #6b7280 !important;
+}
+
+.p-dropdown-filter-icon {
+  color: #6b7280 !important;
+  right: 0.75rem !important;
+}
+
+/* Empty message */
+.p-dropdown-empty-message {
+  color: #6b7280 !important;
+  padding: 0.75rem !important;
+  text-align: center !important;
+  font-style: italic !important;
+}
+
+/* Scrollbar for dropdown items */
+.p-dropdown-items-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.p-dropdown-items-wrapper::-webkit-scrollbar-track {
+  background: #141920;
+  border-radius: 4px;
+}
+
+.p-dropdown-items-wrapper::-webkit-scrollbar-thumb {
+  background: #2d3748;
+  border-radius: 4px;
+}
+
+.p-dropdown-items-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+/* Disabled state */
+.p-dropdown.p-disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Dark dropdown panel class (for specific use cases) */
+.dark-dropdown-panel.p-dropdown-panel {
+  background: #1a1f2e !important;
+  border: 1px solid #2d3748 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark-dropdown-panel .p-dropdown-filter {
+  background: #0f1419 !important;
+  border: 1px solid #2d3748 !important;
+  color: #e8eaed !important;
+}
+
+.dark-dropdown-panel .p-dropdown-filter::placeholder {
+  color: #6b7280 !important;
 }

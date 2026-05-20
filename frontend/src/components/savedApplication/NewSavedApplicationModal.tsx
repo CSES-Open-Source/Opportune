@@ -2,14 +2,15 @@ import React, { useRef, useState } from "react";
 import Modal from "../public/Modal";
 import CompanyDropdown from "../company/CompanyDropdown";
 import { Company } from "../../types/Company";
-import { FaLink, FaUser, FaCalendarAlt } from "react-icons/fa";
-import { FaLocationDot } from "react-icons/fa6";
-import { LuListChecks } from "react-icons/lu";
 import { createSavedApplication } from "../../api/savedApplications";
 import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
 import { Calendar } from "primereact/calendar";
 import { parseErrorResponse } from "../../utils/errorHandler";
+import {
+  LuBuilding2, LuBriefcase, LuMapPin, LuLink, LuListChecks,
+  LuCalendar, LuPlus, LuX,
+} from "react-icons/lu";
 
 interface NewSavedApplicationModalProps {
   isOpen: boolean;
@@ -41,7 +42,6 @@ const NewSavedApplicationModal = ({
     setIsValidPosition(pos.trim().length > 0);
   };
 
-  // onLocationChange remains the same
   const onLocationChange = (loc: string) => {
     setLocation(loc);
   };
@@ -69,7 +69,7 @@ const NewSavedApplicationModal = ({
   const handleAddMaterial = () => {
     if (materialsInput.trim() !== "") {
       setMaterialsNeeded([...materialsNeeded, materialsInput.trim()]);
-      setMaterialsInput(""); // Clear input after adding
+      setMaterialsInput("");
     }
   };
 
@@ -85,7 +85,6 @@ const NewSavedApplicationModal = ({
     setMaterialsNeeded([]);
     setMaterialsInput("");
     setDeadline(null);
-    // setNotes("");
     setIsValidPosition(false);
     setIsValidLink(true);
   };
@@ -137,129 +136,155 @@ const NewSavedApplicationModal = ({
           resetInputs();
           onClose();
         }}
-        className="w-[75vh] max-w-lg rounded-xl flex flex-col px-8 py-6"
+        className="w-full max-w-lg rounded-2xl flex flex-col p-0 overflow-hidden"
         useOverlay
+        style={{
+          background: "linear-gradient(145deg, #1e2433, #1a1f2e)",
+          border: "1px solid #2d3748",
+        }}
       >
-        <div className="w-full h-full flex flex-col items-center gap-5">
-          <h1 className="text-2xl font-bold">Save New Application</h1>{" "}
-          {/* Updated title */}
-          <div className="w-full flex flex-col gap-3 overflow-y-auto max-h-[60vh] pr-2">
-            {" "}
-            {/* Added scroll for content */}
-            <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-1">
-                Company
+        {/* Gradient top bar */}
+        <div className="h-1" style={{ background: "linear-gradient(90deg, #ec4899, #a78bfa)" }} />
+
+        <div className="p-6 flex flex-col max-h-[90vh]">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div
+                className="p-2.5 rounded-lg"
+                style={{
+                  background: "rgba(236,72,153,0.12)",
+                  border: "1px solid rgba(236,72,153,0.25)",
+                }}
+              >
+                <LuPlus className="w-5 h-5 text-[#ec4899]" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-[#e8eaed]">Save New Application</h2>
+                <p className="text-xs text-[#6b7280] mt-0.5">Draft an application to work on later</p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                resetInputs();
+                onClose();
+              }}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6b7280] hover:text-[#e8eaed] hover:rotate-90 transition-all duration-200"
+              style={{ background: "#141920", border: "1px solid #2d3748" }}
+            >
+              <LuX className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Form */}
+          <div className="space-y-4 overflow-y-auto pr-2">
+            {/* Company */}
+            <div>
+              <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                <LuBuilding2 className="w-3.5 h-3.5" />
+                Company <span className="text-[#f87171]">*</span>
               </label>
-              <CompanyDropdown
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                dropdownClassName={`w-full py-0.5 border-2 border-gray-200 rounded-lg ${
-                  company ? "border-blue-500" : ""
-                }`}
-                buttonClassName=""
+              <div
+                className="rounded-lg transition-all"
+                style={{
+                  background: "#141920",
+                  border: company ? "1px solid #ec4899" : "1px solid #2d3748",
+                }}
+              >
+                <CompanyDropdown
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  dropdownClassName="w-full py-2.5 bg-transparent text-[#e8eaed] outline-none"
+                  buttonClassName=""
+                />
+              </div>
+            </div>
+
+            {/* Position */}
+            <div>
+              <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                <LuBriefcase className="w-3.5 h-3.5" />
+                Position <span className="text-[#f87171]">*</span>
+              </label>
+              <input
+                type="text"
+                value={position}
+                onChange={(e) => onPositionChange(e.target.value)}
+                placeholder="e.g., Software Engineer Intern"
+                className="w-full p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                style={{
+                  background: "#141920",
+                  border: "1px solid #2d3748",
+                }}
+                onFocus={e => (e.target as HTMLInputElement).style.borderColor = "#ec4899"}
+                onBlur={e => (e.target as HTMLInputElement).style.borderColor = "#2d3748"}
               />
             </div>
-            <div className="flex flex-col">
-              <label
-                htmlFor="position"
-                className="text-sm font-medium text-gray-700 mb-1"
-              >
-                Position
+
+            {/* Location */}
+            <div>
+              <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                <LuMapPin className="w-3.5 h-3.5" />
+                Location <span className="text-[#6b7280]">(Optional)</span>
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <FaUser
-                    size={22}
-                    className={`${position ? "text-primary" : "text-gray-300"}`}
-                  />
-                </div>
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => onLocationChange(e.target.value)}
+                placeholder="e.g., San Diego, CA"
+                className="w-full p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                style={{
+                  background: "#141920",
+                  border: "1px solid #2d3748",
+                }}
+                onFocus={e => (e.target as HTMLInputElement).style.borderColor = "#ec4899"}
+                onBlur={e => (e.target as HTMLInputElement).style.borderColor = "#2d3748"}
+              />
+            </div>
+
+            {/* Link */}
+            <div>
+              <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                <LuLink className="w-3.5 h-3.5" />
+                Job Posting Link <span className="text-[#6b7280]">(Optional)</span>
+              </label>
+              <input
+                type="url"
+                value={link}
+                onChange={(e) => onLinkChange(e.target.value)}
+                placeholder="https://..."
+                className="w-full p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                style={{
+                  background: "#141920",
+                  border: isValidLink || link.length === 0 ? "1px solid #2d3748" : "1px solid #f87171",
+                }}
+                onFocus={e => (e.target as HTMLInputElement).style.borderColor = isValidLink || link.length === 0 ? "#ec4899" : "#f87171"}
+                onBlur={e => (e.target as HTMLInputElement).style.borderColor = isValidLink || link.length === 0 ? "#2d3748" : "#f87171"}
+              />
+              {!isValidLink && link.length > 0 && (
+                <p className="text-xs text-[#f87171] mt-1.5">Please enter a valid URL</p>
+              )}
+            </div>
+
+            {/* Materials Needed */}
+            <div>
+              <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                <LuListChecks className="w-3.5 h-3.5" />
+                Materials Needed <span className="text-[#6b7280]">(Optional)</span>
+              </label>
+              <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  id="position"
-                  className="block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
-                  placeholder="Add Position"
-                  value={position}
-                  onChange={(e) => onPositionChange(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <label
-                htmlFor="location"
-                className="text-sm font-medium text-gray-700 mb-1"
-              >
-                Location (Optional)
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <FaLocationDot
-                    size={22}
-                    className={`${location ? "text-primary" : "text-gray-300"}`}
-                  />
-                </div>
-                <input
-                  type="text"
-                  id="location"
-                  className="block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
-                  placeholder="Add Location"
-                  value={location}
-                  onChange={(e) => onLocationChange(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <label
-                htmlFor="link"
-                className="text-sm font-medium text-gray-700 mb-1"
-              >
-                Link (Optional)
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <FaLink
-                    size={22}
-                    className={`${link ? "text-primary" : "text-gray-300"}`}
-                  />
-                </div>
-                <input
-                  type="url"
-                  id="link"
-                  className={`block w-full pl-10 pr-3 py-2.5 border-2 rounded-lg focus:outline-none ${
-                    isValidLink || link.length === 0
-                      ? "focus:border-blue-500 border-gray-200"
-                      : "border-red-500"
-                  }`}
-                  placeholder="Add Link"
-                  value={link}
-                  onChange={(e) => onLinkChange(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col">
-              <label
-                htmlFor="materials"
-                className="text-sm font-medium text-gray-700 mb-1"
-              >
-                Materials Needed (Optional)
-              </label>
-              <div className="relative flex items-center">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <LuListChecks
-                    size={22}
-                    className={`${
-                      materialsNeeded.length > 0
-                        ? "text-primary"
-                        : "text-gray-300"
-                    }`}
-                  />
-                </div>
-                <input
-                  type="text"
-                  id="materials"
-                  className="block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
-                  placeholder="Add a material (e.g., Resume)"
                   value={materialsInput}
                   onChange={handleMaterialsInputChange}
+                  placeholder="e.g., Resume, Cover Letter"
+                  className="flex-1 p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                  style={{
+                    background: "#141920",
+                    border: "1px solid #2d3748",
+                  }}
+                  onFocus={e => (e.target as HTMLInputElement).style.borderColor = "#ec4899"}
+                  onBlur={e => (e.target as HTMLInputElement).style.borderColor = "#2d3748"}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
@@ -270,68 +295,89 @@ const NewSavedApplicationModal = ({
                 <button
                   type="button"
                   onClick={handleAddMaterial}
-                  className="ml-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
+                  className="px-3 py-2.5 rounded-lg text-sm font-semibold text-white transition-all hover:-translate-y-0.5"
+                  style={{
+                    background: "linear-gradient(135deg, #ec4899, #a78bfa)",
+                    boxShadow: "0 2px 8px rgba(236,72,153,0.25)",
+                  }}
                 >
                   Add
                 </button>
               </div>
-              <div className="mt-2 flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mt-2">
                 {materialsNeeded.map((material, index) => (
                   <div
                     key={index}
-                    className="flex items-center bg-gray-200 text-gray-700 px-2 py-1 rounded-md text-sm"
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium border"
+                    style={{
+                      background: "rgba(236,72,153,0.12)",
+                      color: "#ec4899",
+                      borderColor: "rgba(236,72,153,0.3)",
+                    }}
                   >
                     {material}
                     <button
                       type="button"
                       onClick={() => handleRemoveMaterial(index)}
-                      className="ml-2 text-red-500 hover:text-red-700"
+                      className="text-[#f87171] hover:text-[#ef4444] transition-colors"
                     >
-                      &times;
+                      <LuX className="w-3 h-3" />
                     </button>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="flex flex-col">
-              <label
-                htmlFor="deadline"
-                className="text-sm font-medium text-gray-700 mb-1"
-              >
-                Deadline (Optional)
+
+            {/* Deadline */}
+            <div>
+              <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                <LuCalendar className="w-3.5 h-3.5" />
+                Deadline <span className="text-[#6b7280]">(Optional)</span>
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none z-10">
-                  <FaCalendarAlt
-                    size={22}
-                    className={`${deadline ? "text-primary" : "text-gray-300"}`}
-                  />
-                </div>
-                <Calendar
-                  id="deadline"
-                  value={deadline}
-                  onChange={(e) => setDeadline(e.value || null)}
-                  showIcon={false}
-                  dateFormat="mm/dd/yy"
-                  placeholder="MM/DD/YYYY"
-                  inputClassName="block w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
-                  panelClassName="mt-1"
-                />
-              </div>
+              <Calendar
+                value={deadline}
+                onChange={(e) => setDeadline(e.value || null)}
+                showIcon={false}
+                dateFormat="mm/dd/yy"
+                placeholder="MM/DD/YYYY"
+                inputClassName="w-full p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none transition-all"
+                inputStyle={{
+                  background: "#141920",
+                  border: "1px solid #2d3748",
+                }}
+              />
             </div>
           </div>
-          <button
-            className={`w-full px-4 py-2 rounded-md text-white font-medium transition-colors mt-4 ${
-              // Adjusted margin-top
-              company && isValidPosition && isValidLink
-                ? "bg-blue-600 hover:bg-blue-700"
-                : "bg-blue-300 cursor-not-allowed"
-            }`}
-            onClick={onSave}
-            disabled={!company || !isValidPosition || !isValidLink}
-          >
-            Save Application
-          </button>
+
+          {/* Actions */}
+          <div className="flex gap-3 mt-6 pt-6 border-t" style={{ borderColor: "#2d3748" }}>
+            <button
+              onClick={() => {
+                resetInputs();
+                onClose();
+              }}
+              className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-[#9ca3af] hover:text-[#e8eaed] transition-all"
+              style={{ background: "#141920", border: "1px solid #2d3748" }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onSave}
+              disabled={!company || !isValidPosition || !isValidLink}
+              className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: company && isValidPosition && isValidLink
+                  ? "linear-gradient(135deg, #ec4899, #a78bfa)"
+                  : "#2d3748",
+                boxShadow: company && isValidPosition && isValidLink
+                  ? "0 4px 14px rgba(236,72,153,0.25)"
+                  : "none",
+              }}
+            >
+              <LuPlus className="w-4 h-4" />
+              Save Application
+            </button>
+          </div>
         </div>
       </Modal>
       <Toast ref={toast} />
