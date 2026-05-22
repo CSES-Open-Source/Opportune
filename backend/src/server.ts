@@ -1,9 +1,11 @@
 import "module-alias/register";
+import { createServer } from "http";
 import mongoose from "mongoose";
 import app from "../src/app";
 import env from "../src/util/validateEnv";
 import s3 from "../src/aws/s3Client"; // Import your S3 client instance
 import { ListBucketsCommand } from "@aws-sdk/client-s3";
+import { initWebSocket } from "./websocket";
 
 const PORT = env.PORT;
 const MONGODB_URI = env.MONGODB_URI;
@@ -36,7 +38,9 @@ async function startServer() {
     await verifyS3Connection();
 
     // Start the Express server
-    app.listen(PORT, () => {
+    const httpServer = createServer(app);
+    initWebSocket(httpServer);
+    httpServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}.`);
     });
   } catch (error) {
