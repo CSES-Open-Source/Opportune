@@ -6,12 +6,9 @@ import mongoose from "mongoose";
 
 export type WebSocketMessageType = 
   | "chat_message"
-  | "new_post"
-  | "update_post"
-  | "delete_post"
-  | "new_comment"
-  | "update_comment"
-  | "delete_comment"
+  | "new_question"
+  | "update_question"
+  | "delete_question"
   | "new_answer"
   | "update_answer"
   | "delete_answer";
@@ -24,41 +21,38 @@ export interface WebSocketBase{
 
 
 export interface chatMessage extends WebSocketBase{
+  type: "chat_message";
+  message: string;
+}
+
+export interface newQuestionMessage extends WebSocketBase{
+  type: "new_question";
+  message: string;
+}
+
+export interface updateQuestionMessage extends WebSocketBase{
+  type: "update_question";
+  message: string;
 
 }
 
-export interface newPostMessage extends WebSocketBase{
-
-}
-
-export interface updatePostMessage extends WebSocketBase{
-
-}
-
-export interface deletePostMessage extends WebSocketBase{
-
-}
-
-export interface newCommentMessage extends WebSocketBase{
-
-}
-
-export interface updateCommentMessage extends WebSocketBase{
-
-}
-
-export interface deleteCommentMessage extends WebSocketBase{
-
+export interface deleteQuestionMessage extends WebSocketBase{
+  type: "delete_question";
+  message: string;
 }
 
 export interface newAnswerMessage extends WebSocketBase{
-
+  type: "new_answer";
+  message: string;
 }
 
 export interface updateAnswerMessage extends WebSocketBase{
-
+  type: "update_answer";
+  message: string;
 }
 
 export interface deleteAnswerMessage extends WebSocketBase{
-
+  type: "delete_answer";
+  message: string;
+  
 }
