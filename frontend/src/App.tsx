@@ -15,6 +15,7 @@ import Sandbox from "./pages/Sandbox";
 import Profile from "./pages/Profile";
 import Analytics from "./pages/Analytics";
 import AuthLayer from "./components/layout/AuthLayer";
+import Forum from "./pages/Forum"; 
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="sandbox" element={<Sandbox />} />
+            <Route path="Forum" element={<Forum />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

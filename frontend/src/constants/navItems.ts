@@ -8,6 +8,7 @@ import {
   FiFileText,
   FiTerminal,
   FiBarChart,
+  FiMessageCircle,
 } from "react-icons/fi";
 import { NavItem } from "../types/NavItem";
 
@@ -21,6 +22,11 @@ export const navItems: NavItem[] = [
     label: "Companies",
     path: "/companies",
     icon: FiBriefcase,
+  },
+  {
+    label: "Forum",
+    path: "/forum",
+    icon: FiMessageCircle,
   },
   {
     label: "Alumni Network",
