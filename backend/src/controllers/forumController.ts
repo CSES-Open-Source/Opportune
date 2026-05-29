@@ -20,7 +20,10 @@ export const getQuestion: RequestHandler = async (req, res, next) => {
       throw createHttpError(400, "Invalid question ID.");
     }
 
-    const question = await Question.findById(questionId).populate("answers");
+    const question = await Question.findById(questionId).populate({
+      path: "answers",
+      populate: { path: "replies" },
+    });
     if (!question) {
       throw createHttpError(404, "Question not found.");
     }
@@ -35,17 +38,10 @@ export const createQuestion: RequestHandler = async (req, res, next) => {
   const { questionTitle, questionContent, userId } = req.body;
   try {
     if (!questionTitle || !questionContent || !userId) {
-      throw createHttpError(
-        400,
-        "questionTitle, questionContent, and userId are required.",
-      );
+      throw createHttpError(400, "questionTitle, questionContent, and userId are required.");
     }
 
-    const question = await Question.create({
-      questionTitle,
-      questionContent,
-      userId,
-    });
+    const question = await Question.create({ questionTitle, questionContent, userId });
     res.status(201).json(question);
   } catch (error) {
     next(error);
@@ -113,7 +109,6 @@ export const createAnswer: RequestHandler = async (req, res, next) => {
     }
 
     const answer = await Answer.create({ userId, answerContent });
-
     question.answers.push(answer._id);
     await question.save();
 
@@ -158,9 +153,16 @@ export const deleteAnswer: RequestHandler = async (req, res, next) => {
       throw createHttpError(404, "Answer not found.");
     }
 
+    // Remove from parent question
     await Question.updateOne(
       { answers: answerId },
       { $pull: { answers: new mongoose.Types.ObjectId(answerId) } },
+    );
+
+    // Also remove if it was a reply on another answer
+    await Answer.updateOne(
+      { replies: answerId },
+      { $pull: { replies: new mongoose.Types.ObjectId(answerId) } },
     );
 
     res.sendStatus(204);
@@ -169,21 +171,46 @@ export const deleteAnswer: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const reactToAnswer: RequestHandler = async (req, res, next) => {
+// POST /api/forum/answers/:answerId/replies
+export const createReply: RequestHandler = async (req, res, next) => {
   const { answerId } = req.params;
-  const { emoji, delta } = req.body;
+  const { userId, answerContent } = req.body;
   try {
     if (!mongoose.isValidObjectId(answerId)) {
       throw createHttpError(400, "Invalid answer ID.");
     }
-    if (!VALID_REACTIONS.includes(emoji)) {
-      throw createHttpError(
-        400,
-        `Invalid emoji. Must be one of: ${VALID_REACTIONS.join(" ")}`,
-      );
+    if (!userId || !answerContent) {
+      throw createHttpError(400, "userId and answerContent are required.");
     }
-    if (delta !== 1 && delta !== -1) {
-      throw createHttpError(400, "delta must be 1 or -1.");
+
+    const parentAnswer = await Answer.findById(answerId);
+    if (!parentAnswer) {
+      throw createHttpError(404, "Answer not found.");
+    }
+
+    const reply = await Answer.create({ userId, answerContent });
+    parentAnswer.replies.push(reply._id);
+    await parentAnswer.save();
+
+    res.status(201).json(reply);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PATCH /api/forum/answers/:answerId/reactions
+export const reactToAnswer: RequestHandler = async (req, res, next) => {
+  const { answerId } = req.params;
+  const { userId, emoji } = req.body;
+  try {
+    if (!mongoose.isValidObjectId(answerId)) {
+      throw createHttpError(400, "Invalid answer ID.");
+    }
+    if (!userId) {
+      throw createHttpError(400, "userId is required.");
+    }
+    if (!VALID_REACTIONS.includes(emoji)) {
+      throw createHttpError(400, `Invalid emoji. Must be one of: ${VALID_REACTIONS.join(" ")}`);
     }
 
     const answer = await Answer.findById(answerId);
@@ -191,11 +218,20 @@ export const reactToAnswer: RequestHandler = async (req, res, next) => {
       throw createHttpError(404, "Answer not found.");
     }
 
-    const current = (answer.reactions as Map<string, number>).get(emoji) ?? 0;
-    const updated = Math.max(0, current + delta);
-    (answer.reactions as Map<string, number>).set(emoji, updated);
-    await answer.save();
+    const reactions = answer.reactions as Array<{ userId: string; emoji: string }>;
+    const existingIndex = reactions.findIndex(
+      (r) => r.userId === userId && r.emoji === emoji,
+    );
 
+    if (existingIndex !== -1) {
+      // User already reacted with this emoji — toggle it off
+      reactions.splice(existingIndex, 1);
+    } else {
+      // Add the reaction
+      reactions.push({ userId, emoji });
+    }
+
+    await answer.save();
     res.status(200).json(answer);
   } catch (error) {
     next(error);

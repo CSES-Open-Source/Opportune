@@ -8,6 +8,7 @@ import {
   createAnswer,
   updateAnswer,
   deleteAnswer,
+  createReply,
   reactToAnswer,
 } from "../controllers/forumController";
 
@@ -22,6 +23,7 @@ router.delete("/questions/:questionId", deleteQuestion);
 router.post("/questions/:questionId/answers", createAnswer);
 router.patch("/answers/:answerId", updateAnswer);
 router.delete("/answers/:answerId", deleteAnswer);
+router.post("/answers/:answerId/replies", createReply);
 router.patch("/answers/:answerId/reactions", reactToAnswer);
 
 export default router;

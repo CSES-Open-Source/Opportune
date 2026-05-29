@@ -3,6 +3,15 @@ import { InferSchemaType, Schema, model } from "mongoose";
 export const VALID_REACTIONS = ["👍", "❤️", "😂", "🎉", "🤔", "🔥"] as const;
 export type ReactionEmoji = (typeof VALID_REACTIONS)[number];
 
+const reactionSchema = new Schema(
+  {
+    userId: { type: String, required: true },
+    emoji: { type: String, required: true },
+  },
+  { _id: false },
+);
+
+// Forward-declare so answerSchema can self-reference for replies
 const answerSchema = new Schema(
   {
     userId: {
@@ -15,9 +24,12 @@ const answerSchema = new Schema(
       required: true,
     },
     reactions: {
-      type: Map,
-      of: Number,
-      default: () => new Map(VALID_REACTIONS.map((emoji) => [emoji, 0])),
+      type: [reactionSchema],
+      default: [],
+    },
+    replies: {
+      type: [{ type: Schema.Types.ObjectId, ref: "Answer" }],
+      default: [],
     },
   },
   {
