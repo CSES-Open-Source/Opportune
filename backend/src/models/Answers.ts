@@ -11,7 +11,6 @@ const reactionSchema = new Schema(
   { _id: false },
 );
 
-// Forward-declare so answerSchema can self-reference for replies
 const answerSchema = new Schema(
   {
     userId: {

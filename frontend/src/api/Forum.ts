@@ -9,9 +9,6 @@ import {
 } from "../types/Forum";
 import { APIResult, get, del, patch, post, handleAPIError } from "./requests";
 
-/**
- * Fetch all questions from the backend.
- */
 export async function getAllQuestions(): Promise<APIResult<Question[]>> {
   try {
     const response = await get("/api/forum/questions");
@@ -22,9 +19,6 @@ export async function getAllQuestions(): Promise<APIResult<Question[]>> {
   }
 }
 
-/**
- * Fetch a single question by ID, with populated answers.
- */
 export async function getQuestionById(
   id: string,
 ): Promise<APIResult<Question>> {
@@ -37,9 +31,6 @@ export async function getQuestionById(
   }
 }
 
-/**
- * Create a new question.
- */
 export async function createQuestion(
   question: CreateQuestionRequest,
 ): Promise<APIResult<Question>> {
@@ -52,9 +43,6 @@ export async function createQuestion(
   }
 }
 
-/**
- * Update an existing question.
- */
 export async function updateQuestion(
   id: string,
   question: UpdateQuestionRequest,
@@ -68,9 +56,6 @@ export async function updateQuestion(
   }
 }
 
-/**
- * Delete a question and its answers.
- */
 export async function deleteQuestion(id: string): Promise<APIResult<null>> {
   try {
     await del(`/api/forum/questions/${id}`);
@@ -80,9 +65,6 @@ export async function deleteQuestion(id: string): Promise<APIResult<null>> {
   }
 }
 
-/**
- * Post an answer to a question.
- */
 export async function createAnswer(
   questionId: string,
   answer: CreateAnswerRequest,
@@ -99,9 +81,6 @@ export async function createAnswer(
   }
 }
 
-/**
- * Update an answer.
- */
 export async function updateAnswer(
   answerId: string,
   answer: UpdateAnswerRequest,
@@ -115,9 +94,6 @@ export async function updateAnswer(
   }
 }
 
-/**
- * Delete an answer.
- */
 export async function deleteAnswer(answerId: string): Promise<APIResult<null>> {
   try {
     await del(`/api/forum/answers/${answerId}`);
@@ -127,10 +103,6 @@ export async function deleteAnswer(answerId: string): Promise<APIResult<null>> {
   }
 }
 
-/**
- * React to an answer with an emoji.
- * delta: 1 to add, -1 to remove.
- */
 export async function reactToAnswer(
   answerId: string,
   reaction: ReactToAnswerRequest,
@@ -147,9 +119,6 @@ export async function reactToAnswer(
   }
 }
 
-/**
- * Post a reply to an answer.
- */
 export async function createReply(
   answerId: string,
   reply: CreateAnswerRequest,

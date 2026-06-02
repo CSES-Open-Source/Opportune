@@ -29,7 +29,7 @@ const UserAvatar = ({ userId, cachedUser, size = "sm" }: { userId: string; cache
 
 interface AnswerCardProps {
   a: Answer;
-  depth?: number; // 0 = top-level answer, 1+ = reply
+  depth?: number;
   currentUserId?: string;
   currentUser?: User;
   getUser: (userId: string) => User | undefined;
@@ -57,7 +57,6 @@ const AnswerCard = ({
   const reactionCounts: Record<string, number> = {};
   a.reactions.forEach((r) => { reactionCounts[r.emoji] = (reactionCounts[r.emoji] ?? 0) + 1; });
 
-  // Indent less aggressively at deeper depths
   const indentClass = depth > 0 ? "ml-5" : "";
   const borderColor = depth === 0 ? "#e8590c" : depth === 1 ? "#7c3aed" : "#5b8ef4";
   const headerBg = depth === 0 ? "#fff7f3" : depth === 1 ? "#f5f0ff" : "#eff6ff";
@@ -183,7 +182,6 @@ const AnswerCard = ({
   );
 };
 
-// ─── Forum ──────────────────────────────────────────────────────────────────
 const Forum = () => {
   const { user } = useAuth();
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -220,7 +218,6 @@ const Forum = () => {
   const collectUserIds = (answers: Answer[]): string[] =>
     answers.flatMap((a) => [a.userId, ...collectUserIds(a.replies ?? [])]);
 
-  // Ensure every answer/reply is a full object (not a bare ObjectId string)
   const sanitizeAnswers = (answers: unknown[]): Answer[] =>
     answers
       .filter((a): a is Answer => typeof a === "object" && a !== null && "_id" in a)
@@ -290,12 +287,10 @@ const Forum = () => {
     if (res.success) refreshSelectedQuestion(qId);
   };
 
-  // Fix blank screen: update only the reacted answer in state, no full refresh
   const handleReact = async (answerId: string, emoji: string) => {
     if (!user || !selectedQuestion) return;
     const res = await reactToAnswer(answerId, { userId: user._id, emoji });
     if (res.success) {
-      // Deep update: patch the answer anywhere in the tree (answer or reply)
       const patchAnswers = (answers: Answer[]): Answer[] =>
         answers.map((a) => {
           if (a._id === answerId) return { ...a, reactions: res.data.reactions };
@@ -318,7 +313,6 @@ const Forum = () => {
 
   const pageBg = { background: "linear-gradient(135deg, #0f1419 0%, #1a1260 50%, #2a0a4a 100%)" };
 
-  // ─── Question Detail View ─────────────────────────────────────────────────
   if (selectedQuestion) {
     const questionAuthor = getUser(selectedQuestion.userId);
     return (
@@ -417,7 +411,6 @@ const Forum = () => {
     );
   }
 
-  // ─── Question List View ───────────────────────────────────────────────────
   return (
     <div className="min-h-screen px-6 py-8 relative" style={pageBg}>
       <div className="fixed inset-0 pointer-events-none overflow-hidden">

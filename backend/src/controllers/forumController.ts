@@ -1,8 +1,11 @@
 import { RequestHandler } from "express";
-import mongoose from "mongoose";
+import mongoose, { HydratedDocument } from "mongoose";
 import createHttpError from "http-errors";
 import Question from "../models/Questions";
 import Answer, { VALID_REACTIONS } from "../models/Answers";
+import { InferSchemaType } from "mongoose";
+
+type AnswerDoc = HydratedDocument<InferSchemaType<typeof Answer.schema>>;
 
 export const getQuestions: RequestHandler = async (req, res, next) => {
   try {
@@ -20,13 +23,17 @@ export const getQuestion: RequestHandler = async (req, res, next) => {
       throw createHttpError(400, "Invalid question ID.");
     }
 
-    // Recursively populate replies at all depths
-    const deepPopulateReplies = async (answers: any[]): Promise<any[]> => {
+    const deepPopulateReplies = async (
+      answers: AnswerDoc[],
+    ): Promise<AnswerDoc[]> => {
       return Promise.all(
         answers.map(async (a) => {
           await a.populate("replies");
-          if (a.replies?.length) {
-            a.replies = await deepPopulateReplies(a.replies);
+          const replies = a.replies as unknown as AnswerDoc[];
+          if (replies?.length) {
+            a.replies = (await deepPopulateReplies(
+              replies,
+            )) as unknown as typeof a.replies;
           }
           return a;
         }),
@@ -37,9 +44,13 @@ export const getQuestion: RequestHandler = async (req, res, next) => {
     if (!question) {
       throw createHttpError(404, "Question not found.");
     }
+
     if (question.answers?.length) {
-      question.answers = await deepPopulateReplies(question.answers as any[]) as any;
+      question.answers = (await deepPopulateReplies(
+        question.answers as unknown as AnswerDoc[],
+      )) as unknown as typeof question.answers;
     }
+
     res.status(200).json(question);
   } catch (error) {
     next(error);
@@ -50,10 +61,17 @@ export const createQuestion: RequestHandler = async (req, res, next) => {
   const { questionTitle, questionContent, userId } = req.body;
   try {
     if (!questionTitle || !questionContent || !userId) {
-      throw createHttpError(400, "questionTitle, questionContent, and userId are required.");
+      throw createHttpError(
+        400,
+        "questionTitle, questionContent, and userId are required.",
+      );
     }
 
-    const question = await Question.create({ questionTitle, questionContent, userId });
+    const question = await Question.create({
+      questionTitle,
+      questionContent,
+      userId,
+    });
     res.status(201).json(question);
   } catch (error) {
     next(error);
@@ -165,13 +183,11 @@ export const deleteAnswer: RequestHandler = async (req, res, next) => {
       throw createHttpError(404, "Answer not found.");
     }
 
-    // Remove from parent question
     await Question.updateOne(
       { answers: answerId },
       { $pull: { answers: new mongoose.Types.ObjectId(answerId) } },
     );
 
-    // Also remove if it was a reply on another answer
     await Answer.updateOne(
       { replies: answerId },
       { $pull: { replies: new mongoose.Types.ObjectId(answerId) } },
@@ -183,7 +199,6 @@ export const deleteAnswer: RequestHandler = async (req, res, next) => {
   }
 };
 
-// POST /api/forum/answers/:answerId/replies
 export const createReply: RequestHandler = async (req, res, next) => {
   const { answerId } = req.params;
   const { userId, answerContent } = req.body;
@@ -210,7 +225,6 @@ export const createReply: RequestHandler = async (req, res, next) => {
   }
 };
 
-// PATCH /api/forum/answers/:answerId/reactions
 export const reactToAnswer: RequestHandler = async (req, res, next) => {
   const { answerId } = req.params;
   const { userId, emoji } = req.body;
@@ -222,7 +236,10 @@ export const reactToAnswer: RequestHandler = async (req, res, next) => {
       throw createHttpError(400, "userId is required.");
     }
     if (!VALID_REACTIONS.includes(emoji)) {
-      throw createHttpError(400, `Invalid emoji. Must be one of: ${VALID_REACTIONS.join(" ")}`);
+      throw createHttpError(
+        400,
+        `Invalid emoji. Must be one of: ${VALID_REACTIONS.join(" ")}`,
+      );
     }
 
     const answer = await Answer.findById(answerId);
@@ -230,16 +247,17 @@ export const reactToAnswer: RequestHandler = async (req, res, next) => {
       throw createHttpError(404, "Answer not found.");
     }
 
-    const reactions = answer.reactions as Array<{ userId: string; emoji: string }>;
+    const reactions = answer.reactions as Array<{
+      userId: string;
+      emoji: string;
+    }>;
     const existingIndex = reactions.findIndex(
       (r) => r.userId === userId && r.emoji === emoji,
     );
 
     if (existingIndex !== -1) {
-      // User already reacted with this emoji — toggle it off
       reactions.splice(existingIndex, 1);
     } else {
-      // Add the reaction
       reactions.push({ userId, emoji });
     }
 
