@@ -20,14 +20,26 @@ export const getQuestion: RequestHandler = async (req, res, next) => {
       throw createHttpError(400, "Invalid question ID.");
     }
 
-    const question = await Question.findById(questionId).populate({
-      path: "answers",
-      populate: { path: "replies" },
-    });
+    // Recursively populate replies at all depths
+    const deepPopulateReplies = async (answers: any[]): Promise<any[]> => {
+      return Promise.all(
+        answers.map(async (a) => {
+          await a.populate("replies");
+          if (a.replies?.length) {
+            a.replies = await deepPopulateReplies(a.replies);
+          }
+          return a;
+        }),
+      );
+    };
+
+    const question = await Question.findById(questionId).populate("answers");
     if (!question) {
       throw createHttpError(404, "Question not found.");
     }
-
+    if (question.answers?.length) {
+      question.answers = await deepPopulateReplies(question.answers as any[]) as any;
+    }
     res.status(200).json(question);
   } catch (error) {
     next(error);

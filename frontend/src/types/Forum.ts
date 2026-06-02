@@ -1,8 +1,14 @@
+export interface Reaction {
+  userId: string;
+  emoji: string;
+}
+
 export interface Answer {
   _id: string;
   userId: string;
   answerContent: string;
-  reactions: Record<string, number>;
+  reactions: Reaction[];
+  replies: Answer[];
   createdDate: string;
   modifiedDate: string;
 }
@@ -38,8 +44,8 @@ export interface UpdateAnswerRequest {
 }
 
 export interface ReactToAnswerRequest {
+  userId: string;
   emoji: string;
-  delta: 1 | -1;
 }
 
 export const VALID_REACTIONS = ["👍", "❤️", "😂", "🎉", "🤔", "🔥"] as const;

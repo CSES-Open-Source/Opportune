@@ -146,3 +146,19 @@ export async function reactToAnswer(
     return handleAPIError(error);
   }
 }
+
+/**
+ * Post a reply to an answer.
+ */
+export async function createReply(
+  answerId: string,
+  reply: CreateAnswerRequest,
+): Promise<APIResult<Answer>> {
+  try {
+    const response = await post(`/api/forum/answers/${answerId}/replies`, reply);
+    const json = (await response.json()) as Answer;
+    return { success: true, data: json };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
