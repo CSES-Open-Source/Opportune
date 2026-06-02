@@ -14,6 +14,7 @@ import { logger } from "../src/middlewares/logger";
 import tipRouter from "../src/routes/tipRoutes";
 import profileRoutes from "../src/routes/profileRoutes";
 import groqRoutes from "../src/routes/groqRoutes";
+import forumRouter from "../src/routes/forumRoutes";
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use("/api/questions/interview", interviewQuestionRouter);
 app.use("/api/tips", tipRouter);
 app.use("/api/articles", articleRouter);
 app.use("/api/email", groqRoutes);
+app.use("/api/forum", forumRouter);
 
 /**
  * Error handler; all errors thrown by server are handled here.
