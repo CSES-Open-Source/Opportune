@@ -21,4 +21,8 @@ code {
   font-size: 1rem; /* Increase font size */
 }
 
+.p-datepicker-title .p-datepicker-month {
+  margin-right: 4px;
+}
+
 

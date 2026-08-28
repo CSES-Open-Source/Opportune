@@ -81,8 +81,8 @@ const applicationColumns: ColumnDef<Application>[] = [
   {
     header: "Date Updated",
     accessor: (row) =>
-      row.process && row.process.length > 0
-        ? row.process[row.process.length - 1].date.toLocaleDateString()
+      row.updatedAt
+        ? row.updatedAt.toLocaleDateString()
         : "",
   },
 ];
@@ -130,6 +130,7 @@ const Applications = () => {
           ...res.data,
           data: res.data.data.map((app) => ({
             ...app,
+            updatedAt: app.updatedAt ? new Date(app.updatedAt) : undefined,
             process:
               app.process &&
               app.process.map((proc) => ({

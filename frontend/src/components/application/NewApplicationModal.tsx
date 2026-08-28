@@ -5,7 +5,9 @@ import { Company } from "../../types/Company";
 import { createApplication } from "../../api/applications";
 import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
-import { LuBuilding2, LuBriefcase, LuMapPin, LuLink, LuPlus, LuX } from "react-icons/lu";
+import { LuBuilding2, LuBriefcase, LuMapPin, LuLink, LuPlus, LuCalendar } from "react-icons/lu";
+import { Status } from "../../types/Application";
+import { Calendar } from "primereact/calendar";
 
 interface NewApplicationModalProps {
   isOpen: boolean;
@@ -25,6 +27,7 @@ const NewApplicationModal = ({
   const [position, setPosition] = useState("");
   const [location, setLocation] = useState("");
   const [link, setLink] = useState("");
+  const [applicationDate, setApplicationDate] = useState<Date>(new Date());
 
   const [isValidPosition, setIsValidPosition] = useState(false);
   const [isValidLink, setIsValidLink] = useState(true);
@@ -59,6 +62,7 @@ const NewApplicationModal = ({
     setPosition("");
     setLocation("");
     setLink("");
+    setApplicationDate(new Date());
     setIsValidPosition(false);
     setIsValidLink(true);
   };
@@ -74,7 +78,8 @@ const NewApplicationModal = ({
         company: company,
         location: location && location.length > 0 ? location : undefined,
         link: link && link.length > 0 ? link : undefined,
-        process: [],
+        applicationDate,
+        process: [{ status: Status.Applied, date: applicationDate }],
         position,
       });
 
@@ -129,13 +134,6 @@ const NewApplicationModal = ({
                 <p className="text-xs text-[#6b7280] mt-0.5">Track a new job application</p>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6b7280] hover:text-[#e8eaed] hover:rotate-90 transition-all duration-200"
-              style={{ background: "#141920", border: "1px solid #2d3748" }}
-            >
-              <LuX className="w-4 h-4" />
-            </button>
           </div>
 
           {/* Form */}
@@ -193,6 +191,20 @@ const NewApplicationModal = ({
                 }}
                 onFocus={e => (e.target as HTMLInputElement).style.borderColor = "#5b8ef4"}
                 onBlur={e => (e.target as HTMLInputElement).style.borderColor = "#2d3748"}
+              />
+            </div>
+            <div>
+              <label className="flex items-center gap-2 text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
+                <LuCalendar className="w-3.5 h-3.5" />
+                Application Date
+              </label>
+              <Calendar
+                value={applicationDate}
+                onChange={(e) => setApplicationDate(e.value as Date)}
+                placeholder="Select Application Date"
+                className="w-full"
+                inputClassName="w-full p-2.5 rounded-lg text-sm text-[#e8eaed] outline-none bg-[#141920] border border-[#2d3748] focus:border-[#5b8ef4]"
+                maxDate={new Date()}
               />
             </div>
 

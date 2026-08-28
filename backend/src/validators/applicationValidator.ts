@@ -89,6 +89,13 @@ const validateLocation = body("location")
   .withMessage("location must be a string.")
   .trim();
 
+const validateApplicationDate = body("applicationDate")
+  .notEmpty()
+  .withMessage("applicationDate is required.")
+  .bail()
+  .isISO8601({ strict: true })
+  .withMessage("applicationDate must be a valid ISO 8601 date.");
+
 const validateProcess = [
   body("process")
     .optional()
@@ -117,6 +124,7 @@ export const createApplicationValidator = [
   validateUserId,
   validateCompany,
   validatePosition,
+  validateApplicationDate,
   validateLink,
   validateLocation,
   ...validateProcess,
@@ -129,6 +137,7 @@ export const updateApplicationValidator = [
   validateUserId.optional(),
   validateCompany.optional(),
   validatePosition.optional(),
+  validateApplicationDate.optional(),
   validateLocation.optional(),
   validateLink.optional(),
   ...validateProcess,

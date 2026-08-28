@@ -18,7 +18,7 @@ import {
   getIndustryLabel,
 } from "../../utils/valuesToLabels";
 import {
-  LuLayers, LuUsers, LuPencil, LuTrash2, LuSave, LuX, LuLink, LuPlus,
+  LuLayers, LuUsers, LuPencil, LuTrash2, LuSave, LuLink, LuPlus,
 } from "react-icons/lu";
 import { parseErrorResponse } from "../../utils/errorHandler";
 
@@ -140,6 +140,9 @@ const ApplicationModal = ({
       position: application.position,
       link: application.link,
       location: application.location,
+      applicationDate: application.applicationDate
+        ? new Date(application.applicationDate)
+        : undefined,
       process: [...(application.process || [])],
     });
     setIsEditing(true);
@@ -374,19 +377,6 @@ const ApplicationModal = ({
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-[#e8eaed]">Application Details</h2>
-            <button
-              onClick={() => {
-                setIsEditing(false);
-                setIsAddingStatus(false);
-                setEditingStatusIndex(null);
-                setUpdatedApplication({ process: [] });
-                onClose();
-              }}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6b7280] hover:text-[#e8eaed] hover:rotate-90 transition-all duration-200"
-              style={{ background: "#141920", border: "1px solid #2d3748" }}
-            >
-              <LuX className="w-4 h-4" />
-            </button>
           </div>
 
           {/* Company info */}
@@ -428,6 +418,35 @@ const ApplicationModal = ({
 
           {/* Application details */}
           <div className="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Application Date
+            </label>
+            {isEditing ? (
+              <Calendar
+                value={
+                  updatedApplication.applicationDate
+                    ? new Date(updatedApplication.applicationDate)
+                    : undefined
+                }
+                onChange={(e) =>
+                  setUpdatedApplication((prev) => ({
+                    ...prev,
+                    applicationDate: e.value as Date,
+                  }))
+                }
+                className="w-full"
+                inputClassName="p-2 border-2 rounded-md focus:outline-blue-600"
+                maxDate={new Date()}
+              />
+            ) : (
+              <p>
+                {application.applicationDate
+                  ? new Date(application.applicationDate).toLocaleDateString()
+                  : "Not specified"}
+              </p>
+            )}
+          </div>
             <div>
               <label className="block text-xs font-semibold text-[#6b7280] uppercase tracking-wider mb-2">
                 Position
