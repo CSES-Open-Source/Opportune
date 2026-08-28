@@ -18,7 +18,7 @@ import {
   getIndustryLabel,
 } from "../../utils/valuesToLabels";
 import {
-  LuLayers, LuUsers, LuPencil, LuTrash2, LuSave, LuX, LuLink, LuPlus,
+  LuLayers, LuUsers, LuPencil, LuTrash2, LuSave, LuLink, LuPlus,
 } from "react-icons/lu";
 import { parseErrorResponse } from "../../utils/errorHandler";
 
@@ -377,19 +377,6 @@ const ApplicationModal = ({
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-[#e8eaed]">Application Details</h2>
-            <button
-              onClick={() => {
-                setIsEditing(false);
-                setIsAddingStatus(false);
-                setEditingStatusIndex(null);
-                setUpdatedApplication({ process: [] });
-                onClose();
-              }}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6b7280] hover:text-[#e8eaed] hover:rotate-90 transition-all duration-200"
-              style={{ background: "#141920", border: "1px solid #2d3748" }}
-            >
-              <LuX className="w-4 h-4" />
-            </button>
           </div>
 
           {/* Company info */}

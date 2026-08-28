@@ -14,6 +14,7 @@ interface BaseModalProps extends React.HTMLAttributes<HTMLDivElement> {
 
 interface enableCloseModalProps extends BaseModalProps {
   disableClose?: false;
+  hideCloseButton?: boolean;
   onClose: () => void;
 }
 
@@ -47,6 +48,7 @@ const Modal = (props: ModalProps): React.JSX.Element => {
     className,
     children,
   } = props;
+  const hideCloseButton = !disableClose && (props as enableCloseModalProps).hideCloseButton;
 
   useEffect(() => {
     // Close modal when escape key is pressed
@@ -102,7 +104,7 @@ const Modal = (props: ModalProps): React.JSX.Element => {
         {...props}
         className={`relative mx-auto max-w-2xl hover:cursor-default ${className}`}
       >
-        {!disableClose && (
+        {!disableClose && !hideCloseButton && (
           <FaXmark
             className="absolute top-4 right-4 text-[#9ca3af] hover:text-[#e8eaed] hover:cursor-pointer transition z-10"
             size={24}
