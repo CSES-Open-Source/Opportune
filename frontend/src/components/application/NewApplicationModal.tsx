@@ -5,7 +5,7 @@ import { Company } from "../../types/Company";
 import { createApplication } from "../../api/applications";
 import { useAuth } from "../../contexts/useAuth";
 import { Toast } from "primereact/toast";
-import { LuBuilding2, LuBriefcase, LuMapPin, LuLink, LuPlus, LuX } from "react-icons/lu";
+import { LuBuilding2, LuBriefcase, LuMapPin, LuLink, LuPlus } from "react-icons/lu";
 
 interface NewApplicationModalProps {
   isOpen: boolean;
@@ -129,13 +129,6 @@ const NewApplicationModal = ({
                 <p className="text-xs text-[#6b7280] mt-0.5">Track a new job application</p>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6b7280] hover:text-[#e8eaed] hover:rotate-90 transition-all duration-200"
-              style={{ background: "#141920", border: "1px solid #2d3748" }}
-            >
-              <LuX className="w-4 h-4" />
-            </button>
           </div>
 
           {/* Form */}
